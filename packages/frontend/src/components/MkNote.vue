@@ -112,6 +112,9 @@
 				<button v-if="appearNote.text" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown="stealMenu(appearNote, stealButton)">
 					<i class="ti ti-swipe"></i>
 				</button>
+				<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown="clip()">
+					<i class="ti ti-paperclip"></i>
+				</button>
 				<MkA v-if="defaultStore.state.showNoteActionsOnlyHover" :to="notePage(note)" :class="$style.footerButton" class="_button">
 					<i class="ti ti-info-circle"></i>
 				</MkA>
@@ -157,7 +160,7 @@ import { reactionPicker } from '@/scripts/reaction-picker';
 import { extractUrlFromMfm } from '@/scripts/extract-url-from-mfm';
 import { $i } from '@/account';
 import { i18n } from '@/i18n';
-import { getNoteMenu } from '@/scripts/get-note-menu';
+import { getNoteClipMenu, getNoteMenu } from '@/scripts/get-note-menu';
 import { useNoteCapture } from '@/scripts/use-note-capture';
 import { deepClone } from '@/scripts/clone';
 import { useTooltip } from '@/scripts/use-tooltip';
@@ -202,6 +205,7 @@ const renoteButton = shallowRef<HTMLElement>();
 const renoteTime = shallowRef<HTMLElement>();
 const reactButton = shallowRef<HTMLElement>();
 const stealButton = shallowRef<HTMLElement>(); // shrimpia
+const clipButton = shallowRef<HTMLElement>();
 let appearNote = $computed(() => isRenote ? note.renote as misskey.entities.Note : note);
 const isMyRenote = $i && ($i.id === note.userId);
 const showContent = ref(false);
@@ -415,6 +419,10 @@ function menu(viaKeyboard = false): void {
 	os.popupMenu(getNoteMenu({ note: note, translating, translation, menuButton, isDeleted, currentClipPage }), menuButton.value, {
 		viaKeyboard,
 	}).then(focus);
+}
+
+async function clip() {
+	os.popupMenu(await getNoteClipMenu({ note: note, isDeleted, currentClipPage }), clipButton.value).then(focus);
 }
 
 function showRenoteMenu(viaKeyboard = false): void {
@@ -745,6 +753,8 @@ function showReactions(): void {
 }
 
 .footer {
+	display: flex;
+	flex-wrap: wrap;
 	margin-bottom: -14px;
 }
 
@@ -752,9 +762,10 @@ function showReactions(): void {
 	margin: 0;
 	padding: 8px;
 	opacity: 0.7;
+	flex-grow: 1;
+	max-width: 4em;
 
 	&:not(:last-child) {
-		margin-right: 28px;
 	}
 
 	&:hover {
@@ -837,7 +848,6 @@ function showReactions(): void {
 	.root:not(.showActionsOnlyHover) {
 		.footerButton {
 			&:not(:last-child) {
-				margin-right: 18px;
 			}
 		}
 	}
@@ -847,7 +857,6 @@ function showReactions(): void {
 	.root:not(.showActionsOnlyHover) {
 		.footerButton {
 			&:not(:last-child) {
-				margin-right: 12px;
 			}
 		}
 	}
@@ -862,7 +871,6 @@ function showReactions(): void {
 	.root:not(.showActionsOnlyHover) {
 		.footerButton {
 			&:not(:last-child) {
-				margin-right: 8px;
 			}
 		}
 	}

@@ -63,7 +63,6 @@ Ebisskeyは、通常のMisskeyをベースに次のような改変を施して�
 
 * ~~「管理者バッジ」を「皇帝バッジ」に変更~~ →12.119.2.sh-2で廃止
 * トップページの左下にある絵文字を🦐と🍤に変更
-* ログイン画面の文言を一部変更
 * Koruri をデフォルトのフォントに採用
 * Dolce テーマを内蔵 (thanks to @L1n4r1A)
 * エラーアイコンを差し替え（thanks to [@Or@mk.shrimpia.network](https://mk.shrimpia.network/@Or)）

@@ -23,7 +23,7 @@
 	<MkSwitch v-model="showFixedPostForm">{{ i18n.ts.showFixedPostForm }}</MkSwitch>
 	<MkSwitch v-model="showFixedPostFormInChannel">{{ i18n.ts.showFixedPostFormInChannel }}</MkSwitch>
 	<MkSwitch v-model="usePostFormWindow">
-		{{ i18n.ts.usePostFormWindow }} <i class="ti ti-flask" v-tooltip="i18n.ts.experimentalFeatures" /> <span class="_beta">Shrimpia</span>
+		投稿フォームをウィンドウとして表示 <i v-tooltip="i18n.ts.experimentalFeatures" class="ti ti-flask"/> <span class="_beta">Shrimpia</span>
 	</MkSwitch>
 
 	<FormSection>
@@ -50,6 +50,7 @@
 		<div class="_gaps_m">
 			<div class="_gaps_s">
 				<MkSwitch v-model="showNoteActionsOnlyHover">{{ i18n.ts.showNoteActionsOnlyHover }}</MkSwitch>
+				<MkSwitch v-model="showClipButtonInNoteFooter">{{ i18n.ts.showClipButtonInNoteFooter }}</MkSwitch>
 				<MkSwitch v-model="collapseRenotes">{{ i18n.ts.collapseRenotes }}</MkSwitch>
 				<MkSwitch v-model="advancedMfm">{{ i18n.ts.enableAdvancedMfm }}</MkSwitch>
 				<MkSwitch v-if="advancedMfm" v-model="animatedMfm">{{ i18n.ts.enableAnimatedMfm }}</MkSwitch>
@@ -70,12 +71,6 @@
 				</MkSwitch>
 				<MkSwitch v-model="disableDrawer">{{ i18n.ts.disableDrawer }}</MkSwitch>
 				<MkSwitch v-model="showTimelineOnUserHome">ユーザータイムラインをホームに表示する <span class="_beta">Shrimpia</span></MkSwitch>
-				<MkSwitch v-model="compactRenote" disabled>
-					1度見たことのあるRenoteを簡略化表示する <span class="_beta">Shrimpia</span>
-					<template #caption>
-						本オプションはMisskeyに正式実装されました。「{{ i18n.ts.collapseRenotes }}」を設定してください。
-					</template>
-				</MkSwitch>
 			</div>
 			<div>
 				<MkRadios v-model="emojiStyle">
@@ -160,6 +155,7 @@ async function reloadAsk() {
 const overridedDeviceKind = computed(defaultStore.makeGetterSetter('overridedDeviceKind'));
 const serverDisconnectedBehavior = computed(defaultStore.makeGetterSetter('serverDisconnectedBehavior'));
 const showNoteActionsOnlyHover = computed(defaultStore.makeGetterSetter('showNoteActionsOnlyHover'));
+const showClipButtonInNoteFooter = computed(defaultStore.makeGetterSetter('showClipButtonInNoteFooter'));
 const collapseRenotes = computed(defaultStore.makeGetterSetter('collapseRenotes'));
 const reduceAnimation = computed(defaultStore.makeGetterSetter('animation', v => !v, v => !v));
 const useBlurEffectForModal = computed(defaultStore.makeGetterSetter('useBlurEffectForModal'));

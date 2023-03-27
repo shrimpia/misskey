@@ -20,7 +20,7 @@
 					{{ i18n.ts._aboutMisskey.about }}<br><a href="https://misskey-hub.net/docs/misskey.html" target="_blank" class="_link">{{ i18n.ts.learnMore }}</a>
 				</div>
 				<div v-if="$i != null" style="text-align: center;">
-					<MkButton primary rounded inline @click="iLoveMisskey"><Mfm text="$[jelly 🦐]"/> #シュリンピア帝国 万歳！</MkButton>
+					<MkButton primary rounded inline @click="iLoveMisskey">I <Mfm text="$[jelly ❤]"/> #Misskey</MkButton>
 				</div>
 				<FormSection>
 					<div class="_formLinks">
@@ -69,7 +69,7 @@
 							<span :class="$style.contributorUsername">@robflop</span>
 						</a>
 					</div>
-					<template #caption><MkLink url="https://github.com/shrimpia/misskey/graphs/contributors">{{ i18n.ts._aboutMisskey.allContributors }}</MkLink></template>
+					<template #caption><MkLink url="https://github.com/misskey-dev/misskey/graphs/contributors">{{ i18n.ts._aboutMisskey.allContributors }}</MkLink></template>
 				</FormSection>
 				<FormSection>
 					<template #label>Ebisskey Contributor</template>
@@ -264,11 +264,7 @@ function gravity() {
 
 function iLoveMisskey() {
 	os.post({
-		initialText: `<center>
-#シュリンピア帝国
-
-$[tada 🦐 万歳！$[flip 🦐]]
-</center>`,
+		initialText: 'I $[jelly ❤] #Misskey',
 		instant: true,
 	});
 }
