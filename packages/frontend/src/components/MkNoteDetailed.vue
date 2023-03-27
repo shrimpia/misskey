@@ -370,6 +370,9 @@ function react(viaKeyboard = false): void {
 			if (appearNote.text && appearNote.text.length > 100 && (Date.now() - new Date(appearNote.createdAt).getTime() < 1000 * 3)) {
 				claimAchievement('reactWithoutRead');
 			}
+			if (reaction.includes('4ttenakuinu')) {
+				claimAchievement('yon');
+			}
 		}, () => {
 			focus();
 		});

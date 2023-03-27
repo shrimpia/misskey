@@ -57,6 +57,7 @@ export const ACHIEVEMENT_TYPES = [
 	'followers1000',
 	'collectAchievements30',
 	'viewAchievements3min',
+	'shrimpiaBanzai',
 	'iLoveMisskey',
 	'foundTreasure',
 	'client30min',
@@ -72,9 +73,11 @@ export const ACHIEVEMENT_TYPES = [
 	'reactWithoutRead',
 	'clickedClickHere',
 	'justPlainLucky',
+	'setNameToLutica',
 	'setNameToSyuilo',
 	'cookieClicked',
 	'brainDiver',
+	'yon',
 ] as const;
 
 export const ACHIEVEMENT_BADGES = {
@@ -442,6 +445,21 @@ export const ACHIEVEMENT_BADGES = {
 		img: '/fluent-emoji/1f9e0.png',
 		bg: 'linear-gradient(0deg, rgb(144, 224, 255), rgb(255, 168, 252))',
 		frame: 'bronze',
+	},
+	'shrimpiaBanzai': {
+		img: 'https://media.shrimpia.network/mk-shrimpia/files/7ec3806b-a846-4fd6-a5ac-f5aec70200e8.png',
+		bg: '#E19781',
+		frame: 'bronze',
+	},
+	'setNameToLutica': {
+		img: '/fluent-emoji/1f990.png',
+		bg: '#E19781',
+		frame: 'bronze',
+	},
+	'yon': {
+		img: 'https://media.shrimpia.network/mk-shrimpia/files/f08a8e8b-9cc0-4e4d-a727-492f05bfd468.gif',
+		bg: 'linear-gradient(30deg, rgb(200, 200, 200), rgb(255, 255, 255))',
+		frame: 'silver',
 	},
 } as const satisfies Record<typeof ACHIEVEMENT_TYPES[number], {
 	img: string;

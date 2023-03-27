@@ -58,6 +58,9 @@ const toggleReaction = (ev) => {
 					noteId: props.note.id,
 					reaction: props.reaction,
 				});
+				if (props.reaction.includes('4ttenakuinu')) {
+					claimAchievement('yon');
+				}
 			}
 		});
 	} else {
@@ -67,6 +70,9 @@ const toggleReaction = (ev) => {
 		});
 		if (props.note.text && props.note.text.length > 100 && (Date.now() - new Date(props.note.createdAt).getTime() < 1000 * 3)) {
 			claimAchievement('reactWithoutRead');
+		}
+		if (props.reaction.includes('4ttenakuinu')) {
+			claimAchievement('yon');
 		}
 	}
 };
@@ -89,6 +95,9 @@ const chooseAlternative = (ev) => {
 		noteId: props.note.id,
 		reaction: `:${alternative.value}:`,
 	});
+	if (alternative.value.includes('4ttenakuinu')) {
+		claimAchievement('yon');
+	}
 };
 
 watch(() => props.count, (newCount, oldCount) => {

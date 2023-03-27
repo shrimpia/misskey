@@ -153,6 +153,9 @@ function save() {
 	if (profile.name === 'syuilo' || profile.name === 'しゅいろ') {
 		claimAchievement('setNameToSyuilo');
 	}
+	if (profile.name === 'るちか' || profile.name.toLowerCase() === 'lutica') {
+		claimAchievement('setNameToLutica');
+	}
 	if (profile.isCat) {
 		claimAchievement('markedAsCat');
 	}
