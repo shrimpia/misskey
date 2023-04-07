@@ -984,6 +984,7 @@ retryAllQueuesConfirmText: "一時的にサーバーの負荷が増大するこ�
 enableChartsForRemoteUser: "他国民のチャートを生成"
 enableChartsForFederatedInstances: "他国のチャートを生成"
 showClipButtonInNoteFooter: "ノートのアクションにクリップを追加"
+clickToAddPersonalMemo: "クリックして自分用メモを追加"
 
 _achievements:
   earnedAt: "獲得日時"

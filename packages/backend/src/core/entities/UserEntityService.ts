@@ -12,7 +12,7 @@ import { KVCache } from '@/misc/cache.js';
 import type { Instance } from '@/models/entities/Instance.js';
 import type { LocalUser, RemoteUser, User } from '@/models/entities/User.js';
 import { birthdaySchema, descriptionSchema, localUsernameSchema, locationSchema, nameSchema, passwordSchema } from '@/models/entities/User.js';
-import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, DriveFilesRepository, NoteUnreadsRepository, ChannelFollowingsRepository, NotificationsRepository, UserNotePiningsRepository, UserProfilesRepository, InstancesRepository, AnnouncementReadsRepository, AnnouncementsRepository, AntennaNotesRepository, PagesRepository, UserProfile, RenoteMutingsRepository } from '@/models/index.js';
+import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, DriveFilesRepository, NoteUnreadsRepository, ChannelFollowingsRepository, NotificationsRepository, UserNotePiningsRepository, UserProfilesRepository, InstancesRepository, AnnouncementReadsRepository, AnnouncementsRepository, AntennaNotesRepository, PagesRepository, UserProfile, RenoteMutingsRepository, UserMemoRepository } from '@/models/index.js';
 import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
 import type { OnModuleInit } from '@nestjs/common';
@@ -113,6 +113,9 @@ export class UserEntityService implements OnModuleInit {
 
 		@Inject(DI.pagesRepository)
 		private pagesRepository: PagesRepository,
+		
+		@Inject(DI.userMemoRepository)
+		private userMemoRepository: UserMemoRepository,
 
 		//private noteEntityService: NoteEntityService,
 		//private driveFileEntityService: DriveFileEntityService,
@@ -367,6 +370,11 @@ export class UserEntityService implements OnModuleInit {
 
 		const falsy = opts.detail ? false : undefined;
 
+		const memo = meId == null ? null : this.userMemoRepository.findOneBy({
+			userId: meId,
+			targetUserId: user.id,
+		}).then(row => row?.memo ?? null);
+
 		const packed = {
 			id: user.id,
 			name: user.name,
@@ -506,6 +514,10 @@ export class UserEntityService implements OnModuleInit {
 				isBlocked: relation.isBlocked,
 				isMuted: relation.isMuted,
 				isRenoteMuted: relation.isRenoteMuted,
+			} : {}),
+
+			...(memo ? {
+				memo,
 			} : {}),
 		} as Promiseable<Packed<'User'>> as Promiseable<IsMeAndIsUserDetailed<ExpectsMe, D>>;
 

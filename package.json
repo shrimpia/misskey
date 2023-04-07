@@ -1,6 +1,6 @@
 {
 	"name": "misskey",
-	"version": "13.10.3",
+	"version": "13.10.3-sh.1",
 	"codename": "negi",
 	"repository": {
 		"type": "git",
