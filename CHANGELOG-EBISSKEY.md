@@ -2,7 +2,7 @@
 
 Ebisskeyとしての変更履歴です。Misskeyのリリースノートは [CHANGELOG](/CHANGELOG.md) を確認してください。
 
-## 13.12.0
+## 13.11.2
 
 > Note: このバージョンから、`master` ブランチをリリースブランチにしました。
 > `git pull` する前に、 `git switch master` を実行してください。
