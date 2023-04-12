@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>Ebisskey</h1>
+<h1>Ebisskey for Shrimpia</h1>
 
 ---
 
@@ -9,6 +9,11 @@
 [Misskey](https://github.com/misskey-dev/misskey) の最新版をベースにいくつかの追加機能と改善をもたらしています。
 
 [本家 Misskey との違い](DIFFERENCE.md)
+
+> **NOTE**
+> 🦐 本ブランチは、シュリンピア帝国での利用を目的とした、Ebisskeyの「帝国フォーク」です。
+> 本ブランチはシュリンピア帝国の動作環境を前提にした機能が追加される可能性もあり、帝国以外での利用を想定していません。
+> 本ブランチを無理やり使うことも可能ですが、サポートは一切受けません。
 
 ## 状況
 
