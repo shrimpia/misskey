@@ -1,9 +1,9 @@
 import { createEmptyNotification, createNotification } from '@/scripts/create-notification';
 import { swLang } from '@/scripts/lang';
-import { swNotificationRead } from '@/scripts/notification-read';
-import { pushNotificationDataMap } from '@/types';
+import { PushNotificationDataMap } from '@/types';
 import * as swos from '@/scripts/operations';
 import { acct as getAcct } from '@/filters/user';
+import { get } from 'idb-keyval';
 
 globalThis.addEventListener('install', ev => {
 	//ev.waitUntil(globalThis.skipWaiting());
@@ -44,7 +44,7 @@ globalThis.addEventListener('push', ev => {
 		includeUncontrolled: true,
 		type: 'window',
 	}).then(async (clients: readonly WindowClient[]) => {
-		const data: pushNotificationDataMap[keyof pushNotificationDataMap] = ev.data?.json();
+		const data: PushNotificationDataMap[keyof PushNotificationDataMap] = ev.data?.json();
 
 		switch (data.type) {
 			// case 'driveFileCreated':
@@ -55,28 +55,8 @@ globalThis.addEventListener('push', ev => {
 
 				return createNotification(data);
 			case 'readAllNotifications':
-				for (const n of await globalThis.registration.getNotifications()) {
-					if (n?.data?.type === 'notification') n.close();
-				}
-				break;
-			case 'readAllAntennas':
-				for (const n of await globalThis.registration.getNotifications()) {
-					if (n?.data?.type === 'unreadAntennaNote') n.close();
-				}
-				break;
-			case 'readNotifications':
-				for (const n of await globalThis.registration.getNotifications()) {
-					if (data.body.notificationIds.includes(n.data.body.id)) {
-						n.close();
-					}
-				}
-				break;
-			case 'readAntenna':
-				for (const n of await globalThis.registration.getNotifications()) {
-					if (n?.data?.type === 'unreadAntennaNote' && data.body.antennaId === n.data.body.antenna.id) {
-						n.close();
-					}
-				}
+				await globalThis.registration.getNotifications()
+					.then(notifications => notifications.forEach(n => n.close()));
 				break;
 		}
 
@@ -92,7 +72,7 @@ globalThis.addEventListener('notificationclick', (ev: ServiceWorkerGlobalScopeEv
 		}
 
 		const { action, notification } = ev;
-		const data: pushNotificationDataMap[keyof pushNotificationDataMap] = notification.data;
+		const data: PushNotificationDataMap[keyof PushNotificationDataMap] = notification.data ?? {};
 		const { userId: loginId } = data;
 		let client: WindowClient | null = null;
 
@@ -148,13 +128,29 @@ globalThis.addEventListener('notificationclick', (ev: ServiceWorkerGlobalScopeEv
 				break;
 			case 'unreadAntennaNote':
 				client = await swos.openAntenna(data.body.antenna.id, loginId);
+				break;
+			default:
+				switch (action) {
+					case 'markAllAsRead':
+						await globalThis.registration.getNotifications()
+							.then(notifications => notifications.forEach(n => n.close()));
+						await get('accounts').then(accounts => {
+							return Promise.all(accounts.map(async account => {
+								await swos.sendMarkAllAsRead(account.id);
+							}));
+						});
+						break;
+					case 'settings':
+						client = await swos.openClient('push', '/settings/notifications', loginId);
+						break;
+				}
 		}
 
 		if (client) {
 			client.focus();
 		}
 		if (data.type === 'notification') {
-			swNotificationRead.then(that => that.read(data));
+			await swos.sendMarkAllAsRead(loginId);
 		}
 
 		notification.close();
@@ -162,11 +158,14 @@ globalThis.addEventListener('notificationclick', (ev: ServiceWorkerGlobalScopeEv
 });
 
 globalThis.addEventListener('notificationclose', (ev: ServiceWorkerGlobalScopeEventMap['notificationclose']) => {
-	const data: pushNotificationDataMap[keyof pushNotificationDataMap] = ev.notification.data;
+	const data: PushNotificationDataMap[keyof PushNotificationDataMap] = ev.notification.data;
 
-	if (data.type === 'notification') {
-		swNotificationRead.then(that => that.read(data));
-	}
+	ev.waitUntil((async () => {
+		if (data.type === 'notification') {
+			await swos.sendMarkAllAsRead(data.userId);
+		}
+		return;
+	})());
 });
 
 globalThis.addEventListener('message', (ev: ServiceWorkerGlobalScopeEventMap['message']) => {

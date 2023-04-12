@@ -7,6 +7,7 @@
 			<!-- <div class="punished" v-if="user.isSilenced"><i class="ti ti-alert-triangle" style="margin-right: 8px;"></i> {{ i18n.ts.userSilenced }}</div> -->
 
 			<div class="profile _gaps">
+				<MkAccountMoved v-if="user.movedToUri" :host="user.movedToUri.host" :acct="user.movedToUri.username"/>
 				<MkRemoteCaution v-if="user.host != null" :href="user.url ?? user.uri!" class="warn"/>
 
 				<div :key="user.id" class="main _panel">
@@ -44,16 +45,18 @@
 							{{ role.name }}
 						</span>
 					</div>
+					<div class="memo" :class="{'no-memo': !memoDraft}">
+						<div class="heading" v-if="memoDraft" v-text="i18n.ts.memo" />
+						<textarea
+							ref="memoTextareaEl"
+							rows="1"
+							v-model="memoDraft"
+							:placeholder="i18n.ts.clickToAddPersonalMemo"
+							@blur="updateMemo"
+							@input="adjustMemoTextarea"
+						/>
+					</div>
 					<div class="description">
-						<div class="memo" :class="{'no-memo': !memoDraft}">
-							<textarea
-								ref="memoTextareaEl"
-								v-model="memoDraft"
-								:placeholder="i18n.ts.clickToAddPersonalMemo"
-								@blur="updateMemo"
-								@input="adjustMemoTextarea"
-							/>
-						</div>
 						<MkOmit>
 							<Mfm v-if="user.description" :text="user.description" :is-note="false" :author="user" :i="$i"/>
 							<p v-else class="empty">{{ i18n.ts.noAccountDescription }}</p>
@@ -66,7 +69,7 @@
 						</dl>
 						<dl v-if="user.birthday" class="field">
 							<dt class="name"><i class="ti ti-cake ti-fw"></i> {{ i18n.ts.birthday }}</dt>
-							<dd class="value">{{ user.birthday.replace('-', '/').replace('-', '/') }} ({{ $t('yearsOld', { age }) }})</dd>
+							<dd class="value">{{ user.birthday.replace('-', '/').replace('-', '/') }} ({{ i18n.t('yearsOld', { age }) }})</dd>
 						</dl>
 						<dl class="field">
 							<dt class="name"><i class="ti ti-calendar ti-fw"></i> {{ i18n.ts.registeredDate }}</dt>
@@ -102,7 +105,7 @@
 
 			<div class="contents _gaps">
 				<div v-if="user.pinnedNotes.length > 0" class="_gaps">
-					<XNote v-for="note in user.pinnedNotes" :key="note.id" class="note _panel" :note="note" :pinned="true"/>
+					<MkNote v-for="note in user.pinnedNotes" :key="note.id" class="note _panel" :note="note" :pinned="true"/>
 				</div>
 				<MkInfo v-else-if="$i && $i.id === user.id">{{ i18n.ts.userPagePinTip }}</MkInfo>
 				<template v-if="narrow">
@@ -129,10 +132,10 @@
 import {defineAsyncComponent, computed, onMounted, onUnmounted, nextTick, watch} from 'vue';
 import calcAge from 's-age';
 import * as misskey from 'misskey-js';
-
+import MkNote from '@/components/MkNote.vue';
 import XUserTimeline from './index.timeline.vue';
-import XNote from '@/components/MkNote.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';
+import MkAccountMoved from '@/components/MkAccountMoved.vue';
 import MkRemoteCaution from '@/components/MkRemoteCaution.vue';
 import MkOmit from '@/components/MkOmit.vue';
 import MkInfo from '@/components/MkInfo.vue';
@@ -243,8 +246,9 @@ onMounted(() => {
 			});
 		}
 	}
-
-	adjustMemoTextarea();
+	nextTick(() => {
+		adjustMemoTextarea();
+	});
 });
 
 onUnmounted(() => {
@@ -406,6 +410,37 @@ onUnmounted(() => {
 					}
 				}
 
+				> .memo {
+					margin: 12px 24px 0 154px;
+					background: transparent;
+					color: var(--fg);
+					border: 1px solid var(--divider);
+					border-radius: 8px;
+					padding: 8px;
+					line-height: 0;
+
+					> .heading {
+						text-align: left;
+						color: var(--fgTransparent);
+						line-height: 1.5;
+					}
+
+					textarea {
+						font-family: inherit;
+						margin: 0;
+						padding: 0;
+						outline: none;
+						width: 100%;
+						height: auto;
+						min-height: 0;
+						color: var(--fg);
+						background: transparent;
+						border: none;
+						resize: none;
+						overflow: hidden;
+					}
+				}
+
 				> .description {
 					padding: 24px 24px 24px 154px;
 					font-size: 0.95em;
@@ -413,30 +448,6 @@ onUnmounted(() => {
 					> .empty {
 						margin: 0;
 						opacity: 0.5;
-					}
-
-					> .memo {
-						background: var(--infoBg);
-						color: var(--infoFg);
-						margin-bottom: 8px;
-						padding: 8px;
-						border-radius: 8px;
-						line-height: 1;
-
-						textarea {
-							font-family: inherit;
-							margin: 0;
-							padding: 0;
-							outline: none;
-							width: 100%;
-							height: auto;
-							min-height: 0;
-							color: var(--fg);
-							background: transparent;
-							border: none;
-							resize: none;
-							overflow: hidden;
-						}
 					}
 				}
 
@@ -563,6 +574,10 @@ onUnmounted(() => {
 				> .roles {
 					padding: 16px 16px 0 16px;
 					justify-content: center;
+				}
+
+				> .memo {
+					margin: 16px 16px 0 16px;
 				}
 
 				> .description {

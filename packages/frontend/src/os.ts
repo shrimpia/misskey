@@ -217,6 +217,7 @@ export function actions<T extends {
 	value: string;
 	text: string;
 	primary?: boolean,
+	danger?: boolean,
 }[]>(props: {
 	type: 'error' | 'info' | 'success' | 'warning' | 'waiting' | 'question';
 	title?: string | null;
@@ -231,6 +232,7 @@ export function actions<T extends {
 			actions: props.actions.map(a => ({
 				text: a.text,
 				primary: a.primary,
+				danger: a.danger,
 				callback: () => {
 					resolve({ canceled: false, result: a.value });
 				},
