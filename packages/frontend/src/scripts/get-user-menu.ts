@@ -4,11 +4,12 @@ import { i18n } from '@/i18n';
 import copyToClipboard from '@/scripts/copy-to-clipboard';
 import { host } from '@/config';
 import * as os from '@/os';
-import { userActions } from '@/store';
+import {defaultStore, userActions} from '@/store';
 import { $i, iAmModerator } from '@/account';
 import { mainRouter } from '@/router';
 import { Router } from '@/nirax';
 import { rolesCache, userListsCache } from '@/cache';
+import {editNickname} from "@/scripts/edit-nickname";
 
 export function getUserMenu(user: misskey.entities.UserDetailed, router: Router = mainRouter) {
 	const meId = $i ? $i.id : null;
@@ -122,7 +123,13 @@ export function getUserMenu(user: misskey.entities.UserDetailed, router: Router 
 		action: () => {
 			os.post({ specified: user, initialText: `@${user.username} ` });
 		},
-	}, null, {
+	}, ...(defaultStore.state.nicknameEnabled ? [{
+		icon: 'ti ti-edit',
+		text: 'ニックネームを編集',
+		action: () => {
+			editNickname(user);
+		},
+	}] : []), null, {
 		type: 'parent',
 		icon: 'ti ti-list',
 		text: i18n.ts.addToList,

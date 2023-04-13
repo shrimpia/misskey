@@ -166,7 +166,7 @@ let poll = $ref<{
 } | null>(null);
 let useCw = $ref(false);
 // #region Shrimpia
-let showPreview = $ref(defaultStore.state.showPostFormPreview);
+let showPreview = $ref(defaultStore.state.rememberPostFormToggleStateEnabled ? defaultStore.state.showPostFormPreview : false);
 // #endregion
 let cw = $ref<string | null>(null);
 let localOnly = $ref<boolean>(props.initialLocalOnly ?? (defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly));
@@ -256,6 +256,7 @@ watch($$(visibleUsers), () => {
 
 // #region Shrimpia
 watch($$(showPreview), () => {
+	if (!defaultStore.state.rememberPostFormToggleStateEnabled) return;
 	defaultStore.set('showPostFormPreview', showPreview);
 });
 // #endregion

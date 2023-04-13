@@ -30,7 +30,7 @@ const faviconUrl = $computed(() => props.instance ? getProxiedImageUrlNullable(p
 const themeColor = instance.themeColor ?? '#777777';
 
 const bg = {
-	background: `linear-gradient(90deg, ${themeColor}, ${themeColor}00)`,
+	background: `linear-gradient(90deg, ${themeColor}, ${themeColor}30)`,
 };
 </script>
 
@@ -41,22 +41,23 @@ $height: 2ex;
 	display: flex;
 	align-items: center;
 	height: $height;
-	border-radius: 4px 0 0 4px;
+	border-radius: 24px;
 	overflow: clip;
-	color: #fff;
+	color: #000;
+	padding: 2px 4px;
 	text-shadow: /* .866 ≈ sin(60deg) */
-		1px 0 1px #000,
-		.866px .5px 1px #000,
-		.5px .866px 1px #000,
-		0 1px 1px #000,
-		-.5px .866px 1px #000,
-		-.866px .5px 1px #000,
-		-1px 0 1px #000,
-		-.866px -.5px 1px #000,
-		-.5px -.866px 1px #000,
-		0 -1px 1px #000,
-		.5px -.866px 1px #000,
-		.866px -.5px 1px #000;
+		1px 0 1px #fff,
+		.866px .5px 1px #fff,
+		.5px .866px 1px #fff,
+		0 1px 1px #fff,
+		-.5px .866px 1px #fff,
+		-.866px .5px 1px #fff,
+		-1px 0 1px #fff,
+		-.866px -.5px 1px #fff,
+		-.5px -.866px 1px #fff,
+		0 -1px 1px #fff,
+		.5px -.866px 1px #fff,
+		.866px -.5px 1px #fff;
 	mask-image: linear-gradient(90deg,
 		rgb(0,0,0),
 		rgb(0,0,0) calc(100% - 16px),
@@ -67,12 +68,14 @@ $height: 2ex;
 .icon {
 	height: $height;
 	flex-shrink: 0;
+	border-radius: 4px;
+	height: 0.9em;
 }
 
 .name {
 	margin-left: 4px;
 	line-height: 1;
-	font-size: 0.9em;
+	font-size: 0.8em;
 	font-weight: bold;
 	white-space: nowrap;
 	overflow: visible;

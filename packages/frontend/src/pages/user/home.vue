@@ -15,7 +15,9 @@
 						<div ref="bannerEl" class="banner" :style="style"></div>
 						<div class="fade"></div>
 						<div class="title">
-							<MkUserName class="name" :user="user" :nowrap="true"/>
+							<div class="name">
+								<MkUserName :user="user" :nowrap="true" @click="editNickname(props.user)"/>
+							</div>
 							<div class="bottom">
 								<span class="username"><MkAcct :user="user" :detail="true"/></span>
 								<span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--badge);"><i class="ti ti-shield"></i></span>
@@ -31,7 +33,7 @@
 					</div>
 					<MkAvatar class="avatar" :user="user" indicator/>
 					<div class="title">
-						<MkUserName :user="user" :nowrap="false" class="name"/>
+						<MkUserName :user="user" :nowrap="false" class="name" @click="editNickname(props.user)"/>
 						<div class="bottom">
 							<span class="username"><MkAcct :user="user" :detail="true"/></span>
 							<span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--badge);"><i class="ti ti-shield"></i></span>
@@ -152,6 +154,7 @@ import { confetti } from '@/scripts/confetti';
 import MkNotes from '@/components/MkNotes.vue';
 import { defaultStore } from '@/store';
 import {api} from "@/os";
+import {editNickname} from "@/scripts/edit-nickname";
 
 const XPhotos = defineAsyncComponent(() => import('./index.photos.vue'));
 const XActivity = defineAsyncComponent(() => import('./index.activity.vue'));
@@ -345,12 +348,25 @@ onUnmounted(() => {
 						color: #fff;
 
 						> .name {
-							display: block;
+							display: flex;
+							gap: 8px;
 							margin: 0;
 							line-height: 32px;
 							font-weight: bold;
 							font-size: 1.8em;
 							text-shadow: 0 0 8px #000;
+
+							> .nickname-button {
+								-webkit-backdrop-filter: var(--blur, blur(8px));
+								backdrop-filter: var(--blur, blur(8px));
+								background: rgba(0, 0, 0, 0.2);
+								color: #ccc;
+								font-size: 0.7em;
+								line-height: 1;
+								width: 1.8em;
+								height: 1.8em;
+								border-radius: 100%;
+							}
 						}
 
 						> .bottom {
@@ -381,6 +397,10 @@ onUnmounted(() => {
 							margin-right: 8px;
 							opacity: 0.8;
 						}
+					}
+
+					> .nickname-button {
+						margin-left: 8px;
 					}
 				}
 

@@ -174,6 +174,11 @@ const menuDef = computed(() => [{
 		text: i18n.ts.other,
 		to: '/settings/other',
 		active: currentPage?.route.name === 'other',
+	}, {
+		icon: 'ti ti-bulb-filled',
+		text: 'Ebisskey',
+		to: '/settings/ebisskey',
+		active: currentPage?.route.name === 'ebisskey',
 	}],
 }, {
 	items: [{

@@ -47,6 +47,7 @@ import { miLocalStorage } from './local-storage';
 import { claimAchievement, claimedAchievements } from './scripts/achievements';
 import { fetchCustomEmojis } from './custom-emojis';
 import { mainRouter } from './router';
+import {userName} from "@/filters/user";
 
 console.info(`Misskey v${version}`);
 
@@ -448,7 +449,7 @@ if ($i) {
 		// 二時間以上前なら
 		if (Date.now() - lastUsedDate > 1000 * 60 * 60 * 2) {
 			toast(i18n.t('welcomeBackWithName', {
-				name: $i.name || $i.username,
+				name: userName($i),
 			}));
 		}
 	}

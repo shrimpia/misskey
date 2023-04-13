@@ -4,6 +4,7 @@ import { initHpmlLib } from './lib';
 import { Expr, isLiteralValue, Variable } from './expr';
 import { PageVar, envVarsDef, Fn, HpmlScope, HpmlError } from '.';
 import { version } from '@/config';
+import {userName} from "@/filters/user";
 
 /**
  * Hpml evaluator
@@ -34,7 +35,7 @@ export class Hpml {
 			VERSION: version,
 			URL: this.page ? `${opts.url}/@${this.page.user.username}/pages/${this.page.name}` : '',
 			LOGIN: opts.visitor != null,
-			NAME: opts.visitor ? opts.visitor.name || opts.visitor.username : '',
+			NAME: opts.visitor ? userName(opts.visitor) : '',
 			USERNAME: opts.visitor ? opts.visitor.username : '',
 			USERID: opts.visitor ? opts.visitor.id : '',
 			NOTES_COUNT: opts.visitor ? opts.visitor.notesCount : 0,

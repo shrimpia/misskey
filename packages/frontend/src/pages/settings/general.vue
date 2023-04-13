@@ -22,9 +22,6 @@
 
 	<MkSwitch v-model="showFixedPostForm">{{ i18n.ts.showFixedPostForm }}</MkSwitch>
 	<MkSwitch v-model="showFixedPostFormInChannel">{{ i18n.ts.showFixedPostFormInChannel }}</MkSwitch>
-	<MkSwitch v-model="usePostFormWindow">
-		投稿フォームをウィンドウとして表示 <i v-tooltip="i18n.ts.experimentalFeatures" class="ti ti-flask"/> <span class="_beta">Shrimpia</span>
-	</MkSwitch>
 
 	<FormSection>
 		<template #label>{{ i18n.ts.behavior }}</template>
@@ -63,7 +60,7 @@
 				<MkSwitch v-model="disableShowingAnimatedImages">{{ i18n.ts.disableShowingAnimatedImages }}</MkSwitch>
 				<MkSwitch v-model="squareAvatars">{{ i18n.ts.squareAvatars }}</MkSwitch>
 				<MkSwitch v-model="useKoruri">
-					Koruri フォントを使用 <span class="_beta">Shrimpia</span>
+					Koruri フォントを使用 <span class="_beta">Ebisskey</span>
 					<template #caption>
 						可読性および欧文・和文間のバランスに優れた
 						<a ref="noopener noreferrer" class="_link" href="https://koruri.github.io/" target="_blank">Koruri</a>
@@ -72,7 +69,7 @@
 				</MkSwitch>
 				<MkSwitch v-model="disableDrawer">{{ i18n.ts.disableDrawer }}</MkSwitch>
 				<MkSwitch v-model="forceShowAds">{{ i18n.ts.forceShowAds }}</MkSwitch>
-				<MkSwitch v-model="showTimelineOnUserHome">ユーザータイムラインをホームに表示する <span class="_beta">Shrimpia</span></MkSwitch>
+				<MkSwitch v-model="showTimelineOnUserHome">ユーザータイムラインをホームに表示する <span class="_beta">Ebisskey</span></MkSwitch>
 			</div>
 			<div>
 				<MkRadios v-model="emojiStyle">
@@ -181,9 +178,7 @@ const enableInfiniteScroll = computed(defaultStore.makeGetterSetter('enableInfin
 const useReactionPickerForContextMenu = computed(defaultStore.makeGetterSetter('useReactionPickerForContextMenu'));
 const squareAvatars = computed(defaultStore.makeGetterSetter('squareAvatars'));
 const aiChanMode = computed(defaultStore.makeGetterSetter('aiChanMode'));
-const usePostFormWindow = computed(defaultStore.makeGetterSetter('usePostFormWindow'));
 const showTimelineOnUserHome = computed(defaultStore.makeGetterSetter('showTimelineOnUserHome'));
-const compactRenote = computed(defaultStore.makeGetterSetter('compactRenote'));
 
 watch(lang, () => {
 	miLocalStorage.setItem('lang', lang.value as string);

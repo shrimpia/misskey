@@ -114,7 +114,7 @@
 				<button v-if="appearNote.myReaction != null" ref="reactButton" class="button _button reacted" @click="undoReact(appearNote)">
 					<i class="ti ti-minus"></i>
 				</button>
-				<button v-if="appearNote.text" ref="stealButton" class="button _button" @mousedown="stealMenu(appearNote, stealButton)">
+				<button v-if="stealButtonVisible" ref="stealButton" class="button _button" @mousedown="stealMenu(appearNote, stealButton)">
 					<i class="ti ti-swipe"></i>
 				</button>
 				<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" class="button _button" @mousedown="clip()">
@@ -217,6 +217,7 @@ const showTicker = (defaultStore.state.instanceTicker === 'always') || (defaultS
 const conversation = ref<misskey.entities.Note[]>([]);
 const replies = ref<misskey.entities.Note[]>([]);
 const canRenote = computed(() => ['public', 'home'].includes(appearNote.visibility) || appearNote.userId === $i.id);
+const stealButtonVisible = appearNote.text && (defaultStore.state.numberQuoteEnabled || defaultStore.state.stealEnabled);
 
 const keymap = {
 	'r': () => reply(true),

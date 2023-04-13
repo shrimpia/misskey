@@ -306,18 +306,50 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
+
+	// #region Shrimpia
+	// -- Feature
+	nicknameEnabled: {
+		where: 'account',
+		default: true,
+	},
+	numberQuoteEnabled: {
+		where: 'account',
+		default: false,
+	},
+	stealEnabled: {
+		where: 'account',
+		default: false,
+	},
+	// -- Tweak
+	infoButtonForNoteActionsEnabled: {
+		where: 'account',
+		default: true,
+	},
+	rememberPostFormToggleStateEnabled: {
+		where: 'account',
+		default: true,
+	},
+	reactableRemoteReactionEnabled: {
+		where: 'account',
+		default: true,
+	},
+	// -- Labs
 	usePostFormWindow: {
 		where: 'device',
 		default: false,
 	},
-
-	// #region Shrimpia
-	showPostFormPreview: {
-		where: 'device',
+	ebiNoteViewEnabledLab: {
+		where: 'account',
 		default: false,
 	},
+
 	useDefaultNoteVisibilityOnRenote: {
 		where: 'account',
+		default: false,
+	},
+	showPostFormPreview: {
+		where: 'device',
 		default: false,
 	},
 	defaultRenoteVisibility: {
@@ -348,6 +380,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: true,
 	},
+	nicknameMap: {
+		where: 'account',
+		default: {} as Record<string, string>,
+	}
 	// #endregion
 }));
 
@@ -386,15 +422,6 @@ export class ColdDeviceStorage {
 		darkTheme,
 		syncDeviceDarkMode: true,
 		plugins: [] as Plugin[],
-		mediaVolume: 0.5,
-		sound_masterVolume: 0.3,
-		sound_note: { type: null, volume: 0.5 },
-		sound_noteMy: { type: null, volume: 0.5 },
-		sound_notification: { type: 'syuilo/n-ea', volume: 0.5 },
-		sound_chat: { type: 'syuilo/pope1', volume: 0.5 },
-		sound_chatBg: { type: 'syuilo/waon', volume: 0.5 },
-		sound_antenna: { type: 'syuilo/triple', volume: 0.5 },
-		sound_channel: { type: 'syuilo/square-pico', volume: 0.5 },
 	};
 
 	public static watchers: Watcher[] = [];
