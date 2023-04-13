@@ -2,7 +2,7 @@
 
 Ebisskeyとしての変更履歴です。Misskeyのリリースノートは [CHANGELOG](/CHANGELOG.md) を確認してください。
 
-## 13.11.3
+## 13.11.3-sh.1
 
 * 殆どのEbisskey独自機能を個別に有効化・無効化できるように
 	* 設定 >> Ebisskey から有効化できます。
