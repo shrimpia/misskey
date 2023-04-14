@@ -1,9 +1,6 @@
 <template>
-<span v-if="disableIfFollowing && isFollowing" style="opacity: 0.5">
-	{{ $ts.alreadyFollowed }}
-</span>
 <button
-	v-else
+	v-if="!disableIfFollowing || !isFollowing"
 	class="kpoogebi _button"
 	:class="{ wait, active: isFollowing || hasPendingFollowRequestFromYou, full, large }"
 	:disabled="wait"

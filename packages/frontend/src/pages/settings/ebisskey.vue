@@ -44,6 +44,9 @@
 			<MkSwitch v-model="reactableRemoteReactionEnabled">
 				リモートのカスタム絵文字リアクションでも、このサーバーに同じ名前の絵文字があればリアクションできるようにする
 			</MkSwitch>
+			<MkSwitch v-model="showFollowingMessageInsteadOfButtonEnabled">
+				既にフォローしている場合、通知欄にフォローボタンを表示しない
+			</MkSwitch>
 		</div>
 	</FormSection>
 	<FormSection>
@@ -75,6 +78,8 @@ import { definePageMetadata } from '@/scripts/page-metadata';
 import MkNote from "@/components/MkNote.vue";
 import {Note, User} from "misskey-js/built/entities";
 import {$i} from "@/account";
+import MkButton from "@/components/MkButton.vue";
+import {confetti} from "@/scripts/confetti";
 
 async function reloadAsk() {
 	const { canceled } = await os.confirm({
@@ -94,6 +99,7 @@ const reactableRemoteReactionEnabled = computed(defaultStore.makeGetterSetter('r
 const rememberPostFormToggleStateEnabled = computed(defaultStore.makeGetterSetter('rememberPostFormToggleStateEnabled'));
 const usePostFormWindow = computed(defaultStore.makeGetterSetter('usePostFormWindow'));
 const ebiNoteViewEnabled = computed(defaultStore.makeGetterSetter('ebiNoteViewEnabledLab'));
+const showFollowingMessageInsteadOfButtonEnabled = computed(defaultStore.makeGetterSetter('showFollowingMessageInsteadOfButtonEnabled'));
 
 const noteMock: Note = {
 	id: 'abc',
@@ -112,7 +118,6 @@ const noteMock: Note = {
 	repliesCount: 10,
 	emojis: [],
 	localOnly: true,
-
 };
 
 watch([

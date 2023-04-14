@@ -43,7 +43,7 @@
 		<MkAvatar v-if="!defaultStore.reactiveState.ebiNoteViewEnabledLab.value" :class="$style.avatar" :user="appearNote.user" link preview/>
 		<div :class="$style.main">
 			<template v-if="defaultStore.reactiveState.ebiNoteViewEnabledLab.value">
-				<ShNoteHeader :note="appearNote" />
+				<ShNoteHeader :note="appearNote" :show-ticker="showTicker" />
 			</template>
 			<template v-else>
 				<MkNoteHeader :class="$style.header" :note="appearNote" :mini="true"/>

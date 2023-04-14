@@ -64,7 +64,7 @@
 			</MkA>
 			<template v-else-if="notification.type === 'follow'">
 				<span :class="$style.text" style="opacity: 0.6;">{{ i18n.ts.youGotNewFollower }}</span>
-				<div v-if="full"><MkFollowButton :user="notification.user" :full="true" disable-if-following/></div>
+				<div v-if="full"><MkFollowButton :user="notification.user" :full="true" :disable-if-following="defaultStore.reactiveState.showFollowingMessageInsteadOfButtonEnabled.value"/></div>
 			</template>
 			<span v-else-if="notification.type === 'followRequestAccepted'" :class="$style.text" style="opacity: 0.6;">{{ i18n.ts.followRequestAccepted }}</span>
 			<template v-else-if="notification.type === 'receiveFollowRequest'">
@@ -96,6 +96,7 @@ import { i18n } from '@/i18n';
 import * as os from '@/os';
 import { useTooltip } from '@/scripts/use-tooltip';
 import { $i } from '@/account';
+import {defaultStore} from "@/store";
 
 const props = withDefaults(defineProps<{
 	notification: misskey.entities.Notification;
