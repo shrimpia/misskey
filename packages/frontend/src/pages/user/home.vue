@@ -7,7 +7,7 @@
 			<!-- <div class="punished" v-if="user.isSilenced"><i class="ti ti-alert-triangle" style="margin-right: 8px;"></i> {{ i18n.ts.userSilenced }}</div> -->
 
 			<div class="profile _gaps">
-				<MkAccountMoved v-if="user.movedToUri" :host="user.movedToUri.host" :acct="user.movedToUri.username"/>
+				<MkAccountMoved v-if="user.movedTo" :moved-to="user.movedTo"/>
 				<MkRemoteCaution v-if="user.host != null" :href="user.url ?? user.uri!" class="warn"/>
 
 				<div :key="user.id" class="main _panel">
@@ -23,6 +23,9 @@
 								<span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--badge);"><i class="ti ti-shield"></i></span>
 								<span v-if="user.isLocked" :title="i18n.ts.isLocked"><i class="ti ti-lock"></i></span>
 								<span v-if="user.isBot" :title="i18n.ts.isBot"><i class="ti ti-robot"></i></span>
+								<button v-if="!isEditingMemo && !memoDraft" class="_button add-note-button" @click="showMemoTextarea">
+									<i class="ti ti-edit"/> {{ i18n.ts.addMemo }}
+								</button>
 							</div>
 						</div>
 						<span v-if="$i && $i.id != user.id && user.isFollowed" class="followed">{{ i18n.ts.followsYou }}</span>
@@ -47,13 +50,21 @@
 							{{ role.name }}
 						</span>
 					</div>
-					<div class="memo" :class="{'no-memo': !memoDraft}">
-						<div class="heading" v-if="memoDraft" v-text="i18n.ts.memo" />
+					<div v-if="iAmModerator" class="moderationNote">
+						<MkTextarea v-if="editModerationNote || (moderationNote != null && moderationNote !== '')" v-model="moderationNote" manual-save>
+							<template #label>Moderation note</template>
+						</MkTextarea>
+						<div v-else>
+							<MkButton small @click="editModerationNote = true">Add moderation note</MkButton>
+						</div>
+					</div>
+					<div v-if="isEditingMemo || memoDraft" class="memo" :class="{'no-memo': !memoDraft}">
+						<div class="heading" v-text="i18n.ts.memo"/>
 						<textarea
 							ref="memoTextareaEl"
-							rows="1"
 							v-model="memoDraft"
-							:placeholder="i18n.ts.clickToAddPersonalMemo"
+							rows="1"
+							@focus="isEditingMemo = true"
 							@blur="updateMemo"
 							@input="adjustMemoTextarea"
 						/>
@@ -131,7 +142,7 @@
 </template>
 
 <script lang="ts" setup>
-import {defineAsyncComponent, computed, onMounted, onUnmounted, nextTick, watch} from 'vue';
+import { defineAsyncComponent, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import calcAge from 's-age';
 import * as misskey from 'misskey-js';
 import MkNote from '@/components/MkNote.vue';
@@ -139,8 +150,10 @@ import XUserTimeline from './index.timeline.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';
 import MkAccountMoved from '@/components/MkAccountMoved.vue';
 import MkRemoteCaution from '@/components/MkRemoteCaution.vue';
+import MkTextarea from '@/components/MkTextarea.vue';
 import MkOmit from '@/components/MkOmit.vue';
 import MkInfo from '@/components/MkInfo.vue';
+import MkButton from '@/components/MkButton.vue';
 import { getScrollPosition } from '@/scripts/scroll';
 import { getUserMenu } from '@/scripts/get-user-menu';
 import number from '@/filters/number';
@@ -148,13 +161,13 @@ import { userPage } from '@/filters/user';
 import * as os from '@/os';
 import { useRouter } from '@/router';
 import { i18n } from '@/i18n';
-import { $i } from '@/account';
+import { $i, iAmModerator } from '@/account';
 import { dateString } from '@/filters/date';
 import { confetti } from '@/scripts/confetti';
 import MkNotes from '@/components/MkNotes.vue';
 import { defaultStore } from '@/store';
-import {api} from "@/os";
 import {editNickname} from "@/scripts/edit-nickname";
+import { api } from "@/os";
 
 const XPhotos = defineAsyncComponent(() => import('./index.photos.vue'));
 const XActivity = defineAsyncComponent(() => import('./index.activity.vue'));
@@ -175,6 +188,13 @@ let rootEl = $ref<null | HTMLElement>(null);
 let bannerEl = $ref<null | HTMLElement>(null);
 let memoTextareaEl = $ref<null | HTMLElement>(null);
 let memoDraft = $ref(props.user.memo);
+let isEditingMemo = $ref(false);
+let moderationNote = $ref(props.user.moderationNote);
+let editModerationNote = $ref(false);
+
+watch($$(moderationNote), async () => {
+	await os.api('admin/update-user-note', { userId: props.user.id, text: moderationNote });
+});
 
 const pagination = {
 	endpoint: 'users/notes' as const,
@@ -217,6 +237,13 @@ function parallax() {
 	banner.style.backgroundPosition = `center calc(50% - ${pos}px)`;
 }
 
+function showMemoTextarea() {
+	isEditingMemo = true;
+	nextTick(() => {
+		memoTextareaEl?.focus();
+	});
+}
+
 function adjustMemoTextarea() {
 	if (!memoTextareaEl) return;
 	memoTextareaEl.style.height = '0px';
@@ -228,6 +255,7 @@ async function updateMemo() {
 		memo: memoDraft,
 		userId: props.user.id,
 	});
+	isEditingMemo = false;
 }
 
 watch([props.user], () => {
@@ -380,6 +408,16 @@ onUnmounted(() => {
 									font-weight: bold;
 								}
 							}
+
+							> .add-note-button {
+								background: rgba(0, 0, 0, 0.2);
+								color: #fff;
+								-webkit-backdrop-filter: var(--blur, blur(8px));
+								backdrop-filter: var(--blur, blur(8px));
+								border-radius: 24px;
+								padding: 4px 8px;
+								font-size: 80%;
+							}
 						}
 					}
 				}
@@ -430,6 +468,10 @@ onUnmounted(() => {
 					}
 				}
 
+				> .moderationNote {
+					margin: 12px 24px 0 154px;
+				}
+
 				> .memo {
 					margin: 12px 24px 0 154px;
 					background: transparent;
@@ -443,21 +485,23 @@ onUnmounted(() => {
 						text-align: left;
 						color: var(--fgTransparent);
 						line-height: 1.5;
+						font-size: 85%;
 					}
 
 					textarea {
-						font-family: inherit;
 						margin: 0;
 						padding: 0;
+						resize: none;
+						border: none;
 						outline: none;
 						width: 100%;
 						height: auto;
 						min-height: 0;
+						line-height: 1.5;
 						color: var(--fg);
-						background: transparent;
-						border: none;
-						resize: none;
 						overflow: hidden;
+						background: transparent;
+						font-family: inherit;
 					}
 				}
 
@@ -594,6 +638,10 @@ onUnmounted(() => {
 				> .roles {
 					padding: 16px 16px 0 16px;
 					justify-content: center;
+				}
+
+				> .moderationNote {
+					margin: 16px 16px 0 16px;
 				}
 
 				> .memo {

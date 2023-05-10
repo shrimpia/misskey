@@ -12,6 +12,7 @@
 	<!--<div v-if="appearNote._prId_" class="tip"><i class="ti ti-speakerphone"></i> {{ i18n.ts.promotion }}<button class="_textButton hide" @click="readPromo()">{{ i18n.ts.hideThisNote }} <i class="ti ti-x"></i></button></div>-->
 	<!--<div v-if="appearNote._featuredId_" class="tip"><i class="ti ti-bolt"></i> {{ i18n.ts.featured }}</div>-->
 	<div v-if="isRenote" :class="$style.renote">
+		<div v-if="note.channel" :class="$style.colorBar" :style="{ background: note.channel.color }"></div>
 		<MkAvatar v-if="!defaultStore.reactiveState.ebiNoteViewEnabledLab.value" :class="$style.renoteAvatar" :user="note.user" link preview/>
 		<i class="ti ti-repeat" style="margin-right: 4px;"></i>
 		<I18n :src="i18n.ts.renotedBy" tag="span" :class="$style.renoteText">
@@ -40,6 +41,7 @@
 		<Mfm :text="getNoteSummary(appearNote)" :plain="true" :nowrap="true" :author="appearNote.user" :class="$style.collapsedRenoteTargetText" @click="renoteCollapsed = false"/>
 	</div>
 	<article v-else :class="$style.article" @contextmenu.stop="onContextmenu">
+		<div v-if="appearNote.channel" :class="$style.colorBar" :style="{ background: appearNote.channel.color }"></div>
 		<MkAvatar v-if="!defaultStore.reactiveState.ebiNoteViewEnabledLab.value" :class="$style.avatar" :user="appearNote.user" link preview/>
 		<div :class="$style.main">
 			<template v-if="defaultStore.reactiveState.ebiNoteViewEnabledLab.value">
@@ -177,6 +179,7 @@ import { stealMenu } from '@/scripts/steal-menu';
 import { MenuItem } from '@/types/menu';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { notePage } from '@/filters/note';
+import { showMovedDialog } from '@/scripts/show-moved-dialog';
 
 const props = defineProps<{
 	note: misskey.entities.Note;
@@ -272,6 +275,7 @@ useTooltip(renoteButton, async (showing) => {
 
 function renote(viaKeyboard = false) {
 	pleaseLogin();
+	showMovedDialog();
 
 	let items = [] as MenuItem[];
 
@@ -367,6 +371,7 @@ function reply(viaKeyboard = false): void {
 
 function react(viaKeyboard = false): void {
 	pleaseLogin();
+	showMovedDialog();
 	if (appearNote.reactionAcceptance === 'likeOnly') {
 		os.api('notes/reactions/create', {
 			noteId: appearNote.id,
@@ -436,6 +441,7 @@ async function clip() {
 
 function showRenoteMenu(viaKeyboard = false): void {
 	if (!isMyRenote) return;
+	pleaseLogin();
 	os.popupMenu([{
 		text: i18n.ts.unrenote,
 		icon: 'ti ti-trash',
@@ -519,6 +525,11 @@ function showReactions(): void {
 		}
 	}
 
+	.footer {
+		position: relative;
+		z-index: 1;
+	}
+
 	&:hover > .article > .main > .footer > .footerButton {
 		opacity: 1;
 	}
@@ -572,6 +583,7 @@ function showReactions(): void {
 }
 
 .renote {
+	position: relative;
 	display: flex;
 	align-items: center;
 	padding: 16px 32px 8px 32px;
@@ -581,6 +593,10 @@ function showReactions(): void {
 
 	& + .article {
 		padding-top: 8px;
+	}
+
+	> .colorBar {
+		height: calc(100% - 6px);
 	}
 }
 
@@ -653,6 +669,16 @@ function showReactions(): void {
 	padding: 28px 32px;
 }
 
+.colorBar {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	width: 5px;
+	height: calc(100% - 16px);
+	border-radius: 999px;
+	pointer-events: none;
+}
+
 .avatar {
 	flex-shrink: 0;
 	display: block !important;
@@ -704,6 +730,7 @@ function showReactions(): void {
 	position: absolute;
 	bottom: 0;
 	left: 0;
+	z-index: 2;
 	width: 100%;
 	height: 64px;
 	background: linear-gradient(0deg, var(--panel), var(--X15));
@@ -870,6 +897,13 @@ function showReactions(): void {
 			&:not(:last-child) {
 			}
 		}
+	}
+
+	.colorBar {
+		top: 6px;
+		left: 6px;
+		width: 4px;
+		height: calc(100% - 12px);
 	}
 }
 

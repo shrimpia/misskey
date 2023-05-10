@@ -10,14 +10,12 @@
 
 [本家 Misskey との違い](DIFFERENCE.md)
 
+Ebisskey固有のリリースノートは [CHANGELOG-EBISSKEY.md](CHANGELOG-EBISSKEY.md)を参照。
+
 > **Note** <br>
 > 🦐 本ブランチ `empire` は、シュリンピア帝国での利用を目的とした、Ebisskeyの「帝国フォーク」です。<br>
 > シュリンピア帝国の動作環境を前提にした機能が追加される可能性もあり、帝国以外での利用を想定していません。<br>
 > 本ブランチを無理やり使うことも可能ですが、サポートは一切受けません。
-
-## 状況
-
-現在、Misskey 13.11.2 に追従しています。Ebisskey固有のリリースノートは [CHANGELOG-EBISSKEY.md](CHANGELOG-EBISSKEY.md)を参照。
 
 ## サーバー構築方法
 

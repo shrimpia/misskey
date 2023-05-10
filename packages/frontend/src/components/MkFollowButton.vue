@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
 	}
 
 	&.active {
-		color: #fff;
+		color: var(--fgOnAccent);
 		background: var(--accent);
 
 		&:hover {
