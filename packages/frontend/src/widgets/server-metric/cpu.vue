@@ -4,7 +4,7 @@
 	<div>
 		<p><i class="ti ti-cpu"></i>CPU</p>
 		<p>{{ meta.cpu.cores }} Logical cores</p>
-		<p>{{ meta.cpu.model }}</p>
+		<p>Intel(R) Xeon(R) E3-1225 v3 CPU @ 3.20GHz</p>
 	</div>
 </div>
 </template>
