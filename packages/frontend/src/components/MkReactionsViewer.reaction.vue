@@ -6,7 +6,7 @@
 	:class="[$style.root, { [$style.reacted]: note.myReaction == reaction, [$style.canToggle]: canToggle || alternative, [$style.large]: defaultStore.state.largeNoteReactions }]"
 	@click="toggleReaction()"
 >
-	<MkReactionIcon :class="$style.icon" :reaction="reaction" :emoji-url="note.reactionEmojis[reaction.substr(1, reaction.length - 2)]"/>
+	<MkReactionIcon :class="$style.icon" :reaction="reaction" :emojiUrl="note.reactionEmojis[reaction.substr(1, reaction.length - 2)]"/>
 	<span :class="$style.count">{{ count }}</span>
 </button>
 </template>
@@ -23,6 +23,7 @@ import MkReactionEffect from '@/components/MkReactionEffect.vue';
 import { customEmojis } from '@/custom-emojis';
 import { claimAchievement } from '@/scripts/achievements';
 import { defaultStore } from '@/store';
+import { i18n } from '@/i18n';
 
 const props = defineProps<{
 	reaction: string;
@@ -42,14 +43,22 @@ const alternative: ComputedRef<string | null> = computed(() => defaultStore.stat
 
 const canToggle = computed(() => !props.reaction.match(/@\w/) && $i);
 
-const toggleReaction = (ev) => {
+async function toggleReaction(ev) {
 	if (!canToggle.value) {
 		chooseAlternative(ev);
 		return;
 	}
 
+	// TODO: その絵文字を使う権限があるかどうか確認
+
 	const oldReaction = props.note.myReaction;
 	if (oldReaction) {
+		const confirm = await os.confirm({
+			type: 'warning',
+			text: oldReaction !== props.reaction ? i18n.ts.changeReactionConfirm : i18n.ts.cancelReactionConfirm,
+		});
+		if (confirm.canceled) return;
+
 		os.api('notes/reactions/delete', {
 			noteId: props.note.id,
 		}).then(() => {
@@ -75,9 +84,9 @@ const toggleReaction = (ev) => {
 			claimAchievement('yon');
 		}
 	}
-};
+}
 
-const anime = () => {
+function anime() {
 	if (document.hidden) return;
 	if (!defaultStore.state.animation) return;
 
@@ -85,7 +94,7 @@ const anime = () => {
 	const x = rect.left + 16;
 	const y = rect.top + (buttonEl.value.offsetHeight / 2);
 	os.popup(MkReactionEffect, { reaction: props.reaction, x, y }, {}, 'end');
-};
+}
 
 const chooseAlternative = (ev) => {
 	// メニュー表示にして、モデレーター以上の場合は登録もできるように

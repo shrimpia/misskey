@@ -57,10 +57,6 @@
 			<MkSwitch v-model="usePostFormWindow">
 				投稿フォームをウィンドウとして表示
 			</MkSwitch>
-			<MkSwitch v-model="ebiNoteViewEnabled">
-				新しいノートUIを試す
-			</MkSwitch>
-			<MkNote :note="noteMock" />
 		</div>
 	</FormSection>
 </div>

@@ -2,7 +2,7 @@
 <MkStickyContainer>
 	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
 	<div style="overflow: clip;">
-		<MkSpacer :content-max="600" :margin-min="20">
+		<MkSpacer :contentMax="600" :marginMin="20">
 			<div class="_gaps_m znqjceqz">
 				<div v-panel class="about">
 					<div ref="containerEl" class="container" :class="{ playing: easterEggEngine != null }">
@@ -10,8 +10,8 @@
 						<div class="misskey">Ebisskey</div>
 						<div class="version">v{{ version }}</div>
 						<span v-for="emoji in easterEggEmojis" :key="emoji.id" class="emoji" :data-physics-x="emoji.left" :data-physics-y="emoji.top" :class="{ _physics_circle_: !emoji.emoji.startsWith(':') }">
-							<MkCustomEmoji v-if="emoji.emoji[0] === ':'" class="emoji" :name="emoji.emoji" :normal="true" :no-style="true"/>
-							<MkEmoji v-else class="emoji" :emoji="emoji.emoji" :normal="true" :no-style="true"/>
+							<MkCustomEmoji v-if="emoji.emoji[0] === ':'" class="emoji" :name="emoji.emoji" :normal="true" :noStyle="true"/>
+							<MkEmoji v-else class="emoji" :emoji="emoji.emoji" :normal="true" :noStyle="true"/>
 						</span>
 					</div>
 					<button v-if="thereIsTreasure" class="_button treasure" @click="getTreasure"><img src="/fluent-emoji/1f3c6.png" class="treasureImg"></button>
@@ -78,10 +78,6 @@
 							<img src="https://avatars.githubusercontent.com/u/7106976?v=4" :class="$style.contributorAvatar">
 							<span :class="$style.contributorUsername">@EbiseLutica</span>
 						</a>
-						<a href="https://mk.shrimpia.network/@Or" target="_blank" :class="$style.contributor">
-							<img src="https://media.shrimpia.network/mk-shrimpia/files/webpublic-bf1d07c1-c3e9-49bb-91de-b6d18c8f738a.png" :class="$style.contributorAvatar">
-							<span :class="$style.contributorUsername">@Or (Error Image)</span>
-						</a>
 					</div>
 				</FormSection>
 				<FormSection>
@@ -99,8 +95,13 @@
 				</FormSection>
 				<FormSection>
 					<template #label>Special thanks</template>
-					<div style="text-align: center;">
-						<a style="display: inline-block;" class="dcadvirth" title="DC Advirth" href="https://www.dotchain.ltd/advirth" target="_blank"><img width="200" src="https://misskey-hub.net/sponsors/dcadvirth.png" alt="DC Advirth"></a>
+					<div class="_gaps" style="text-align: center;">
+						<div>
+							<a style="display: inline-block;" class="masknetwork" title="Mask Network" href="https://mask.io/" target="_blank"><img width="200" src="https://misskey-hub.net/sponsors/masknetwork.png" alt="Mask Network"></a>
+						</div>
+						<div>
+							<a style="display: inline-block;" class="dcadvirth" title="DC Advirth" href="https://www.dotchain.ltd/advirth" target="_blank"><img width="200" src="https://misskey-hub.net/sponsors/dcadvirth.png" alt="DC Advirth"></a>
+						</div>
 					</div>
 				</FormSection>
 			</div>
@@ -157,6 +158,12 @@ const patronsWithIcon = [{
 }, {
 	name: 'かみらえっと',
 	icon: 'https://misskey-hub.net/patrons/be1326bda7d940a482f3758ffd9ffaf6.jpg',
+}, {
+	name: 'へてて',
+	icon: 'https://misskey-hub.net/patrons/0431eacd7c6843d09de8ea9984307e86.jpg',
+}, {
+	name: 'spinlock',
+	icon: 'https://misskey-hub.net/patrons/6a1cebc819d540a78bf20e9e3115baa8.jpg',
 }];
 
 const patrons = [
@@ -251,6 +258,7 @@ const patrons = [
 	'ずも',
 	'binvinyl',
 	'渡志郎',
+	'ぷーざ',
 ];
 
 let thereIsTreasure = $ref($i && !claimedAchievements.includes('foundTreasure'));

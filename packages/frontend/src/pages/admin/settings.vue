@@ -2,7 +2,7 @@
 <div>
 	<MkStickyContainer>
 		<template #header><XHeader :tabs="headerTabs"/></template>
-		<MkSpacer :content-max="700" :margin-min="16" :margin-max="32">
+		<MkSpacer :contentMax="700" :marginMin="16" :marginMax="32">
 			<FormSuspense :p="init">
 				<div class="_gaps_m">
 					<MkInput v-model="name">
@@ -13,7 +13,7 @@
 						<template #label>{{ i18n.ts.instanceDescription }}</template>
 					</MkTextarea>
 
-					<FormSplit :min-width="300">
+					<FormSplit :minWidth="300">
 						<MkInput v-model="maintainerName">
 							<template #label>{{ i18n.ts.maintainerName }}</template>
 						</MkInput>
@@ -28,18 +28,6 @@
 						<template #label>{{ i18n.ts.pinnedUsers }}</template>
 						<template #caption>{{ i18n.ts.pinnedUsersDescription }}</template>
 					</MkTextarea>
-
-					<FormSection>
-						<div class="_gaps_s">
-							<MkSwitch v-model="enableChartsForRemoteUser">
-								<template #label>{{ i18n.ts.enableChartsForRemoteUser }}</template>
-							</MkSwitch>
-
-							<MkSwitch v-model="enableChartsForFederatedInstances">
-								<template #label>{{ i18n.ts.enableChartsForFederatedInstances }}</template>
-							</MkSwitch>
-						</div>
-					</FormSection>
 
 					<FormSection>
 						<template #label>{{ i18n.ts.theme }}</template>
@@ -73,6 +61,27 @@
 								<template #label>{{ i18n.ts.instanceDefaultDarkTheme }}</template>
 								<template #caption>{{ i18n.ts.instanceDefaultThemeDescription }}</template>
 							</MkTextarea>
+						</div>
+					</FormSection>
+
+					<FormSection>
+						<template #label>{{ i18n.ts.errorImage }}</template>
+
+						<div class="_gaps_m">
+							<MkInput v-model="notFoundImageUrl">
+								<template #prefix><i class="ti ti-link"></i></template>
+								<template #label>{{ i18n.ts.notFoundDescription }}</template>
+							</MkInput>
+
+							<MkInput v-model="infoImageUrl">
+								<template #prefix><i class="ti ti-link"></i></template>
+								<template #label>{{ i18n.ts.nothing }}</template>
+							</MkInput>
+
+							<MkInput v-model="serverErrorImageUrl">
+								<template #prefix><i class="ti ti-link"></i></template>
+								<template #label>{{ i18n.ts.somethingHappened }}</template>
+							</MkInput>
 						</div>
 					</FormSection>
 
@@ -128,7 +137,7 @@
 		</MkSpacer>
 		<template #footer>
 			<div :class="$style.footer">
-				<MkSpacer :content-max="700" :margin-min="16" :margin-max="16">
+				<MkSpacer :contentMax="700" :marginMin="16" :marginMax="16">
 					<MkButton primary rounded @click="save"><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton>
 				</MkSpacer>
 			</div>
@@ -163,11 +172,12 @@ let backgroundImageUrl: string | null = $ref(null);
 let themeColor: any = $ref(null);
 let defaultLightTheme: any = $ref(null);
 let defaultDarkTheme: any = $ref(null);
+let serverErrorImageUrl: string | null = $ref(null);
+let infoImageUrl: string | null = $ref(null);
+let notFoundImageUrl: string | null = $ref(null);
 let pinnedUsers: string = $ref('');
 let cacheRemoteFiles: boolean = $ref(false);
 let enableServiceWorker: boolean = $ref(false);
-let enableChartsForRemoteUser: boolean = $ref(false);
-let enableChartsForFederatedInstances: boolean = $ref(false);
 let swPublicKey: any = $ref(null);
 let swPrivateKey: any = $ref(null);
 let deeplAuthKey: string = $ref('');
@@ -183,13 +193,14 @@ async function init() {
 	themeColor = meta.themeColor;
 	defaultLightTheme = meta.defaultLightTheme;
 	defaultDarkTheme = meta.defaultDarkTheme;
+	serverErrorImageUrl = meta.serverErrorImageUrl;
+	infoImageUrl = meta.infoImageUrl;
+	notFoundImageUrl = meta.notFoundImageUrl;
 	maintainerName = meta.maintainerName;
 	maintainerEmail = meta.maintainerEmail;
 	pinnedUsers = meta.pinnedUsers.join('\n');
 	cacheRemoteFiles = meta.cacheRemoteFiles;
 	enableServiceWorker = meta.enableServiceWorker;
-	enableChartsForRemoteUser = meta.enableChartsForRemoteUser;
-	enableChartsForFederatedInstances = meta.enableChartsForFederatedInstances;
 	swPublicKey = meta.swPublickey;
 	swPrivateKey = meta.swPrivateKey;
 	deeplAuthKey = meta.deeplAuthKey;
@@ -206,13 +217,14 @@ function save() {
 		themeColor: themeColor === '' ? null : themeColor,
 		defaultLightTheme: defaultLightTheme === '' ? null : defaultLightTheme,
 		defaultDarkTheme: defaultDarkTheme === '' ? null : defaultDarkTheme,
+		infoImageUrl,
+		notFoundImageUrl,
+		serverErrorImageUrl,
 		maintainerName,
 		maintainerEmail,
 		pinnedUsers: pinnedUsers.split('\n'),
 		cacheRemoteFiles,
 		enableServiceWorker,
-		enableChartsForRemoteUser,
-		enableChartsForFederatedInstances,
 		swPublicKey,
 		swPrivateKey,
 		deeplAuthKey,
