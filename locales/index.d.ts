@@ -84,6 +84,7 @@ export interface Locale {
     "following": string;
     "followers": string;
     "followsYou": string;
+    "alreadyFollowed": string;
     "createList": string;
     "manageLists": string;
     "error": string;
@@ -558,10 +559,6 @@ export interface Locale {
     "userSilenced": string;
     "yourAccountSuspendedTitle": string;
     "yourAccountSuspendedDescription": string;
-    "tokenRevoked": string;
-    "tokenRevokedDescription": string;
-    "accountDeleted": string;
-    "accountDeletedDescription": string;
     "menu": string;
     "divider": string;
     "addItem": string;
@@ -606,6 +603,7 @@ export interface Locale {
     "pluginTokenRequestedDescription": string;
     "notificationType": string;
     "edit": string;
+    "useStarForReactionFallback": string;
     "emailServer": string;
     "enableEmail": string;
     "emailConfigInfo": string;
@@ -978,6 +976,7 @@ export interface Locale {
     "thisPostMayBeAnnoyingHome": string;
     "thisPostMayBeAnnoyingCancel": string;
     "thisPostMayBeAnnoyingIgnore": string;
+    "usePostFormWindow": string;
     "collapseRenotes": string;
     "internalServerError": string;
     "internalServerErrorDescription": string;
@@ -1317,6 +1316,11 @@ export interface Locale {
                 "description": string;
                 "flavor": string;
             };
+            "_shrimpiaBanzai": {
+                "title": string;
+                "description": string;
+                "flavor": string;
+            };
             "_foundTreasure": {
                 "title": string;
                 "description": string;
@@ -1383,6 +1387,10 @@ export interface Locale {
                 "title": string;
                 "description": string;
             };
+            "_setNameToLutica": {
+                "title": string;
+                "description": string;
+            };
             "_passedSinceAccountCreated1": {
                 "title": string;
                 "description": string;
@@ -1410,6 +1418,11 @@ export interface Locale {
                 "flavor": string;
             };
             "_brainDiver": {
+                "title": string;
+                "description": string;
+                "flavor": string;
+            };
+            "_yon": {
                 "title": string;
                 "description": string;
                 "flavor": string;
