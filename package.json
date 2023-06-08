@@ -1,7 +1,7 @@
 {
 	"name": "misskey",
-	"version": "13.13.0",
-	"codename": "negi",
+	"version": "13.13.1",
+	"codename": "nasubi",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/shrimpia/misskey.git"

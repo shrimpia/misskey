@@ -559,6 +559,10 @@ export interface Locale {
     "userSilenced": string;
     "yourAccountSuspendedTitle": string;
     "yourAccountSuspendedDescription": string;
+    "tokenRevoked": string;
+    "tokenRevokedDescription": string;
+    "accountDeleted": string;
+    "accountDeletedDescription": string;
     "menu": string;
     "divider": string;
     "addItem": string;
@@ -603,7 +607,6 @@ export interface Locale {
     "pluginTokenRequestedDescription": string;
     "notificationType": string;
     "edit": string;
-    "useStarForReactionFallback": string;
     "emailServer": string;
     "enableEmail": string;
     "emailConfigInfo": string;

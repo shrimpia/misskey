@@ -12,10 +12,10 @@
 
 -->
 
-## 13.13.1 (unreleased)
+## 13.13.1
 
-### General
-- エラー時や項目が存在しないときなどのアイコン画像をサーバー管理者が設定できるようになりました
+### Client
+- Fix: タブがアクティブな間はstreamが切断されないように
 
 ### Server
 - Fix: api/metaで`TypeError: JSON5.parse is not a function`エラーが発生する問題を修正
