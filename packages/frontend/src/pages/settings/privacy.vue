@@ -7,7 +7,7 @@
 		{{ i18n.ts.makeReactionsPublic }}
 		<template #caption>{{ i18n.ts.makeReactionsPublicDescription }}</template>
 	</MkSwitch>
-		
+
 	<MkSelect v-model="ffVisibility" @update:modelValue="save()">
 		<template #label>{{ i18n.ts.ffVisibility }}</template>
 		<option value="public">{{ i18n.ts._ffVisibility.public }}</option>
@@ -15,7 +15,7 @@
 		<option value="private">{{ i18n.ts._ffVisibility.private }}</option>
 		<template #caption>{{ i18n.ts.ffVisibilityDescription }}</template>
 	</MkSelect>
-		
+
 	<MkSwitch v-model="hideOnlineStatus" @update:modelValue="save()">
 		{{ i18n.ts.hideOnlineStatus }}
 		<template #caption>{{ i18n.ts.hideOnlineStatusDescription }}</template>
@@ -54,24 +54,9 @@
 				</div>
 			</MkFolder>
 
-			<MkSwitch v-model="useDefaultNoteVisibilityOnRenote" @update:model-value="save()">Renoteにデフォルトの公開範囲を適用する <span class="_beta">Shrimpia</span></MkSwitch>
-			<MkFolder v-if="!useDefaultNoteVisibilityOnRenote">
-				<template #label>{{ i18n.ts.defaultNoteVisibility }} (Renote) <span class="_beta">Shrimpia</span></template>
-				<template v-if="defaultRenoteVisibility === 'public'" #suffix>{{ i18n.ts._visibility.public }}</template>
-				<template v-else-if="defaultRenoteVisibility === 'home'" #suffix>{{ i18n.ts._visibility.home }}</template>
-				<template v-else-if="defaultRenoteVisibility === 'followers'" #suffix>{{ i18n.ts._visibility.followers }}</template>
-				<template v-else-if="defaultRenoteVisibility === 'specified'" #suffix>{{ i18n.ts._visibility.specified }}</template>
-
-				<div class="_gaps_m">
-					<MkSelect v-model="defaultRenoteVisibility">
-						<option value="public">{{ i18n.ts._visibility.public }}</option>
-						<option value="home">{{ i18n.ts._visibility.home }}</option>
-						<option value="followers">{{ i18n.ts._visibility.followers }}</option>
-						<option value="specified">{{ i18n.ts._visibility.specified }}</option>
-					</MkSelect>
-					<MkSwitch v-model="defaultRenoteLocalOnly">{{ i18n.ts._visibility.localOnly }}</MkSwitch>
-				</div>
-			</MkFolder>
+			<FormInfo>
+			  Misskey のアップデートによる競合のため、一時的にRenoteの公開範囲の設定を無効化しています。
+			</FormInfo>
 
 			<MkFolder>
 				<template #label>{{ i18n.ts.defaultNoteVisibility }} (数字引用 / パクる) <span class="_beta">Shrimpia</span></template>
@@ -104,6 +89,7 @@ import { } from 'vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import MkSelect from '@/components/MkSelect.vue';
 import FormSection from '@/components/form/section.vue';
+import FormInfo from '@/components/MkInfo.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import * as os from '@/os';
 import { defaultStore } from '@/store';

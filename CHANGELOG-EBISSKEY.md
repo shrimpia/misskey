@@ -2,6 +2,10 @@
 
 Ebisskeyとしての変更履歴です。Misskeyのリリースノートは [CHANGELOG](/CHANGELOG.md) を確認してください。
 
+## 13.14.1-sh.1
+
+* Misskey本体と競合するため、一時的に「デフォルトの公開範囲（Renote）」設定を廃止しました
+
 ## 13.13.1
 
 * コードネームをMisskey v13本家に準拠しました

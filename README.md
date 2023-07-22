@@ -1,14 +1,16 @@
 <div align="center">
 
-<h1>Ebisskey for Shrimpia</h1>
+<h1>🦐 Ebisskey for Shrimpia</h1>
 
 ---
 
 </div>
 
-[Misskey](https://github.com/misskey-dev/misskey) の最新版をベースにいくつかの追加機能と改善をもたらしています。
+[Misskey](https://github.com/misskey-dev/misskey) は、ActivityPubによるサーバー間連合をサポートした、多機能で楽しいSNSです。
 
-[本家 Misskey との違い](DIFFERENCE.md)
+Ebisskeyは、Misskeyの最新版に追従しながら、いくつかの追加機能と改善をもたらしています。
+
+[本家 Misskey との違い](DIFFERENCE.md) にて違いを確認できます。
 
 Ebisskey固有のリリースノートは [CHANGELOG-EBISSKEY.md](CHANGELOG-EBISSKEY.md)を参照。
 

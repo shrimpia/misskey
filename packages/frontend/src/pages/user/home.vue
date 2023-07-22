@@ -46,8 +46,10 @@
 					</div>
 					<div v-if="user.roles.length > 0" class="roles">
 						<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="{ '--color': role.color }">
-							<img v-if="role.iconUrl" style="height: 1.3em; vertical-align: -22%;" :src="role.iconUrl"/>
-							{{ role.name }}
+							<MkA v-adaptive-bg :to="`/roles/${role.id}`">
+								<img v-if="role.iconUrl" style="height: 1.3em; vertical-align: -22%;" :src="role.iconUrl"/>
+								{{ role.name }}
+							</MkA>
 						</span>
 					</div>
 					<div v-if="iAmModerator" class="moderationNote">
@@ -100,15 +102,15 @@
 						</dl>
 					</div>
 					<div class="status">
-						<MkA v-click-anime :to="userPage(user)">
+						<MkA :to="userPage(user)">
 							<b>{{ number(user.notesCount) }}</b>
 							<span>{{ i18n.ts.notes }}</span>
 						</MkA>
-						<MkA v-click-anime :to="userPage(user, 'following')">
+						<MkA v-if="isFfVisibleForMe(user)" :to="userPage(user, 'following')">
 							<b>{{ number(user.followingCount) }}</b>
 							<span>{{ i18n.ts.following }}</span>
 						</MkA>
-						<MkA v-click-anime :to="userPage(user, 'followers')">
+						<MkA v-if="isFfVisibleForMe(user)" :to="userPage(user, 'followers')">
 							<b>{{ number(user.followersCount) }}</b>
 							<span>{{ i18n.ts.followers }}</span>
 						</MkA>
@@ -145,8 +147,8 @@
 import { defineAsyncComponent, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import calcAge from 's-age';
 import * as misskey from 'misskey-js';
-import MkNote from '@/components/MkNote.vue';
 import XUserTimeline from './index.timeline.vue';
+import MkNote from '@/components/MkNote.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';
 import MkAccountMoved from '@/components/MkAccountMoved.vue';
 import MkRemoteCaution from '@/components/MkRemoteCaution.vue';
@@ -166,8 +168,9 @@ import { dateString } from '@/filters/date';
 import { confetti } from '@/scripts/confetti';
 import MkNotes from '@/components/MkNotes.vue';
 import { defaultStore } from '@/store';
-import {editNickname} from "@/scripts/edit-nickname";
-import { api } from "@/os";
+import { editNickname } from '@/scripts/edit-nickname';
+import { api } from '@/os';
+import { isFfVisibleForMe } from '@/scripts/isFfVisibleForMe';
 
 const XPhotos = defineAsyncComponent(() => import('./index.photos.vue'));
 const XActivity = defineAsyncComponent(() => import('./index.activity.vue'));
