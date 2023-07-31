@@ -1,12 +1,11 @@
-import { i18n } from "@/i18n";
-import {alert, api, confirm, popupMenu, post} from "@/os";
-import { defaultStore } from "@/store";
-import { Note } from "misskey-js/built/entities";
-import { getTextLastNumeric, getTextWithoutEndingNumeric } from "./get-note-last-numeric";
-import { pleaseLogin } from "./please-login";
-import { playFile } from "./sound";
-import {MenuItem} from "@/types/menu";
-
+import { Note } from 'misskey-js/built/entities';
+import { getTextLastNumeric, getTextWithoutEndingNumeric } from './get-note-last-numeric';
+import { pleaseLogin } from './please-login';
+import { playFile } from './sound';
+import { defaultStore } from '@/store';
+import { alert, api, confirm, popupMenu, post } from '@/os';
+import { i18n } from '@/i18n';
+import { MenuItem } from '@/types/menu';
 
 // #region shrimpia
 export function stealMenu(note: Note, el: HTMLElement) {
@@ -22,22 +21,28 @@ export function stealMenu(note: Note, el: HTMLElement) {
 			action: async () => {
 				if (!note.text) return;
 				if (!defaultStore.state.numberQuoteConfirmed) {
-					const {canceled} = await confirm({
+					const { canceled } = await confirm({
 						type: 'warning',
 						text: 'このノートを数字引用します。本文をコピーして投稿するため、相手に迷惑がかからないことを確認する必要があります。\n本当に投稿しますか？',
-					})
+					});
 					if (canceled) return;
 				}
 				await defaultStore.set('numberQuoteConfirmed', true);
 				if (note.visibility === 'followers' || note.visibility === 'specified') {
-					const {canceled} = await confirm({
+					const { canceled } = await confirm({
 						type: 'warning',
 						text: `このノートは公開範囲を「${i18n.ts._visibility[note.visibility]}」に設定しているため、数字引用すべきではないかもしれません。それでも続行しますか？`,
-					})
-					if (canceled) return
+					});
+					if (canceled) return;
 				}
 				let baseText = getTextWithoutEndingNumeric(note.text);
+				// タグ対策
 				if (baseText.endsWith('</center>')) baseText += '\n';
+				// ハッシュタグ対策
+				if (/#[^ ]+$/.test(baseText)) baseText += ' ';
+				// 絵文字ショートコード対策
+				if (baseText.endsWith(':')) baseText += ' ';
+
 				const visibility = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
 					? note.visibility
 					: defaultStore.state.defaultNumberQuoteVisibility;
@@ -48,6 +53,10 @@ export function stealMenu(note: Note, el: HTMLElement) {
 					text: baseText + nextNumeric,
 					visibility: visibility as never,
 					localOnly,
+					renoteId: note.renoteId,
+					replyId: note.replyId,
+					cw: note.cw,
+					channelId: note.channelId,
 				}).then(() => {
 					if (nextNumericOnesPlace !== 4) return;
 					playFile('shrimpia/4', 0.5);
@@ -63,19 +72,19 @@ export function stealMenu(note: Note, el: HTMLElement) {
 			action: async () => {
 				if (!note.text) return;
 				if (!defaultStore.state.stealConfirmed) {
-					const {canceled} = await confirm({
+					const { canceled } = await confirm({
 						type: 'warning',
 						text: 'このノートをパクります。本文をコピーして投稿するため、相手に迷惑がかからないことを確認する必要があります。\n本当に投稿しますか？',
-					})
+					});
 					if (canceled) return;
 				}
 				defaultStore.set('stealConfirmed', true);
 				if (note.visibility === 'followers' || note.visibility === 'specified') {
-					const {canceled} = await confirm({
+					const { canceled } = await confirm({
 						type: 'warning',
 						text: `このノートは公開範囲を「${i18n.ts._visibility[note.visibility]}」に設定しているため、パクるべきではないかもしれません。それでも続行しますか？`,
-					})
-					if (canceled) return
+					});
+					if (canceled) return;
 				}
 				const visibility = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
 					? note.visibility
@@ -87,6 +96,10 @@ export function stealMenu(note: Note, el: HTMLElement) {
 					text: note.text,
 					visibility: visibility as never,
 					localOnly,
+					renoteId: note.renoteId,
+					replyId: note.replyId,
+					cw: note.cw,
+					channelId: note.channelId,
 				});
 			},
 		}, {
