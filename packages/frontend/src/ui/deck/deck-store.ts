@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 import { throttle } from 'throttle-debounce';
 import { markRaw } from 'vue';
 import { notificationTypes } from 'misskey-js';
@@ -24,7 +29,7 @@ export type Column = {
 	channelId?: string;
 	roleId?: string;
 	includingTypes?: typeof notificationTypes[number][];
-	tl?: 'home' | 'local' | 'social' | 'global';
+	tl?: 'home' | 'local' | 'media' | 'social' | 'global';
 };
 
 export const deckStore = markRaw(new Storage('deck', {

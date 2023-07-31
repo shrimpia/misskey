@@ -1,34 +1,39 @@
+/*
+ * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 import { markRaw } from 'vue';
 import { Storage } from '@/pizzax';
 
 export const soundConfigStore = markRaw(new Storage('sound', {
 	mediaVolume: {
 		where: 'device',
-		default: 0.5
+		default: 0.5,
 	},
 	sound_masterVolume: {
 		where: 'device',
-		default: 0.3
+		default: 0.3,
 	},
 	sound_note: {
 		where: 'account',
-		default: { type: null as string | null, volume: 0 }
+		default: { type: null as string | null, volume: 0 },
 	},
 	sound_noteMy: {
 		where: 'account',
-		default: { type: null as string | null, volume: 0 }
+		default: { type: null as string | null, volume: 0 },
 	},
 	sound_notification: {
 		where: 'account',
-		default: { type: 'syuilo/n-ea', volume: 1 }
+		default: { type: 'syuilo/n-ea', volume: 1 },
 	},
 	sound_antenna: {
 		where: 'account',
-		default: { type: 'syuilo/triple', volume: 1 }
+		default: { type: 'syuilo/triple', volume: 1 },
 	},
 	sound_channel: {
 		where: 'account',
-		default: { type: 'syuilo/square-pico', volume: 1 }
+		default: { type: 'syuilo/square-pico', volume: 1 },
 	},
 }));
 

@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 <template>
 <MkContainer :showHeader="widgetProps.showHeader" :style="`height: ${widgetProps.height}px;`" :scrollable="true" data-cy-mkw-timeline class="mkw-timeline">
 	<template #icon>
@@ -117,6 +122,10 @@ const choose = async (ev) => {
 		text: i18n.ts._timelines.local,
 		icon: 'ti ti-planet',
 		action: () => { setSrc('local'); },
+	}, {
+		text: i18n.ts._timelines.media,
+		icon: 'ti ti-photo',
+		action: () => { setSrc('media'); },
 	}, {
 		text: i18n.ts._timelines.social,
 		icon: 'ti ti-rocket',

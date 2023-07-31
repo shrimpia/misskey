@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 <template>
 <MkStickyContainer>
 	<template #header><MkPageHeader v-model:tab="src" :actions="headerActions" :tabs="$i ? headerTabs : headerTabsWhenNotLogin" :displayMyAvatar="true"/></template>
@@ -127,6 +132,11 @@ const headerTabs = $computed(() => [{
 	key: 'local',
 	title: i18n.ts._timelines.local,
 	icon: 'ti ti-planet',
+	iconOnly: true,
+}, {
+	key: 'media',
+	title: i18n.ts._timelines.media,
+	icon: 'ti ti-photo',
 	iconOnly: true,
 }, {
 	key: 'social',

@@ -1940,6 +1940,7 @@ _instanceCharts:
 _timelines:
   home: "ホーム"
   local: "ローカル"
+  media: "メディア"
   social: "ソーシャル"
   global: "グローバル"
 

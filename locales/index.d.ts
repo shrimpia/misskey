@@ -2028,6 +2028,7 @@ export interface Locale {
     "_timelines": {
         "home": string;
         "local": string;
+        "media": string;
         "social": string;
         "global": string;
     };
