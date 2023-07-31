@@ -764,7 +764,7 @@ async function post(ev?: MouseEvent) {
 			if ((lowerCase.includes('love') || lowerCase.includes('❤')) && lowerCase.includes('misskey')) {
 				claimAchievement('iLoveMisskey');
 			}
-			if (text.includes('シュリンピア') || text.includes('万歳')) {
+			if (text.includes('シュリンピア') && text.includes('万歳')) {
 				claimAchievement('shrimpiaBanzai');
 			}
 			if ([
