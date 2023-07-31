@@ -152,14 +152,13 @@ export function getUserMenu(user: misskey.entities.UserDetailed, router: Router 
 		action: () => {
 			os.post({ specified: user, initialText: `@${user.username} ` });
 		},
-	}, ...(defaultStore.state.nicknameEnabled ? [{
+	}, null, ...(defaultStore.state.nicknameEnabled ? [{
 		icon: 'ti ti-edit',
 		text: 'ニックネームを編集',
 		action: () => {
 			editNickname(user);
 		},
-	}] : []), null, {
-	}, null, {
+	}] : []), {
 		icon: 'ti ti-pencil',
 		text: i18n.ts.editMemo,
 		action: () => {
