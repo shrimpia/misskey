@@ -335,6 +335,7 @@ import * as ep___users_lists_favorite from './endpoints/users/lists/favorite.js'
 import * as ep___users_lists_unfavorite from './endpoints/users/lists/unfavorite.js';
 import * as ep___users_lists_create_from_public from './endpoints/users/lists/create-from-public.js';
 import * as ep___users_notes from './endpoints/users/notes.js';
+import * as ep___users_flashs from './endpoints/users/flashs.js';
 import * as ep___users_reactions from './endpoints/users/reactions.js';
 import * as ep___users_recommendation from './endpoints/users/recommendation.js';
 import * as ep___users_relation from './endpoints/users/relation.js';
@@ -679,6 +680,7 @@ const $users_lists_favorite: Provider = { provide: 'ep:users/lists/favorite', us
 const $users_lists_unfavorite: Provider = { provide: 'ep:users/lists/unfavorite', useClass: ep___users_lists_unfavorite.default };
 const $users_lists_create_from_public: Provider = { provide: 'ep:users/lists/create-from-public', useClass: ep___users_lists_create_from_public.default };
 const $users_notes: Provider = { provide: 'ep:users/notes', useClass: ep___users_notes.default };
+const $users_flashs: Provider = { provide: 'ep:users/flashs', useClass: ep___users_flashs.default };
 const $users_reactions: Provider = { provide: 'ep:users/reactions', useClass: ep___users_reactions.default };
 const $users_recommendation: Provider = { provide: 'ep:users/recommendation', useClass: ep___users_recommendation.default };
 const $users_relation: Provider = { provide: 'ep:users/relation', useClass: ep___users_relation.default };
@@ -1027,6 +1029,7 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$users_lists_unfavorite,
 		$users_lists_create_from_public,
 		$users_notes,
+		$users_flashs,
 		$users_reactions,
 		$users_recommendation,
 		$users_relation,
@@ -1367,6 +1370,7 @@ const $retention: Provider = { provide: 'ep:retention', useClass: ep___retention
 		$users_lists_unfavorite,
 		$users_lists_create_from_public,
 		$users_notes,
+		$users_flashs,
 		$users_reactions,
 		$users_recommendation,
 		$users_relation,

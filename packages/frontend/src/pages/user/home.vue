@@ -137,7 +137,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</div>
 			<div v-if="!disableNotes && defaultStore.state.showTimelineOnUserHome">
-				<XUserTimeline :user="user"/>
+				<MkUserTimeline :user="user"/>
 			</div>
 		</div>
 		<div v-if="!narrow" class="sub _gaps" style="container-type: inline-size;">
@@ -151,8 +151,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { defineAsyncComponent, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import calcAge from 's-age';
-import * as misskey from 'misskey-js';
-import XUserTimeline from './index.timeline.vue';
+import * as Misskey from 'misskey-js';
+import MkUserTimeline from '@/pages/user/index.timeline.vue';
 import MkNote from '@/components/MkNote.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';
 import MkAccountMoved from '@/components/MkAccountMoved.vue';
@@ -181,7 +181,7 @@ const XPhotos = defineAsyncComponent(() => import('./index.photos.vue'));
 const XActivity = defineAsyncComponent(() => import('./index.activity.vue'));
 
 const props = withDefaults(defineProps<{
-	user: misskey.entities.UserDetailed;
+	user: Misskey.entities.UserDetailed;
 	/** Test only; MkNotes currently causes problems in vitest */
 	disableNotes: boolean;
 }>(), {
@@ -224,7 +224,8 @@ const age = $computed(() => {
 });
 
 function menu(ev) {
-	os.popupMenu(getUserMenu(props.user, router), ev.currentTarget ?? ev.target);
+	const { menu, cleanup } = getUserMenu(props.user, router);
+	os.popupMenu(menu, ev.currentTarget ?? ev.target).finally(cleanup);
 }
 
 function parallaxLoop() {

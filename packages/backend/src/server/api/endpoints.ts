@@ -335,6 +335,7 @@ import * as ep___users_lists_unfavorite from './endpoints/users/lists/unfavorite
 import * as ep___users_lists_create_from_public from './endpoints/users/lists/create-from-public.js';
 import * as ep___users_lists_update from './endpoints/users/lists/update.js';
 import * as ep___users_notes from './endpoints/users/notes.js';
+import * as ep___users_flashs from './endpoints/users/flashs.js';
 import * as ep___users_reactions from './endpoints/users/reactions.js';
 import * as ep___users_recommendation from './endpoints/users/recommendation.js';
 import * as ep___users_relation from './endpoints/users/relation.js';
@@ -677,6 +678,7 @@ const eps = [
 	['users/lists/update', ep___users_lists_update],
 	['users/lists/create-from-public', ep___users_lists_create_from_public],
 	['users/notes', ep___users_notes],
+	['users/flashs', ep___users_flashs],
 	['users/reactions', ep___users_reactions],
 	['users/recommendation', ep___users_recommendation],
 	['users/relation', ep___users_relation],
@@ -803,4 +805,5 @@ const endpoints: IEndpoint[] = (eps as [string, any]).map(([name, ep]) => {
 	};
 });
 
+// eslint-disable-next-line import/no-default-export
 export default endpoints;

@@ -24,7 +24,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 	>
 		<source
 			:src="video.url"
-			:type="video.type"
 		>
 	</video>
 	<i class="ti ti-eye-off" :class="$style.hide" @click="hide = true"></i>
@@ -33,13 +32,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import * as misskey from 'misskey-js';
+import * as Misskey from 'misskey-js';
 import bytes from '@/filters/bytes';
 import { defaultStore } from '@/store';
 import { i18n } from '@/i18n';
 
 const props = defineProps<{
-	video: misskey.entities.DriveFile;
+	video: Misskey.entities.DriveFile;
 }>();
 
 const hide = ref((defaultStore.state.nsfw === 'force' || defaultStore.state.enableDataSaverMode) ? true : (props.video.isSensitive && defaultStore.state.nsfw !== 'ignore'));
