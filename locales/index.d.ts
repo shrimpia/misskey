@@ -1494,7 +1494,7 @@ export interface Locale {
                 "title": string;
                 "description": string;
                 "flavor": string;
-						},
+            };
             "_smashTestNotificationButton": {
                 "title": string;
                 "description": string;
