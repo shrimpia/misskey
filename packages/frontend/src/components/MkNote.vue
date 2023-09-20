@@ -177,6 +177,7 @@ import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { notePage } from '@/filters/note.js';
 import { showMovedDialog } from '@/scripts/show-moved-dialog.js';
 import { shouldCollapsed } from '@/scripts/collapsed.js';
+import { stealMenu } from '@/scripts/steal-menu.js';
 
 const props = defineProps<{
 	note: Misskey.entities.Note;
