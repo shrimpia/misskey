@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as os from '@/os';
-import { $i } from '@/account';
+import * as os from '@/os.js';
+import { $i } from '@/account.js';
 
 export const ACHIEVEMENT_TYPES = [
 	'notes1',
@@ -84,6 +84,7 @@ export const ACHIEVEMENT_TYPES = [
 	'cookieClicked',
 	'brainDiver',
 	'yon',
+	'smashTestNotificationButton',
 ] as const;
 
 export const ACHIEVEMENT_BADGES = {
@@ -471,6 +472,11 @@ export const ACHIEVEMENT_BADGES = {
 		img: 'https://media.shrimpia.network/mk-shrimpia/files/f08a8e8b-9cc0-4e4d-a727-492f05bfd468.gif',
 		bg: 'linear-gradient(30deg, rgb(200, 200, 200), rgb(255, 255, 255))',
 		frame: 'silver',
+	},
+	'smashTestNotificationButton': {
+		img: '/fluent-emoji/1f514.png',
+		bg: 'linear-gradient(0deg, rgb(187 183 59), rgb(255 143 77))',
+		frame: 'bronze',
 	},
 /* @see <https://github.com/misskey-dev/misskey/pull/10365#discussion_r1155511107>
 } as const satisfies Record<typeof ACHIEVEMENT_TYPES[number], {

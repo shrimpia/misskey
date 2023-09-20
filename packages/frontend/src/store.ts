@@ -4,8 +4,9 @@
  */
 
 import { markRaw, ref } from 'vue';
-import misskey from 'misskey-js';
-import { Storage } from './pizzax';
+import * as Misskey from 'misskey-js';
+import { miLocalStorage } from './local-storage';
+import { Storage } from '@/pizzax.js';
 
 interface PostFormAction {
 	title: string,
@@ -163,9 +164,13 @@ export const defaultStore = markRaw(new Storage('base', {
 	tl: {
 		where: 'deviceAccount',
 		default: {
-			src: 'home' as 'home' | 'local' | 'social' | 'global',
-			arg: null,
+			src: 'home' as 'home' | 'local' | 'social' | 'global' | `list:${string}`,
+			userList: null as Misskey.entities.UserList | null,
 		},
+	},
+	pinnedUserLists: {
+		where: 'deviceAccount',
+		default: [] as Misskey.entities.UserList[],
 	},
 
 	overridedDeviceKind: {
@@ -316,9 +321,9 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
-	largeNoteReactions: {
+	reactionsDisplaySize: {
 		where: 'device',
-		default: false,
+		default: 'medium' as 'small' | 'medium' | 'large',
 	},
 	forceShowAds: {
 		where: 'device',
@@ -351,6 +356,10 @@ export const defaultStore = markRaw(new Storage('base', {
 	additionalUnicodeEmojiIndexes: {
 		where: 'device',
 		default: {} as Record<string, Record<string, string[]>>,
+	},
+	keepScreenOn: {
+		where: 'device',
+		default: false,
 	},
 
 	// #region Shrimpia
@@ -433,7 +442,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	nicknameMap: {
 		where: 'account',
 		default: {} as Record<string, string>,
-	}
+	},
 	// #endregion
 }));
 
@@ -461,7 +470,6 @@ interface Watcher {
 /**
  * 常にメモリにロードしておく必要がないような設定情報を保管するストレージ(非リアクティブ)
  */
-import { miLocalStorage } from './local-storage';
 import lightTheme from '@/themes/l-light.json5';
 import darkTheme from '@/themes/d-green-lime.json5';
 
