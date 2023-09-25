@@ -200,6 +200,10 @@ useTooltip(buttonEl, async (showing) => {
 	}
 }
 
+.icon {
+	max-width: 150px;
+}
+
 .count {
 	font-size: 0.7em;
 	line-height: 42px;
