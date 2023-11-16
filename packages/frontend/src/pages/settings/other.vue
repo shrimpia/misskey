@@ -54,6 +54,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkSwitch v-model="enableCondensedLineForAcct">
 						<template #label>Enable condensed line for acct</template>
 					</MkSwitch>
+					<MkButton @click="summonUpdatedMessage">Updated Message</MkButton>
 				</div>
 			</MkFolder>
 
@@ -85,7 +86,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, watch } from 'vue';
+import { computed, watch, defineAsyncComponent } from 'vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import FormLink from '@/components/form/link.vue';
 import MkFolder from '@/components/MkFolder.vue';
@@ -99,6 +100,7 @@ import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { unisonReload } from '@/scripts/unison-reload.js';
 import FormSection from '@/components/form/section.vue';
+import { popup } from '@/os.js';
 
 const reportError = computed(defaultStore.makeGetterSetter('reportError'));
 const enableCondensedLineForAcct = computed(defaultStore.makeGetterSetter('enableCondensedLineForAcct'));
@@ -154,6 +156,10 @@ async function updateRepliesAll(withReplies: boolean) {
 	});
 	if (canceled) return;
 	await os.api('following/update-all', { withReplies });
+}
+
+async function summonUpdatedMessage() {
+	popup(defineAsyncComponent(() => import('@/components/MkUpdated.vue')), {}, {}, 'closed');
 }
 
 watch([
