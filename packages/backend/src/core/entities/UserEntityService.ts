@@ -351,7 +351,7 @@ export class UserEntityService implements OnModuleInit {
 
 		const notificationsInfo = isMe && opts.detail ? await this.getNotificationsInfo(user.id) : null;
 
-		const memo = meId == null ? null : this.userMemoRepository.findOneBy({
+		const memo = meId == null ? null : this.userMemosRepository.findOneBy({
 			userId: meId,
 			targetUserId: user.id,
 		}).then(row => row?.memo ?? null);
