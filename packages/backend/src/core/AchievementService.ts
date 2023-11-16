@@ -89,6 +89,7 @@ export const ACHIEVEMENT_TYPES = [
 	'setNameToLutica',
 	'yon',
 	'smashTestNotificationButton',
+	'tutorialCompleted',
 ] as const;
 
 @Injectable()

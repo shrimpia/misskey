@@ -36,7 +36,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<span v-if="$i && $i.id != user.id && user.isFollowed" class="followed">{{ i18n.ts.followsYou }}</span>
 						<div v-if="$i" class="actions">
 							<button class="menu _button" @click="menu"><i class="ti ti-dots"></i></button>
-							<MkFollowButton v-if="$i.id != user.id" :user="user" :inline="true" :transparent="false" :full="true" class="koudoku"/>
+							<MkFollowButton v-if="$i.id != user.id" v-model:user="user" :inline="true" :transparent="false" :full="true" class="koudoku"/>
 						</div>
 					</div>
 					<MkAvatar class="avatar" :user="user" indicator/>
@@ -78,7 +78,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</div>
 					<div class="description">
 						<MkOmit>
-							<Mfm v-if="user.description" :text="user.description" :isNote="false" :author="user" :i="$i"/>
+							<Mfm v-if="user.description" :text="user.description" :isNote="false" :author="user"/>
 							<p v-else class="empty">{{ i18n.ts.noAccountDescription }}</p>
 						</MkOmit>
 					</div>
@@ -102,7 +102,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 								<Mfm :text="field.name" :plain="true" :colored="false"/>
 							</dt>
 							<dd class="value">
-								<Mfm :text="field.value" :author="user" :i="$i" :colored="false"/>
+								<Mfm :text="field.value" :author="user" :colored="false"/>
 								<i v-if="user.verifiedLinks.includes(field.value)" v-tooltip:dialog="i18n.ts.verifiedLink" class="ti ti-circle-check" :class="$style.verifiedLink"></i>
 							</dd>
 						</dl>
@@ -130,10 +130,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 				<MkInfo v-else-if="$i && $i.id === user.id">{{ i18n.ts.userPagePinTip }}</MkInfo>
 				<template v-if="narrow">
-					<XPhotos :key="user.id" :user="user"/>
+					<XFiles :key="user.id" :user="user"/>
 					<XActivity :key="user.id" :user="user"/>
 				</template>
 				<div v-if="!defaultStore.state.showTimelineOnUserHome">
+					<div style="margin-bottom: 8px;">{{ i18n.ts.featured }}</div>
 					<MkNotes v-if="!disableNotes" :class="$style.tl" :noGap="true" :pagination="pagination"/>
 				</div>
 			</div>
@@ -142,7 +143,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</div>
 		</div>
 		<div v-if="!narrow" class="sub _gaps" style="container-type: inline-size;">
-			<XPhotos :key="user.id" :user="user"/>
+			<XFiles :key="user.id" :user="user"/>
 			<XActivity :key="user.id" :user="user"/>
 		</div>
 	</div>
@@ -192,7 +193,7 @@ function calcAge(birthdate: string): number {
 	return yearDiff;
 }
 
-const XPhotos = defineAsyncComponent(() => import('./index.photos.vue'));
+const XFiles = defineAsyncComponent(() => import('./index.files.vue'));
 const XActivity = defineAsyncComponent(() => import('./index.activity.vue'));
 
 const props = withDefaults(defineProps<{
@@ -205,6 +206,7 @@ const props = withDefaults(defineProps<{
 
 const router = useRouter();
 
+let user = $ref(props.user);
 let parallaxAnimationId = $ref<null | number>(null);
 let narrow = $ref<null | boolean>(null);
 let rootEl = $ref<null | HTMLElement>(null);
@@ -220,7 +222,7 @@ watch($$(moderationNote), async () => {
 });
 
 const pagination = {
-	endpoint: 'users/notes' as const,
+	endpoint: 'users/featured-notes' as const,
 	limit: 10,
 	params: computed(() => ({
 		userId: props.user.id,
@@ -239,7 +241,7 @@ const age = $computed(() => {
 });
 
 function menu(ev) {
-	const { menu, cleanup } = getUserMenu(props.user, router);
+	const { menu, cleanup } = getUserMenu(user, router);
 	os.popupMenu(menu, ev.currentTarget ?? ev.target).finally(cleanup);
 }
 

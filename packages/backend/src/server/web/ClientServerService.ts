@@ -188,7 +188,7 @@ export class ClientServerService {
 		// Authenticate
 		fastify.addHook('onRequest', async (request, reply) => {
 			// %71ueueとかでリクエストされたら困るため
-			const url = decodeURI(request.routerPath);
+			const url = decodeURI(request.routeOptions.url);
 			if (url === bullBoardPath || url.startsWith(bullBoardPath + '/')) {
 				const token = request.cookies.token;
 				if (token == null) {
@@ -253,8 +253,9 @@ export class ClientServerService {
 				decorateReply: false,
 			});
 		} else {
+			const port = (process.env.VITE_PORT ?? '5173');
 			fastify.register(fastifyProxy, {
-				upstream: 'http://localhost:5173', // TODO: port configuration
+				upstream: 'http://localhost:' + port,
 				prefix: '/vite',
 				rewritePrefix: '/vite',
 			});

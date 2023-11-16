@@ -26,6 +26,7 @@ import { UtilityService } from '@/core/UtilityService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { IActivity } from '@/core/activitypub/type.js';
+import { isPureRenote } from '@/misc/is-pure-renote.js';
 import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginOptions } from 'fastify';
 import type { FindOptionsWhere } from 'typeorm';
 
@@ -88,7 +89,7 @@ export class ActivityPubServerService {
 	 */
 	@bindThis
 	private async packActivity(note: MiNote): Promise<any> {
-		if (note.renoteId && note.text == null && !note.hasPoll && (note.fileIds == null || note.fileIds.length === 0)) {
+		if (isPureRenote(note)) {
 			const renote = await this.notesRepository.findOneByOrFail({ id: note.renoteId });
 			return this.apRendererService.renderAnnounce(renote.uri ? renote.uri : `${this.config.url}/notes/${renote.id}`, note);
 		}
@@ -379,9 +380,10 @@ export class ActivityPubServerService {
 		if (page) {
 			const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), sinceId, untilId)
 				.andWhere('note.userId = :userId', { userId: user.id })
-				.andWhere(new Brackets(qb => { qb
-					.where('note.visibility = \'public\'')
-					.orWhere('note.visibility = \'home\'');
+				.andWhere(new Brackets(qb => {
+					qb
+						.where('note.visibility = \'public\'')
+						.orWhere('note.visibility = \'home\'');
 				}))
 				.andWhere('note.localOnly = FALSE');
 

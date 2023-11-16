@@ -39,8 +39,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #label>{{ i18n.ts.closeAccount }}</template>
 
 				<div class="_gaps_m">
-					<Mfm text="アカウントを閉鎖したい場合は、 @Lutica にお問い合わせください。" />
-					<MkButton primary @click="createMessageToLutica">アカウントの閉鎖を申請する</MkButton>
+					<FormInfo warn>{{ i18n.ts._accountDelete.mayTakeTime }}</FormInfo>
+					<FormInfo>{{ i18n.ts._accountDelete.sendEmail }}</FormInfo>
+					<MkButton v-if="!$i.isDeleted" danger @click="deleteAccount">{{ i18n.ts._accountDelete.requestAccountDelete }}</MkButton>
+					<MkButton v-else disabled>{{ i18n.ts._accountDelete.inProgress }}</MkButton>
 				</div>
 			</MkFolder>
 
@@ -71,6 +73,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<FormSection>
 		<FormLink to="/registry"><template #icon><i class="ti ti-adjustments"></i></template>{{ i18n.ts.registry }}</FormLink>
 	</FormSection>
+
+	<FormSection>
+		<div class="_gaps_s">
+			<MkSwitch v-model="defaultWithReplies">{{ i18n.ts.withRepliesByDefaultForNewlyFollowed }}</MkSwitch>
+			<MkButton danger @click="updateRepliesAll(true)"><i class="ti ti-messages"></i> {{ i18n.ts.showRepliesToOthersInTimelineAll }}</MkButton>
+			<MkButton danger @click="updateRepliesAll(false)"><i class="ti ti-messages-off"></i> {{ i18n.ts.hideRepliesToOthersInTimelineAll }}</MkButton>
+		</div>
+	</FormSection>
 </div>
 </template>
 
@@ -93,6 +103,7 @@ import FormSection from '@/components/form/section.vue';
 const reportError = computed(defaultStore.makeGetterSetter('reportError'));
 const enableCondensedLineForAcct = computed(defaultStore.makeGetterSetter('enableCondensedLineForAcct'));
 const devMode = computed(defaultStore.makeGetterSetter('devMode'));
+const defaultWithReplies = computed(defaultStore.makeGetterSetter('defaultWithReplies'));
 
 function onChangeInjectFeaturedNote(v) {
 	os.api('i/update', {
@@ -136,22 +147,13 @@ async function reloadAsk() {
 	unisonReload();
 }
 
-async function createMessageToLutica() {
-	if ((await os.confirm({
+async function updateRepliesAll(withReplies: boolean) {
+	const { canceled } = os.confirm({
 		type: 'warning',
-		title: 'アカウントを閉鎖しますか？',
-		text: '衝動的なアカウント閉鎖で後悔しないために、アカウント閉鎖は申請式になっています。\n\n全てのノートやファイルなどが失われます。\nまた、同じユーザーIDでアカウントを作成することはできません。',
-	})).canceled) return;
-
-	if ((await os.confirm({
-		type: 'warning',
-		title: '後悔しませんね？',
-		text: '$[shake.speed=4s 本当に全部消えますよ。]',
-	})).canceled) return;
-
-	os.api('users/show', { username: 'Lutica' }).then(res => {
-		os.post({ specified: res, initialText: '@Lutica アカウントの閉鎖をお願いします。' });
+		text: withReplies ? i18n.ts.confirmShowRepliesAll : i18n.ts.confirmHideRepliesAll,
 	});
+	if (canceled) return;
+	await os.api('following/update-all', { withReplies });
 }
 
 watch([
