@@ -1284,6 +1284,8 @@ export interface Locale {
         "shortName": string;
         "shortNameDescription": string;
         "fanoutTimelineDescription": string;
+        "fanoutTimelineDbFallback": string;
+        "fanoutTimelineDbFallbackDescription": string;
     };
     "_accountMigration": {
         "moveFrom": string;
@@ -1958,6 +1960,15 @@ export interface Locale {
         "yearsAgo": string;
         "invalid": string;
     };
+    "_timeIn": {
+        "seconds": string;
+        "minutes": string;
+        "hours": string;
+        "days": string;
+        "weeks": string;
+        "months": string;
+        "years": string;
+    };
     "_time": {
         "second": string;
         "minute": string;
@@ -2201,7 +2212,6 @@ export interface Locale {
     "_timelines": {
         "home": string;
         "local": string;
-        "media": string;
         "social": string;
         "global": string;
     };
