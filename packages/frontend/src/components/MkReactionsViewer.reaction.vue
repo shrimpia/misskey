@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	:class="[$style.root, { [$style.reacted]: note.myReaction == reaction, [$style.canToggle]: canToggle || alternative, [$style.small]: defaultStore.state.reactionsDisplaySize === 'small', [$style.large]: defaultStore.state.reactionsDisplaySize === 'large' }]"
 	@click="toggleReaction()"
 >
-	<MkReactionIcon :class="$style.icon" :reaction="reaction" :emojiUrl="note.reactionEmojis[reaction.substring(1, reaction.length - 1)]"/>
+	<MkReactionIcon :class="defaultStore.state.limitWidthOfReaction ? $style.limitWidth : ''" :reaction="reaction" :emojiUrl="note.reactionEmojis[reaction.substring(1, reaction.length - 1)]"/>
 	<span :class="$style.count">{{ count }}</span>
 </button>
 </template>
@@ -29,6 +29,7 @@ import { customEmojis } from '@/custom-emojis.js';
 import { claimAchievement } from '@/scripts/achievements.js';
 import { defaultStore } from '@/store.js';
 import { i18n } from '@/i18n.js';
+import * as sound from '@/scripts/sound.js';
 
 const props = defineProps<{
 	reaction: string;
@@ -70,6 +71,10 @@ async function toggleReaction(ev) {
 		});
 		if (confirm.canceled) return;
 
+		if (oldReaction !== props.reaction) {
+			sound.play('reaction');
+		}
+
 		if (mock) {
 			emit('reactionToggled', props.reaction, (props.count - 1));
 			return;
@@ -89,6 +94,8 @@ async function toggleReaction(ev) {
 			}
 		});
 	} else {
+		sound.play('reaction');
+
 		if (mock) {
 			emit('reactionToggled', props.reaction, (props.count + 1));
 			return;
@@ -162,12 +169,14 @@ if (!mock) {
 
 <style lang="scss" module>
 .root {
-	display: inline-block;
+	display: inline-flex;
 	height: 42px;
 	margin: 2px;
 	padding: 0 6px;
 	font-size: 1.5em;
 	border-radius: 6px;
+	align-items: center;
+	justify-content: center;
 
 	&.canToggle {
 		background: var(--buttonBg);
@@ -206,7 +215,7 @@ if (!mock) {
 	&.reacted, &.reacted:hover {
 		background: var(--accentedBg);
 		color: var(--accent);
-		box-shadow: 0 0 0px 1px var(--accent) inset;
+		box-shadow: 0 0 0 1px var(--accent) inset;
 
 		> .count {
 			color: var(--accent);
@@ -218,7 +227,7 @@ if (!mock) {
 	}
 }
 
-.icon {
+.limitWidth {
 	max-width: 150px;
 }
 

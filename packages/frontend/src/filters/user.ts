@@ -4,7 +4,6 @@
  */
 
 import * as Misskey from 'misskey-js';
-import * as Misskey from 'misskey-js';
 import { url } from '@/config.js';
 import { defaultStore } from '@/store.js';
 

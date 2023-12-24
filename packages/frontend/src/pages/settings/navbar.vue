@@ -57,7 +57,6 @@ import { defaultStore } from '@/store.js';
 import { unisonReload } from '@/scripts/unison-reload.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { deepClone } from '@/scripts/clone.js';
 import { MenuItem } from '@/types/menu.js';
 
 const Sortable = defineAsyncComponent(() => import('vuedraggable').then(x => x.default));
@@ -127,9 +126,9 @@ watch(menuDisplay, async () => {
 	await reloadAsk();
 });
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts.navbar,

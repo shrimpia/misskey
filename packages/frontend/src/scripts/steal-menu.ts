@@ -123,7 +123,7 @@ export function stealMenu(note: Note, el: HTMLElement) {
 		}]);
 	}
 
-	popupMenu([...menuItems, null, {
+	popupMenu([...menuItems, { type: 'divider' }, {
 		text: i18n.ts.help,
 		icon: 'ti ti-question-circle',
 		action: async () => {
