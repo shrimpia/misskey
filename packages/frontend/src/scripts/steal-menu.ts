@@ -1,9 +1,10 @@
 import { Note } from 'misskey-js/built/entities';
 import { getTextLastNumeric, getTextWithoutEndingNumeric } from './get-note-last-numeric';
 import { pleaseLogin } from './please-login';
-import { playFile } from './sound';
+import { misskeyApi } from '@/scripts/misskey-api.js';
+import * as sound from '@/scripts/sound.js';
 import { defaultStore } from '@/store';
-import { alert, api, confirm, popupMenu, post } from '@/os';
+import { alert, confirm, popupMenu, post } from '@/os';
 import { i18n } from '@/i18n';
 import { MenuItem } from '@/types/menu';
 
@@ -49,7 +50,7 @@ export function stealMenu(note: Note, el: HTMLElement) {
 				const localOnly = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
 					? note.localOnly
 					: defaultStore.state.defaultNumberQuoteLocalOnly;
-				api('notes/create', {
+				misskeyApi('notes/create', {
 					text: baseText + nextNumeric,
 					visibility: visibility as never,
 					localOnly,
@@ -59,7 +60,10 @@ export function stealMenu(note: Note, el: HTMLElement) {
 					channelId: note.channelId,
 				}).then(() => {
 					if (nextNumericOnesPlace !== 4) return;
-					playFile('shrimpia/4', 0.5);
+					sound.playMisskeySfxFile({
+						type: 'shrimpia/4',
+						volume: 0.5,
+					});
 				});
 			},
 		});
@@ -92,7 +96,7 @@ export function stealMenu(note: Note, el: HTMLElement) {
 				const localOnly = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
 					? note.localOnly
 					: defaultStore.state.defaultNumberQuoteLocalOnly;
-				api('notes/create', {
+				misskeyApi('notes/create', {
 					text: note.text,
 					visibility: visibility as never,
 					localOnly,

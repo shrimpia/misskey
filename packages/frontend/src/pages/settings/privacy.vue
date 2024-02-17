@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -102,11 +102,13 @@ import MkSelect from '@/components/MkSelect.vue';
 import FormSection from '@/components/form/section.vue';
 import FormInfo from '@/components/MkInfo.vue';
 import MkFolder from '@/components/MkFolder.vue';
-import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { defaultStore } from '@/store.js';
 import { i18n } from '@/i18n.js';
-import { $i } from '@/account.js';
+import { signinRequired } from '@/account.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
+
+const $i = signinRequired();
 
 const isLocked = ref($i.isLocked);
 const autoAcceptFollowed = ref($i.autoAcceptFollowed);
@@ -115,8 +117,8 @@ const preventAiLearning = ref($i.preventAiLearning);
 const isExplorable = ref($i.isExplorable);
 const hideOnlineStatus = ref($i.hideOnlineStatus);
 const publicReactions = ref($i.publicReactions);
-const followingVisibility = ref($i?.followingVisibility);
-const followersVisibility = ref($i?.followersVisibility);
+const followingVisibility = ref($i.followingVisibility);
+const followersVisibility = ref($i.followersVisibility);
 
 const defaultNoteVisibility = computed(defaultStore.makeGetterSetter('defaultNoteVisibility'));
 const defaultNoteLocalOnly = computed(defaultStore.makeGetterSetter('defaultNoteLocalOnly'));
@@ -128,7 +130,7 @@ const defaultNumberQuoteLocalOnly = computed(defaultStore.makeGetterSetter('defa
 // #endregion
 
 function save() {
-	os.api('i/update', {
+	misskeyApi('i/update', {
 		isLocked: !!isLocked.value,
 		autoAcceptFollowed: !!autoAcceptFollowed.value,
 		noCrawle: !!noCrawle.value,
@@ -145,8 +147,8 @@ const headerActions = computed(() => []);
 
 const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePageMetadata(() => ({
 	title: i18n.ts.privacy,
 	icon: 'ti ti-lock-open',
-});
+}));
 </script>

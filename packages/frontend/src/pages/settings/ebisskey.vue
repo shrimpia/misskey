@@ -64,6 +64,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
+import { Note, User } from 'misskey-js/built/entities';
 import MkSwitch from '@/components/MkSwitch.vue';
 import FormSection from '@/components/form/section.vue';
 import { defaultStore } from '@/store';
@@ -71,11 +72,10 @@ import * as os from '@/os';
 import { unisonReload } from '@/scripts/unison-reload';
 import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
-import MkNote from "@/components/MkNote.vue";
-import {Note, User} from "misskey-js/built/entities";
-import {$i} from "@/account";
-import MkButton from "@/components/MkButton.vue";
-import {confetti} from "@/scripts/confetti";
+import MkNote from '@/components/MkNote.vue';
+import { $i } from '@/account';
+import MkButton from '@/components/MkButton.vue';
+import { confetti } from '@/scripts/confetti';
 
 async function reloadAsk() {
 	const { canceled } = await os.confirm({
@@ -125,9 +125,9 @@ watch([
 	await reloadAsk();
 });
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
 definePageMetadata({
 	title: 'Ebisskey',
