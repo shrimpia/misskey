@@ -360,7 +360,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 
 		// #region Shrimpia
-		if (user.host != null && mentionedUsers.some(u => u.host !== null)) {
+		if (user.host != null && mentionedUsers.length > 0) {
 			const userEntity = await this.usersRepository.findOneByOrFail({ id: user.id });
 			if (userEntity.followersCount === 0) {
 				throw new Error('Temporarily, notes including mentions from remote users which no followers are not allowed');
