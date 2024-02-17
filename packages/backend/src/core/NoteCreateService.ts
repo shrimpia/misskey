@@ -359,11 +359,13 @@ export class NoteCreateService implements OnApplicationShutdown {
 			mentionedUsers = data.apMentions ?? await this.extractMentionedUsers(user, combinedTokens);
 		}
 
+		const willCauseNotification = mentionedUsers.length > 0 || data.reply?.userHost === null || data.renote?.userHost === null;
+
 		// #region Shrimpia
-		if (user.host != null && mentionedUsers.length > 0) {
+		if (user.host != null && willCauseNotification) {
 			const userEntity = await this.usersRepository.findOneBy({ id: user.id });
 			if ((userEntity?.followersCount ?? 0) === 0) {
-				throw new Error('Temporarily, notes including mentions from remote users which no followers are not allowed');
+				throw new Error('Temporarily, notes including mentions, replies and renotes to local-user from remote users which is not followed by local-users are not allowed');
 			}
 		}
 		// #endregion
