@@ -359,9 +359,9 @@ export class NoteCreateService implements OnApplicationShutdown {
 			mentionedUsers = data.apMentions ?? await this.extractMentionedUsers(user, combinedTokens);
 		}
 
+		// #region Shrimpia
 		const willCauseNotification = mentionedUsers.length > 0 || data.reply?.userHost === null || data.renote?.userHost === null;
 
-		// #region Shrimpia
 		if (user.host != null && willCauseNotification) {
 			const userEntity = await this.usersRepository.findOneBy({ id: user.id });
 			if ((userEntity?.followersCount ?? 0) === 0) {
