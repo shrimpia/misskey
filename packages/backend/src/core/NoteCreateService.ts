@@ -359,7 +359,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			mentionedUsers = data.apMentions ?? await this.extractMentionedUsers(user, combinedTokens);
 		}
 
-		// #region Shrimpia
+		// #region Ebisskey
 		// ローカル宛てのメンション、リプライ、引用ノートの発行元が、ローカルユーザーにフォローされていない場合は投稿を拒否する
 		const willCauseNotification = mentionedUsers.filter(u => u.host === null).length > 0 ||
 			(data.reply != null && data.reply.userHost === null) ||
