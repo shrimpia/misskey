@@ -360,7 +360,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 
 		// #region Shrimpia
-		const willCauseNotification = mentionedUsers.length > 0 || data.reply?.userHost === null || data.renote?.userHost === null;
+		const willCauseNotification = mentionedUsers.filter(u => u.host === null).length > 0 || data.reply?.userHost === null || data.renote?.userHost === null;
 
 		if (user.host != null && willCauseNotification) {
 			const userEntity = await this.usersRepository.findOneBy({ id: user.id });
