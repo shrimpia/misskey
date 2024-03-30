@@ -184,4 +184,9 @@ export const navbarItemDef = reactive({
 			clearCache();
 		},
 	},
+	events: {
+		title: 'イベント',
+		icon: 'ti ti-calendar-bolt',
+		to: '/events',
+	},
 });

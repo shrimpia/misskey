@@ -557,6 +557,9 @@ const routes: RouteDef[] = [{
 	path: '/timeline',
 	component: page(() => import('@/pages/timeline.vue')),
 }, {
+	path: '/events',
+	component: page(() => import('@/pages/event-calendar.vue')),
+}, {
 	name: 'index',
 	path: '/',
 	component: $i ? page(() => import('@/pages/timeline.vue')) : page(() => import('@/pages/welcome.vue')),

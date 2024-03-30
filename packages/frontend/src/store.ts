@@ -147,6 +147,7 @@ export const defaultStore = markRaw(new Storage('base', {
 			'search',
 			'-',
 			'ui',
+			'events',
 		],
 	},
 	visibility: {
