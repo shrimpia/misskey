@@ -12,63 +12,6 @@ import { MenuItem } from '@/types/menu';
 export function stealMenu(note: Note, el: HTMLElement) {
 	pleaseLogin();
 	const menuItems: MenuItem[] = [];
-
-	if (defaultStore.state.numberQuoteEnabled) {
-		const nextNumeric = getTextLastNumeric(note.text ?? '') + 1;
-		const nextNumericOnesPlace = nextNumeric % 10;
-		menuItems.push({
-			icon: `ti ti-box-multiple-${Math.abs(nextNumericOnesPlace)}`,
-			text: '数字引用',
-			action: async () => {
-				if (!note.text) return;
-				if (!defaultStore.state.numberQuoteConfirmed) {
-					const { canceled } = await confirm({
-						type: 'warning',
-						text: 'このノートを数字引用します。本文をコピーして投稿するため、相手に迷惑がかからないことを確認する必要があります。\n本当に投稿しますか？',
-					});
-					if (canceled) return;
-				}
-				await defaultStore.set('numberQuoteConfirmed', true);
-				if (note.visibility === 'followers' || note.visibility === 'specified') {
-					const { canceled } = await confirm({
-						type: 'warning',
-						text: `このノートは公開範囲を「${i18n.ts._visibility[note.visibility]}」に設定しているため、数字引用すべきではないかもしれません。それでも続行しますか？`,
-					});
-					if (canceled) return;
-				}
-				let baseText = getTextWithoutEndingNumeric(note.text);
-				// タグ対策
-				if (baseText.endsWith('</center>')) baseText += '\n';
-				// ハッシュタグ対策
-				if (/#[^ ]+$/.test(baseText)) baseText += ' ';
-				// 絵文字ショートコード対策
-				if (baseText.endsWith(':')) baseText += ' ';
-
-				const visibility = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
-					? note.visibility
-					: defaultStore.state.defaultNumberQuoteVisibility;
-				const localOnly = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
-					? note.localOnly
-					: defaultStore.state.defaultNumberQuoteLocalOnly;
-				misskeyApi('notes/create', {
-					text: baseText + nextNumeric,
-					visibility: visibility as never,
-					localOnly,
-					renoteId: note.renoteId,
-					replyId: note.replyId,
-					cw: note.cw,
-					channelId: note.channelId,
-				}).then(() => {
-					if (nextNumericOnesPlace !== 4) return;
-					sound.playMisskeySfxFile({
-						type: 'shrimpia/4',
-						volume: 0.5,
-					});
-				});
-			},
-		});
-	}
-
 	if (defaultStore.state.stealEnabled) {
 		menuItems.push(...[{
 			icon: 'ti ti-swipe',

@@ -41,7 +41,7 @@ export interface Locale extends ILocale {
      */
     "notifications": string;
     /**
-     * 国民名
+     * エビ名
      */
     "username": string;
     /**
@@ -73,7 +73,7 @@ export interface Locale extends ILocale {
      */
     "noThankYou": string;
     /**
-     * 国民名を入力
+     * エビ名を入力
      */
     "enterUsername": string;
     /**
@@ -149,11 +149,11 @@ export interface Locale extends ILocale {
      */
     "save": string;
     /**
-     * 国民
+     * エビ
      */
     "users": string;
     /**
-     * 国民を追加
+     * エビを追加
      */
     "addUser": string;
     /**
@@ -229,11 +229,11 @@ export interface Locale extends ILocale {
      */
     "copyRSS": string;
     /**
-     * 国民名をコピー
+     * エビ名をコピー
      */
     "copyUsername": string;
     /**
-     * 国民IDをコピー
+     * エビIDをコピー
      */
     "copyUserId": string;
     /**
@@ -253,7 +253,7 @@ export interface Locale extends ILocale {
      */
     "copyProfileUrl": string;
     /**
-     * 国民を検索
+     * エビを検索
      */
     "searchUser": string;
     /**
@@ -453,6 +453,10 @@ export interface Locale extends ILocale {
      */
     "renoted": string;
     /**
+     * {name} にリノートしました。
+     */
+    "renotedToX": ParameterizedString<"name">;
+    /**
      * この投稿はリノートできません。
      */
     "cantRenote": string;
@@ -472,6 +476,14 @@ export interface Locale extends ILocale {
      * チャンネル内引用
      */
     "inChannelQuote": string;
+    /**
+     * チャンネルにリノート
+     */
+    "renoteToChannel": string;
+    /**
+     * 他のチャンネルにリノート
+     */
+    "renoteToOtherChannel": string;
     /**
      * ピン留めされたノート
      */
@@ -669,7 +681,7 @@ export interface Locale extends ILocale {
      */
     "cacheRemoteFiles": string;
     /**
-     * この設定を有効にすると、リモートファイルを帝国のストレージにキャッシュするようになります。画像の表示が高速になりますが、帝国のストレージを多く消費します。リモート国民がどれほどキャッシュを保持するかは、ロールによるドライブ容量制限によって決定されます。この制限を超えた場合、古いファイルからキャッシュが削除されリンクになります。この設定が無効の場合、リモートのファイルを最初からリンクとして保持しますが、画像のサムネイル生成や国民のプライバシー保護のために、default.ymlでproxyRemoteFilesをtrueにすることをお勧めします。
+     * この設定を有効にすると、リモートファイルを帝国のストレージにキャッシュするようになります。画像の表示が高速になりますが、帝国のストレージを多く消費します。リモートユーザーがどれほどキャッシュを保持するかは、ロールによるドライブ容量制限によって決定されます。この制限を超えた場合、古いファイルからキャッシュが削除されリンクになります。この設定が無効の場合、リモートのファイルを最初からリンクとして保持しますが、画像のサムネイル生成やエビのプライバシー保護のために、default.ymlでproxyRemoteFilesをtrueにすることをお勧めします。
      */
     "cacheRemoteFilesDescription": string;
     /**
@@ -705,11 +717,11 @@ export interface Locale extends ILocale {
      */
     "flagShowTimelineReplies": string;
     /**
-     * オンにすると、タイムラインに国民のノート以外にもその国民の他のノートへの返信を表示します。
+     * オンにすると、タイムラインにエビのノート以外にもそのエビの他のノートへの返信を表示します。
      */
     "flagShowTimelineRepliesDescription": string;
     /**
-     * フォロー中の国民からのフォロリクを自動承認
+     * フォロー中のエビからのフォロリクを自動承認
      */
     "autoAcceptFollowed": string;
     /**
@@ -757,11 +769,11 @@ export interface Locale extends ILocale {
      */
     "followConfirm": ParameterizedString<"name">;
     /**
-     * プロキシアカウント
+     * プロキシュリンプ
      */
     "proxyAccount": string;
     /**
-     * プロキシアカウントは、特定の条件下で国民のリモートフォローを代行するアカウントです。例えば、国民がリモート国民をリストに入れたとき、リストに入れられた国民を誰もフォローしていないとアクティビティが帝国に配達されないため、代わりにプロキシ国民がフォローするようにします。
+     * プロキシュリンプは、特定の条件下でエビのリモートフォローを代行するアカウントです。例えば、エビがリモートユーザーをリストに入れたとき、リストに入れられたユーザーを誰もフォローしていないとアクティビティが帝国に配達されないため、代わりにプロキシュリンプがフォローするようにします。
      */
     "proxyAccountDescription": string;
     /**
@@ -769,7 +781,7 @@ export interface Locale extends ILocale {
      */
     "host": string;
     /**
-     * 国民を選択
+     * エビを選択
      */
     "selectUser": string;
     /**
@@ -909,7 +921,7 @@ export interface Locale extends ILocale {
      */
     "silencedInstances": string;
     /**
-     * サイレンスしたい国家のホストを改行で区切って設定します。サイレンスされた国家に所属する国民はすべて「サイレンス」として扱われ、フォローがすべてリクエストになり、フォロワーでないローカル国民にはメンションできなくなります。ブロックした国家には影響しません。
+     * サイレンスしたい国家のホストを改行で区切って設定します。サイレンスされた国家に所属するユーザーはすべて「サイレンス」として扱われ、フォローがすべてリクエストになり、フォロワーでないローカルエビにはメンションできなくなります。ブロックした国家には影響しません。
      */
     "silencedInstancesDescription": string;
     /**
@@ -917,15 +929,15 @@ export interface Locale extends ILocale {
      */
     "muteAndBlock": string;
     /**
-     * ミュートした国民
+     * ミュートしたエビ
      */
     "mutedUsers": string;
     /**
-     * ブロックした国民
+     * ブロックしたエビ
      */
     "blockedUsers": string;
     /**
-     * 国民はいません
+     * エビはいません
      */
     "noUsers": string;
     /**
@@ -1009,7 +1021,7 @@ export interface Locale extends ILocale {
      */
     "instanceFollowers": string;
     /**
-     * サーバーの国民
+     * サーバーのエビ
      */
     "instanceUsers": string;
     /**
@@ -1049,11 +1061,11 @@ export interface Locale extends ILocale {
      */
     "featured": string;
     /**
-     * 国民名か国民ID
+     * エビ名かエビID
      */
     "usernameOrUserId": string;
     /**
-     * 国民が見つかりません
+     * エビが見つかりません
      */
     "noSuchUser": string;
     /**
@@ -1185,7 +1197,7 @@ export interface Locale extends ILocale {
      */
     "home": string;
     /**
-     * 他国民の情報のため、我が国では完全な情報を確認できない場合があります。
+     * 他ユーザーの情報のため、我が国では完全な情報を確認できない場合があります。
      */
     "remoteUserCaution": string;
     /**
@@ -1272,6 +1284,10 @@ export interface Locale extends ILocale {
      * フォルダーを選択
      */
     "selectFolders": string;
+    /**
+     * ファイルが選択されていません
+     */
+    "fileNotSelected": string;
     /**
      * ファイル名を変更
      */
@@ -1501,11 +1517,11 @@ export interface Locale extends ILocale {
      */
     "basicInfo": string;
     /**
-     * 晒し上げられた国民
+     * 晒し上げられたエビ
      */
     "pinnedUsers": string;
     /**
-     * 「みつける」ページなどにピン留めしたい国民を改行で区切って記述します。
+     * 「みつける」ページなどにピン留めしたいエビを改行で区切って記述します。
      */
     "pinnedUsersDescription": string;
     /**
@@ -1621,6 +1637,10 @@ export interface Locale extends ILocale {
      */
     "antennaExcludeKeywords": string;
     /**
+     * Botアカウントを除外
+     */
+    "antennaExcludeBots": string;
+    /**
      * スペースで区切るとAND指定になり、改行で区切るとOR指定になります
      */
     "antennaKeywordsDescription": string;
@@ -1637,7 +1657,7 @@ export interface Locale extends ILocale {
      */
     "enableServiceworker": string;
     /**
-     * 国民名を改行で区切って指定します
+     * エビ名を改行で区切って指定します
      */
     "antennaUsersDescription": string;
     /**
@@ -1677,23 +1697,23 @@ export interface Locale extends ILocale {
      */
     "unsilenceConfirm": string;
     /**
-     * 人気の国民
+     * 人気のエビ
      */
     "popularUsers": string;
     /**
-     * 最近投稿した国民
+     * 最近投稿したエビ
      */
     "recentlyUpdatedUsers": string;
     /**
-     * 最近入国した国民
+     * 最近入国したエビ
      */
     "recentlyRegisteredUsers": string;
     /**
-     * 最近発見された国民
+     * 最近発見されたエビ
      */
     "recentlyDiscoveredUsers": string;
     /**
-     * {count}の国民がいます
+     * {count}のエビがいます
      */
     "exploreUsersCount": ParameterizedString<"count">;
     /**
@@ -1889,6 +1909,10 @@ export interface Locale extends ILocale {
      */
     "quoteQuestion": string;
     /**
+     * クリップボードのテキストが長いです。テキストファイルとして添付しますか？
+     */
+    "attachAsFileQuestion": string;
+    /**
      * まだチャットはありません
      */
     "noMessagesYet": string;
@@ -1961,7 +1985,7 @@ export interface Locale extends ILocale {
      */
     "signinWith": ParameterizedString<"x">;
     /**
-     * 入国できませんでした。国民名とパスワードを確認してください。
+     * 入国できませんでした。エビ名とパスワードを確認してください。
      */
     "signinFailed": string;
     /**
@@ -1996,6 +2020,10 @@ export interface Locale extends ILocale {
      * ノートのアクションをホバー時のみ表示する
      */
     "showNoteActionsOnlyHover": string;
+    /**
+     * ノートのリアクション数を表示する
+     */
+    "showReactionsCount": string;
     /**
      * 履歴はありません
      */
@@ -2329,7 +2357,7 @@ export interface Locale extends ILocale {
      */
     "disablePagesScript": string;
     /**
-     * リモート国民情報の更新
+     * リモートユーザー情報の更新
      */
     "updateRemoteUser": string;
     /**
@@ -2365,11 +2393,11 @@ export interface Locale extends ILocale {
      */
     "removeAllFollowingDescription": ParameterizedString<"host">;
     /**
-     * この国民は凍結されています。
+     * このエビは凍結されています。
      */
     "userSuspended": string;
     /**
-     * この国民はサイレンスされています。
+     * このエビはサイレンスされています。
      */
     "userSilenced": string;
     /**
@@ -2597,7 +2625,7 @@ export interface Locale extends ILocale {
      */
     "smtpPort": string;
     /**
-     * 国民名
+     * エビ名
      */
     "smtpUser": string;
     /**
@@ -2605,7 +2633,7 @@ export interface Locale extends ILocale {
      */
     "smtpPass": string;
     /**
-     * 国民名とパスワードを空欄にすることで、SMTP認証を無効化出来ます
+     * エビ名とパスワードを空欄にすることで、SMTP認証を無効化出来ます
      */
     "emptyToDisableSmtpAuth": string;
     /**
@@ -2705,7 +2733,7 @@ export interface Locale extends ILocale {
      */
     "other": string;
     /**
-     * 国民トークンを再生成
+     * エビトークンを再生成
      */
     "regenerateLoginToken": string;
     /**
@@ -2933,7 +2961,7 @@ export interface Locale extends ILocale {
      */
     "noCrawle": string;
     /**
-     * 外部の検索エンジンにあなたの国民ページ、ノート、Pagesなどのコンテンツを登録(インデックス)しないよう要求します。
+     * 外部の検索エンジンにあなたのエビページ、ノート、Pagesなどのコンテンツを登録(インデックス)しないよう要求します。
      */
     "noCrawleDescription": string;
     /**
@@ -3061,7 +3089,7 @@ export interface Locale extends ILocale {
      */
     "onlineUsersCount": ParameterizedString<"n">;
     /**
-     * {n}国民
+     * {n}エビ
      */
     "nUsers": ParameterizedString<"n">;
     /**
@@ -3245,7 +3273,7 @@ export interface Locale extends ILocale {
      */
     "info": string;
     /**
-     * 国民情報
+     * エビ情報
      */
     "userInfo": string;
     /**
@@ -3309,7 +3337,7 @@ export interface Locale extends ILocale {
      */
     "quickAction": string;
     /**
-     * 国民
+     * エビ
      */
     "user": string;
     /**
@@ -3328,6 +3356,10 @@ export interface Locale extends ILocale {
      * 皇帝情報が設定されていません。
      */
     "noMaintainerInformationWarning": string;
+    /**
+     * 問い合わせ先URLが設定されていません。
+     */
+    "noInquiryUrlWarning": string;
     /**
      * Botプロテクションが設定されていません。
      */
@@ -3469,7 +3501,7 @@ export interface Locale extends ILocale {
      */
     "accountDeletionInProgress": string;
     /**
-     * 帝国上であなたのアカウントを一意に識別するための名前。アルファベット(a~z, A~Z)、数字(0~9)、およびアンダーバー(_)が使用できます。国民名は後から変更することは出来ません。
+     * 帝国上であなたのアカウントを一意に識別するための名前。アルファベット(a~z, A~Z)、数字(0~9)、およびアンダーバー(_)が使用できます。エビ名は後から変更することは出来ません。
      */
     "usernameInfo": string;
     /**
@@ -3737,7 +3769,7 @@ export interface Locale extends ILocale {
      */
     "check": string;
     /**
-     * この国民のドライブ容量上限を変更
+     * このエビのドライブ容量上限を変更
      */
     "driveCapOverrideLabel": string;
     /**
@@ -3861,7 +3893,7 @@ export interface Locale extends ILocale {
      */
     "enableAutoSensitiveDescription": string;
     /**
-     * 国民のメールアドレスのバリデーションを、捨てアドかどうかや実際に通信可能かどうかなどを判定しより積極的に行います。オフにすると単に文字列として正しいかどうかのみチェックされます。
+     * エビのメールアドレスのバリデーションを、捨てアドかどうかや実際に通信可能かどうかなどを判定しより積極的に行います。オフにすると単に文字列として正しいかどうかのみチェックされます。
      */
     "activeEmailValidationDescription": string;
     /**
@@ -3989,7 +4021,7 @@ export interface Locale extends ILocale {
      */
     "noRole": string;
     /**
-     * 一般国民
+     * 一般エビ
      */
     "normalUser": string;
     /**
@@ -4085,9 +4117,13 @@ export interface Locale extends ILocale {
      */
     "usePostFormWindow": string;
     /**
-     * 見たことのあるリノートを省略して表示
+     * リノートのスマート省略
      */
     "collapseRenotes": string;
+    /**
+     * リアクションやリノートをしたことがあるノートをたたんで表示します。
+     */
+    "collapseRenotesDescription": string;
     /**
      * 帝国非常事態
      */
@@ -4233,7 +4269,7 @@ export interface Locale extends ILocale {
      */
     "retryAllQueuesConfirmText": string;
     /**
-     * 他国民のチャートを生成
+     * 他ユーザーのチャートを生成
      */
     "enableChartsForRemoteUser": string;
     /**
@@ -4281,7 +4317,7 @@ export interface Locale extends ILocale {
      */
     "accountMigration": string;
     /**
-     * この国民は新居にお引越ししました：
+     * このエビは新居にお引越ししました：
      */
     "accountMoved": string;
     /**
@@ -4365,11 +4401,11 @@ export interface Locale extends ILocale {
      */
     "continue": string;
     /**
-     * 予約国民名
+     * 予約エビ名
      */
     "preservedUsernames": string;
     /**
-     * 予約する国民名を改行で列挙します。ここで指定された国民名はアカウント作成時に使えなくなりますが、皇帝によるアカウント作成時はこの制限を受けません。また、既に存在するアカウントも影響を受けません。
+     * 予約するエビ名を改行で列挙します。ここで指定されたエビ名はアカウント作成時に使えなくなりますが、皇帝によるアカウント作成時はこの制限を受けません。また、既に存在するアカウントも影響を受けません。
      */
     "preservedUsernamesDescription": string;
     /**
@@ -4417,7 +4453,7 @@ export interface Locale extends ILocale {
      */
     "options": string;
     /**
-     * 国民指定
+     * エビ指定
      */
     "specifyUser": string;
     /**
@@ -4473,7 +4509,7 @@ export interface Locale extends ILocale {
      */
     "enableServerMachineStats": string;
     /**
-     * 国民ごとのIdenticon生成を有効にする
+     * エビごとのIdenticon生成を有効にする
      */
     "enableIdenticonGeneration": string;
     /**
@@ -4521,7 +4557,7 @@ export interface Locale extends ILocale {
      */
     "inviteCodeUsedAt": string;
     /**
-     * ビザを使用した国民
+     * ビザを使用したエビ
      */
     "registeredUserUsingInviteCode": string;
     /**
@@ -4529,7 +4565,7 @@ export interface Locale extends ILocale {
      */
     "waitingForMailAuth": string;
     /**
-     * ビザを作成した国民
+     * ビザを作成したエビ
      */
     "inviteCodeCreator": string;
     /**
@@ -4904,6 +4940,78 @@ export interface Locale extends ILocale {
      * リトライ
      */
     "gameRetry": string;
+    /**
+     * 使用しない場合は空欄にしてください
+     */
+    "notUsePleaseLeaveBlank": string;
+    /**
+     * ワンタイムパスワードを使う
+     */
+    "useTotp": string;
+    /**
+     * バックアップコードを使う
+     */
+    "useBackupCode": string;
+    /**
+     * アプリを起動
+     */
+    "launchApp": string;
+    /**
+     * 動画・音声の再生にブラウザのUIを使用する
+     */
+    "useNativeUIForVideoAudioPlayer": string;
+    /**
+     * オリジナルのファイル名を保持
+     */
+    "keepOriginalFilename": string;
+    /**
+     * この設定をオフにすると、アップロード時にファイル名が自動でランダム文字列に置き換えられます。
+     */
+    "keepOriginalFilenameDescription": string;
+    /**
+     * 説明文はありません
+     */
+    "noDescription": string;
+    /**
+     * フォローの際常に確認する
+     */
+    "alwaysConfirmFollow": string;
+    /**
+     * お問い合わせ
+     */
+    "inquiry": string;
+    "_delivery": {
+        /**
+         * 配信状態
+         */
+        "status": string;
+        /**
+         * 配信停止
+         */
+        "stop": string;
+        /**
+         * 配信再開
+         */
+        "resume": string;
+        "_type": {
+            /**
+             * 配信中
+             */
+            "none": string;
+            /**
+             * 手動停止中
+             */
+            "manuallySuspended": string;
+            /**
+             * サーバー削除のため停止中
+             */
+            "goneSuspended": string;
+            /**
+             * サーバー応答なしのため停止中
+             */
+            "autoSuspendedForNotResponding": string;
+        };
+    };
     "_bubbleGame": {
         /**
          * 遊び方
@@ -4960,11 +5068,11 @@ export interface Locale extends ILocale {
     };
     "_announcement": {
         /**
-         * 既存国民のみ
+         * 既存エビのみ
          */
         "forExistingUsers": string;
         /**
-         * 有効にすると、このお知らせ作成時点で存在する国民にのみお知らせが表示されます。無効にすると、このお知らせ作成後にアカウントを作成した国民にもお知らせが表示されます。
+         * 有効にすると、このお知らせ作成時点で存在するエビにのみお知らせが表示されます。無効にすると、このお知らせ作成後にアカウントを作成したエビにもお知らせが表示されます。
          */
         "forExistingUsersDescription": string;
         /**
@@ -4992,7 +5100,7 @@ export interface Locale extends ILocale {
          */
         "readConfirmText": ParameterizedString<"title">;
         /**
-         * 特に新規国民のUXを損ねる可能性が高いため、常時掲示するための情報ではなく、即時性が求められる情報の掲示のためにお知らせを使用することを推奨します。
+         * 特に新規エビのUXを損ねる可能性が高いため、常時掲示するための情報ではなく、即時性が求められる情報の掲示のためにお知らせを使用することを推奨します。
          */
         "shouldNotBeUsedToPresentPermanentInfo": string;
         /**
@@ -5038,7 +5146,7 @@ export interface Locale extends ILocale {
          */
         "youCanEditMoreSettingsInSettingsPageLater": string;
         /**
-         * タイムラインを構築するため、気になる国民をフォローしてみましょう。
+         * タイムラインを構築するため、気になるエビをフォローしてみましょう。
          */
         "followUsers": string;
         /**
@@ -5163,7 +5271,7 @@ export interface Locale extends ILocale {
              */
             "home": string;
             /**
-             * この帝国にいる国民全員の投稿を見られます。
+             * この帝国にいるエビ全員の投稿を見られます。
              */
             "local": string;
             /**
@@ -5198,11 +5306,11 @@ export interface Locale extends ILocale {
                  */
                 "description": string;
                 /**
-                 * すべての国民に公開。
+                 * すべてのエビに公開。
                  */
                 "public": string;
                 /**
-                 * ホームタイムラインのみに公開。フォロワー・プロフィールを見に来たエビ・リノートから、他の国民も見ることができます。
+                 * ホームタイムラインのみに公開。フォロワー・プロフィールを見に来たエビ・リノートから、他のエビも見ることができます。
                  */
                 "home": string;
                 /**
@@ -5210,7 +5318,7 @@ export interface Locale extends ILocale {
                  */
                 "followers": string;
                 /**
-                 * 指定した国民にのみ公開され、また相手に通知が入ります。ダイレクトメッセージのかわりにお使いいただけます。
+                 * 指定したエビにのみ公開され、また相手に通知が入ります。ダイレクトメッセージのかわりにお使いいただけます。
                  */
                 "direct": string;
                 /**
@@ -5218,11 +5326,11 @@ export interface Locale extends ILocale {
                  */
                 "doNotSendConfidencialOnDirect1": string;
                 /**
-                 * 送信先のサーバーの管理者は投稿内容を見ることが可能なので、信頼できないサーバーの国民にダイレクト投稿を送信する場合は、機密情報の扱いに注意が必要です。
+                 * 送信先のサーバーの管理者は投稿内容を見ることが可能なので、信頼できないサーバーのユーザーダイレクト投稿を送信する場合は、機密情報の扱いに注意が必要です。
                  */
                 "doNotSendConfidencialOnDirect2": string;
                 /**
-                 * 他のサーバーに投稿を連合しません。上記の公開範囲に関わらず、他のサーバーの国民は、この設定がついたノートを直接閲覧することができなくなります。
+                 * 他のサーバーに投稿を連合しません。上記の公開範囲に関わらず、他のサーバーのユーザーは、この設定がついたノートを直接閲覧することができなくなります。
                  */
                 "localOnly": string;
             };
@@ -5300,7 +5408,7 @@ export interface Locale extends ILocale {
          */
         "home": string;
         /**
-         * ローカルタイムラインでは、この帝国の国民全員の投稿を見られます。
+         * ローカルタイムラインでは、この帝国のエビ全員の投稿を見られます。
          */
         "local": string;
         /**
@@ -5363,6 +5471,14 @@ export interface Locale extends ILocale {
          * 有効にすると、タイムラインがキャッシュされていない場合にDBへ追加で問い合わせを行うフォールバック処理を行います。無効にすると、フォールバック処理を行わないことでさらにサーバーの負荷を軽減することができますが、タイムラインが取得できる範囲に制限が生じます。
          */
         "fanoutTimelineDbFallbackDescription": string;
+        /**
+         * 問い合わせ先URL
+         */
+        "inquiryUrl": string;
+        /**
+         * サーバー運営者へのお問い合わせフォームのURLや、運営者の連絡先等が記載されたWebページのURLを指定します。
+         */
+        "inquiryUrlDescription": string;
     };
     "_accountMigration": {
         /**
@@ -5678,7 +5794,7 @@ export interface Locale extends ILocale {
                  */
                 "description": string;
                 /**
-                 * その国民、シュリンピアンにつき
+                 * そのエビ、シュリンピアンにつき
                  */
                 "flavor": string;
             };
@@ -6354,7 +6470,7 @@ export interface Locale extends ILocale {
         "assignTarget": string;
         /**
          * <b>マニュアル</b>は誰がこのロールに含まれるかを手動で管理します。
-         * <b>コンディショナル</b>は条件を設定し、それに合致する国民が自動で含まれるようになります。
+         * <b>コンディショナル</b>は条件を設定し、それに合致するエビが自動で含まれるようになります。
          */
         "descriptionOfAssignTarget": string;
         /**
@@ -6386,7 +6502,7 @@ export interface Locale extends ILocale {
          */
         "isPublic": string;
         /**
-         * 国民のプロフィールでこのロールが表示されます。
+         * エビのプロフィールでこのロールが表示されます。
          */
         "descriptionOfIsPublic": string;
         /**
@@ -6418,11 +6534,11 @@ export interface Locale extends ILocale {
          */
         "asBadge": string;
         /**
-         * オンにすると、国民名の横にロールのアイコンが表示されます。
+         * オンにすると、エビ名の横にロールのアイコンが表示されます。
          */
         "descriptionOfAsBadge": string;
         /**
-         * 国民を見つけやすくする
+         * エビを見つけやすくする
          */
         "isExplorable": string;
         /**
@@ -6442,7 +6558,7 @@ export interface Locale extends ILocale {
          */
         "canEditMembersByModerator": string;
         /**
-         * オンにすると、皇帝に加えて官僚もこのロールへ国民をアサイン/アサイン解除できるようになります。オフにすると皇帝のみが行えます。
+         * オンにすると、皇帝に加えて官僚もこのロールへエビをアサイン/アサイン解除できるようになります。オフにすると皇帝のみが行えます。
          */
         "descriptionOfCanEditMembersByModerator": string;
         /**
@@ -6537,11 +6653,11 @@ export interface Locale extends ILocale {
              */
             "noteEachClipsMax": string;
             /**
-             * 国民リストの作成可能数
+             * エビリストの作成可能数
              */
             "userListMax": string;
             /**
-             * 国民リスト内の国民の最大数
+             * エビリスト内のエビの最大数
              */
             "userEachUserListsMax": string;
             /**
@@ -6575,13 +6691,33 @@ export interface Locale extends ILocale {
              */
             "roleAssignedTo": string;
             /**
-             * ローカル国民
+             * ローカルエビ
              */
             "isLocal": string;
             /**
-             * リモート国民
+             * リモートユーザー
              */
             "isRemote": string;
+            /**
+             * 猫型エビ
+             */
+            "isCat": string;
+            /**
+             * botエビ
+             */
+            "isBot": string;
+            /**
+             * サスペンド済みエビ
+             */
+            "isSuspended": string;
+            /**
+             * 鍵アカウントエビ
+             */
+            "isLocked": string;
+            /**
+             * 「アカウントを見つけやすくする」が有効なエビ
+             */
+            "isExplorable": string;
             /**
              * アカウント作成から～以内
              */
@@ -6764,7 +6900,7 @@ export interface Locale extends ILocale {
          */
         "setZeroToDisable": string;
         /**
-         * 広告の配信間隔が極めて短いため、国民体験が著しく損われる可能性があります。
+         * 広告の配信間隔が極めて短いため、エビ体験が著しく損われる可能性があります。
          */
         "adsTooClose": string;
     };
@@ -6831,6 +6967,10 @@ export interface Locale extends ILocale {
          * ソースを表示
          */
         "viewSource": string;
+        /**
+         * ログを表示
+         */
+        "viewLog": string;
     };
     "_preferencesBackups": {
         /**
@@ -6990,7 +7130,7 @@ export interface Locale extends ILocale {
          */
         "none": string;
         /**
-         * リモート国民に表示
+         * リモートユーザーに表示
          */
         "remote": string;
         /**
@@ -7096,7 +7236,7 @@ export interface Locale extends ILocale {
     };
     "_instanceMute": {
         /**
-         * ミュートした国家の国民への返信を含めて、設定した国家の全てのノートとRenoteをミュートします。
+         * ミュートした国家のエビへの返信を含めて、設定した国家の全てのノートとRenoteをミュートします。
          */
         "instanceMuteDescription": string;
         /**
@@ -7548,13 +7688,9 @@ export interface Locale extends ILocale {
          */
         "step1": ParameterizedString<"a" | "b">;
         /**
-         * 次に、表示されているQRコードをアプリでスキャンします。
+         * 次に、表示されているQRコードをアプリでスキャンするか、ボタンをクリックして端末上でアプリを開きます。
          */
         "step2": string;
-        /**
-         * QRコードをクリックすると、お使いの端末にインストールされている認証アプリやキーリングに登録できます。
-         */
-        "step2Click": string;
         /**
          * デスクトップアプリを使用する場合は次のURIを入力します
          */
@@ -7647,6 +7783,10 @@ export interface Locale extends ILocale {
          * バックアップコードが全て使用されました。認証アプリを利用できない場合、これ以上アカウントにアクセスできなくなります。認証アプリを再登録してください。
          */
         "backupCodesExhaustedWarning": string;
+        /**
+         * 詳細なガイドはこちら
+         */
+        "moreDetailedGuideHere": string;
     };
     "_permissions": {
         /**
@@ -7746,11 +7886,11 @@ export interface Locale extends ILocale {
          */
         "write:page-likes": string;
         /**
-         * 国民グループを見る
+         * エビグループを見る
          */
         "read:user-groups": string;
         /**
-         * 国民グループを操作する
+         * エビグループを操作する
          */
         "write:user-groups": string;
         /**
@@ -7845,10 +7985,6 @@ export interface Locale extends ILocale {
          * ユーザーのプライベートな情報を見る
          */
         "read:admin:show-user": string;
-        /**
-         * ユーザーのプライベートな情報を見る
-         */
-        "read:admin:show-users": string;
         /**
          * ユーザーを凍結する
          */
@@ -8034,19 +8170,19 @@ export interface Locale extends ILocale {
          */
         "all": string;
         /**
-         * フォローしている国民のノート
+         * フォローしているエビのノート
          */
         "homeTimeline": string;
         /**
-         * 指定した一尾または複数の国民のノート
+         * 指定した一尾または複数のエビのノート
          */
         "users": string;
         /**
-         * 指定したリストの国民のノート
+         * 指定したリストのエビのノート
          */
         "userList": string;
         /**
-         * 指定した一尾または複数の国民を除いた全てのノート
+         * 指定した一尾または複数のエビを除いた全てのノート
          */
         "userBlacklist": string;
     };
@@ -8158,7 +8294,7 @@ export interface Locale extends ILocale {
          */
         "button": string;
         /**
-         * オンライン国民
+         * オンラインエビ
          */
         "onlineUsers": string;
         /**
@@ -8182,7 +8318,7 @@ export interface Locale extends ILocale {
          */
         "aichan": string;
         /**
-         * 国民リスト
+         * エビリスト
          */
         "userList": string;
         "_userList": {
@@ -8196,7 +8332,7 @@ export interface Locale extends ILocale {
          */
         "clicker": string;
         /**
-         * 今日誕生日の国民
+         * 今日誕生日のエビ
          */
         "birthdayFollowings": string;
     };
@@ -8310,7 +8446,7 @@ export interface Locale extends ILocale {
          */
         "public": string;
         /**
-         * 全ての国民に公開
+         * 全てのエビに公開
          */
         "publicDescription": string;
         /**
@@ -8334,7 +8470,7 @@ export interface Locale extends ILocale {
          */
         "specified": string;
         /**
-         * 指定した国民のみに公開
+         * 指定したエビのみに公開
          */
         "specifiedDescription": string;
         /**
@@ -8392,7 +8528,7 @@ export interface Locale extends ILocale {
          */
         "name": string;
         /**
-         * 国民名
+         * エビ名
          */
         "username": string;
         /**
@@ -8470,7 +8606,7 @@ export interface Locale extends ILocale {
          */
         "userLists": string;
         /**
-         * ミュートしている国民を除外
+         * ミュートしているエビを除外
          */
         "excludeMutingUsers": string;
         /**
@@ -8492,15 +8628,15 @@ export interface Locale extends ILocale {
          */
         "apRequest": string;
         /**
-         * 国民の増減
+         * エビの増減
          */
         "usersIncDec": string;
         /**
-         * 国民の合計
+         * エビの合計
          */
         "usersTotal": string;
         /**
-         * アクティブ国民数
+         * アクティブエビ数
          */
         "activeUsers": string;
         /**
@@ -8542,11 +8678,11 @@ export interface Locale extends ILocale {
          */
         "requests": string;
         /**
-         * 国民の増減
+         * エビの増減
          */
         "users": string;
         /**
-         * 国民の累積
+         * エビの累積
          */
         "usersTotal": string;
         /**
@@ -8657,6 +8793,10 @@ export interface Locale extends ILocale {
          * 説明
          */
         "summary": string;
+        /**
+         * 非公開に設定するとプロフィールに表示されなくなりますが、URLを知っている人は引き続きアクセスできます。
+         */
+        "visibilityDescription": string;
     };
     "_pages": {
         /**
@@ -8829,6 +8969,14 @@ export interface Locale extends ILocale {
              */
             "button": string;
             /**
+             * 動的ブロック
+             */
+            "dynamic": string;
+            /**
+             * このブロックは廃止されています。今後は{play}を利用してください。
+             */
+            "dynamicDescription": ParameterizedString<"play">;
+            /**
              * ノート埋め込み
              */
             "note": string;
@@ -8940,6 +9088,10 @@ export interface Locale extends ILocale {
          */
         "reactedBySomeUsers": ParameterizedString<"n">;
         /**
+         * {n}尾がいいねしました
+         */
+        "likedBySomeUsers": ParameterizedString<"n">;
+        /**
          * {n}尾がリノートしました
          */
         "renotedBySomeUsers": ParameterizedString<"n">;
@@ -8957,7 +9109,7 @@ export interface Locale extends ILocale {
              */
             "all": string;
             /**
-             * 国民の新規投稿
+             * エビの新規投稿
              */
             "note": string;
             /**
@@ -9037,6 +9189,10 @@ export interface Locale extends ILocale {
          * カラムを追加
          */
         "addColumn": string;
+        /**
+         * 新着ノート通知の設定
+         */
+        "newNoteNotificationSettings": string;
         /**
          * カラムの設定
          */
@@ -9288,7 +9444,7 @@ export interface Locale extends ILocale {
          */
         "createGlobalAnnouncement": string;
         /**
-         * 国民へお知らせを作成
+         * エビへお知らせを作成
          */
         "createUserAnnouncement": string;
         /**
@@ -9296,7 +9452,7 @@ export interface Locale extends ILocale {
          */
         "updateGlobalAnnouncement": string;
         /**
-         * 国民のお知らせを更新
+         * エビのお知らせを更新
          */
         "updateUserAnnouncement": string;
         /**
@@ -9304,7 +9460,7 @@ export interface Locale extends ILocale {
          */
         "deleteGlobalAnnouncement": string;
         /**
-         * 国民のお知らせを削除
+         * エビのお知らせを削除
          */
         "deleteUserAnnouncement": string;
         /**
@@ -9364,11 +9520,11 @@ export interface Locale extends ILocale {
          */
         "deleteAvatarDecoration": string;
         /**
-         * 国民のアイコンを解除
+         * エビのアイコンを解除
          */
         "unsetUserAvatar": string;
         /**
-         * 国民のバナーを解除
+         * エビのバナーを解除
          */
         "unsetUserBanner": string;
     };
@@ -9398,7 +9554,7 @@ export interface Locale extends ILocale {
          */
         "attachedNotes": string;
         /**
-         * このページは、このファイルをアップロードした国民しか閲覧できません。
+         * このページは、このファイルをアップロードしたエビしか閲覧できません。
          */
         "thisPageCanBeSeenFromTheAuthor": string;
     };
@@ -9777,6 +9933,74 @@ export interface Locale extends ILocale {
          * サーバーに接続できません
          */
         "header": string;
+    };
+    "_urlPreviewSetting": {
+        /**
+         * URLプレビューの設定
+         */
+        "title": string;
+        /**
+         * URLプレビューを有効にする
+         */
+        "enable": string;
+        /**
+         * プレビュー取得時のタイムアウト(ms)
+         */
+        "timeout": string;
+        /**
+         * プレビュー取得の所要時間がこの値を超えた場合、プレビューは生成されません。
+         */
+        "timeoutDescription": string;
+        /**
+         * Content-Lengthの最大値(byte)
+         */
+        "maximumContentLength": string;
+        /**
+         * Content-Lengthがこの値を超えた場合、プレビューは生成されません。
+         */
+        "maximumContentLengthDescription": string;
+        /**
+         * Content-Lengthが取得できた場合のみプレビューを生成
+         */
+        "requireContentLength": string;
+        /**
+         * 相手サーバがContent-Lengthを返さない場合、プレビューは生成されません。
+         */
+        "requireContentLengthDescription": string;
+        /**
+         * User-Agent
+         */
+        "userAgent": string;
+        /**
+         * プレビュー取得時に使用されるUser-Agentを設定します。空欄の場合、デフォルトのUser-Agentが使用されます。
+         */
+        "userAgentDescription": string;
+        /**
+         * プレビューを生成するプロキシのエンドポイント
+         */
+        "summaryProxy": string;
+        /**
+         * Misskey本体ではなく、サマリープロキシを使用してプレビューを生成します。
+         */
+        "summaryProxyDescription": string;
+        /**
+         * プロキシには下記パラメータがクエリ文字列として連携されます。プロキシ側がこれらをサポートしない場合、設定値は無視されます。
+         */
+        "summaryProxyDescription2": string;
+    };
+    "_mediaControls": {
+        /**
+         * ピクチャインピクチャ
+         */
+        "pip": string;
+        /**
+         * 再生速度
+         */
+        "playbackRate": string;
+        /**
+         * ループ再生
+         */
+        "loop": string;
     };
 }
 declare const locales: {
