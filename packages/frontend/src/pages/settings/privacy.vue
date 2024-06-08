@@ -65,12 +65,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</MkFolder>
 
-			<FormInfo>
-				Misskey のアップデートによる競合のため、一時的にRenoteの公開範囲の設定を無効化しています。
-			</FormInfo>
-
 			<MkFolder>
-				<template #label>{{ i18n.ts.defaultNoteVisibility }} (数字引用 / パクる) <span class="_beta">Shrimpia</span></template>
+				<template #label>{{ i18n.ts.defaultNoteVisibility }} パクる <span class="_beta">Shrimpia</span></template>
 				<template v-if="defaultNumberQuoteVisibility === 'inherits'" #suffix>元のノートに合わせる</template>
 				<template v-if="defaultNumberQuoteVisibility === 'public'" #suffix>{{ i18n.ts._visibility.public }}</template>
 				<template v-else-if="defaultNumberQuoteVisibility === 'home'" #suffix>{{ i18n.ts._visibility.home }}</template>
