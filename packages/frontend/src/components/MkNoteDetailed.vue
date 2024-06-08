@@ -297,7 +297,7 @@ const showTicker = (defaultStore.state.instanceTicker === 'always') || (defaultS
 const conversation = ref<Misskey.entities.Note[]>([]);
 const replies = ref<Misskey.entities.Note[]>([]);
 const canRenote = computed(() => ['public', 'home'].includes(appearNote.value.visibility) || appearNote.value.userId === $i?.id);
-const stealButtonVisible = appearNote.value.text && (defaultStore.state.numberQuoteEnabled || defaultStore.state.stealEnabled);
+const stealButtonVisible = appearNote.value.text && defaultStore.state.stealEnabled;
 
 const keymap = {
 	'r': () => reply(true),

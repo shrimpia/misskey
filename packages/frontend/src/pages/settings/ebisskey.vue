@@ -13,12 +13,6 @@
 					頻繁に名前を変更するユーザーを識別するときなどに使えます。
 				</template>
 			</MkSwitch>
-			<MkSwitch v-model="numberQuoteEnabled">
-				数字引用機能
-				<template #caption>
-					ノートをコピーした上で末尾に数字をつけて投稿する機能。数字が本文の末尾にある場合はそれ+1、なければ「2」になります。
-				</template>
-			</MkSwitch>
 			<MkSwitch v-model="stealEnabled">
 				パクる機能
 				<template #caption>
@@ -88,7 +82,6 @@ async function reloadAsk() {
 }
 
 const nicknameEnabled = computed(defaultStore.makeGetterSetter('nicknameEnabled'));
-const numberQuoteEnabled = computed(defaultStore.makeGetterSetter('numberQuoteEnabled'));
 const stealEnabled = computed(defaultStore.makeGetterSetter('stealEnabled'));
 const infoButtonForNoteActionsEnabled = computed(defaultStore.makeGetterSetter('infoButtonForNoteActionsEnabled'));
 const reactableRemoteReactionEnabled = computed(defaultStore.makeGetterSetter('reactableRemoteReactionEnabled'));
@@ -117,7 +110,6 @@ const noteMock: Note = {
 };
 
 watch([
-	numberQuoteEnabled,
 	stealEnabled,
 	infoButtonForNoteActionsEnabled,
 	reactableRemoteReactionEnabled,
