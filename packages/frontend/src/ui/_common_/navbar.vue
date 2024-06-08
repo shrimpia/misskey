@@ -36,9 +36,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</component>
 			</template>
 			<div :class="$style.divider"></div>
-			<a v-tooltip.noDelay.right="'シュリンピアポータル'" :class="$style.item" href="https://portal.shrimpia.network" target="_blank" rel="noopener noreferrer">
-				<i :class="$style.itemIcon" class="ti ti-building-broadcast-tower ti-fw"></i><span :class="$style.itemText">シュリンピアポータル</span>
-			</a>
 			<MkA v-if="$i.isAdmin || $i.isModerator" v-tooltip.noDelay.right="i18n.ts.controlPanel" :class="$style.item" :activeClass="$style.active" to="/admin">
 				<i :class="$style.itemIcon" class="ti ti-dashboard ti-fw"></i><span :class="$style.itemText">{{ i18n.ts.controlPanel }}</span>
 			</MkA>

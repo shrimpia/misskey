@@ -98,6 +98,24 @@ export function openInstanceMenu(ev: MouseEvent) {
 			window.open(instance.privacyPolicyUrl, '_blank', 'noopener');
 		},
 	} : undefined, (!instance.impressumUrl && !instance.tosUrl && !instance.privacyPolicyUrl) ? undefined : { type: 'divider' }, {
+		text: 'シュリンピアポータル',
+		icon: 'ti ti-building-broadcast-tower',
+		action: () => {
+			window.open('https://portal.shrimpia.network', '_blank', 'noopener');
+		},
+	}, {
+		text: '公式ドキュメント',
+		icon: 'ti ti-file-description',
+		action: () => {
+			window.open('https://docs.shrimpia.network', '_blank', 'noopener');
+		},
+	}, {
+		text: 'Shrimpia Park',
+		icon: 'ti ti-brand-discord',
+		action: () => {
+			window.open('https://go.shrimpia.network/discord', '_blank', 'noopener');
+		},
+	}, { type: 'divider' }, {
 		text: i18n.ts.help,
 		icon: 'ti ti-help-circle',
 		action: () => {

@@ -28,9 +28,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</component>
 	</template>
 	<div class="divider"></div>
-	<a class="item" href="https://portal.shrimpia.network" target="_blank" rel="noopener noreferrer">
-		<i class="ti ti-building-broadcast-tower ti-fw"></i><span class="text">シュリンピアポータル</span>
-	</a>
 	<MkA v-if="$i.isAdmin || $i.isModerator" v-click-anime class="item" activeClass="active" to="/admin" :behavior="settingsWindowed ? 'window' : null">
 		<i class="ti ti-dashboard ti-fw"></i><span class="text">{{ i18n.ts.controlPanel }}</span>
 	</MkA>
