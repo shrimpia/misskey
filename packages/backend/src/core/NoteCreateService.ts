@@ -369,7 +369,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		// ローカル宛てのメンション、リプライ、引用ノートの発行元が、ローカルユーザーにフォローされていない場合は投稿を拒否する
 		const willCauseNotification = mentionedUsers.filter(u => u.host === null).length > 0 ||
 			(data.reply != null && data.reply.userHost === null) ||
-			(this.isQuote(data) && data.renote.userHost === null) ||
+			(this.isRenote(data) && this.isQuote(data) && data.renote.userHost === null) ||
 			(data.visibility === 'specified' && data.visibleUsers != null && data.visibleUsers.some(u => u.host === null));
 
 		if (user.host != null && willCauseNotification) {
