@@ -85,52 +85,54 @@ export function openInstanceMenu(ev: MouseEvent) {
 		icon: 'ti ti-help-circle',
 		to: '/contact',
 	}, (instance.impressumUrl) ? {
+		type: 'a',
 		text: i18n.ts.impressum,
 		icon: 'ti ti-file-invoice',
-		action: () => {
-			window.open(instance.impressumUrl, '_blank', 'noopener');
-		},
+		href: instance.impressumUrl,
+		target: '_blank',
 	} : undefined, (instance.tosUrl) ? {
+		type: 'a',
 		text: i18n.ts.termsOfService,
 		icon: 'ti ti-notebook',
-		action: () => {
-			window.open(instance.tosUrl, '_blank', 'noopener');
-		},
+		href: instance.tosUrl,
+		target: '_blank',
 	} : undefined, (instance.privacyPolicyUrl) ? {
+		type: 'a',
 		text: i18n.ts.privacyPolicy,
 		icon: 'ti ti-shield-lock',
-		action: () => {
-			window.open(instance.privacyPolicyUrl, '_blank', 'noopener');
-		},
+		href: instance.privacyPolicyUrl,
+		target: '_blank',
 	} : undefined, (!instance.impressumUrl && !instance.tosUrl && !instance.privacyPolicyUrl) ? undefined : { type: 'divider' }, {
+		type: 'a',
 		text: 'シュリンピアポータル',
 		icon: 'ti ti-building-broadcast-tower',
-		action: () => {
-			window.open('https://portal.shrimpia.network', '_blank', 'noopener');
-		},
+		href: 'https://portal.shrimpia.network',
+		target: '_blank',
 	}, {
+		type: 'a',
 		text: '公式ドキュメント',
 		icon: 'ti ti-file-description',
-		action: () => {
-			window.open('https://docs.shrimpia.network', '_blank', 'noopener');
-		},
+		href: 'https://docs.shrimpia.network',
+		target: '_blank',
 	}, {
+		type: 'a',
 		text: 'Shrimpia Park',
 		icon: 'ti ti-brand-discord',
-		action: () => {
-			window.open('https://go.shrimpia.network/discord', '_blank', 'noopener');
-		},
+		href: 'https://go.shrimpia.network/discord',
+		target: '_blank',
 	}, { type: 'divider' }, {
+		type: 'a',
 		text: i18n.ts.document,
 		icon: 'ti ti-bulb',
-		action: () => {
-			window.open('https://misskey-hub.net/docs/for-users/', '_blank', 'noopener');
-		},
+		href: 'https://misskey-hub.net/docs/for-users/',
+		target: '_blank',
 	}, ($i) ? {
 		text: i18n.ts._initialTutorial.launchTutorial,
 		icon: 'ti ti-presentation',
 		action: () => {
-			os.popup(defineAsyncComponent(() => import('@/components/MkTutorialDialog.vue')), {}, {}, 'closed');
+			const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/MkTutorialDialog.vue')), {}, {
+				closed: () => dispose(),
+			});
 		},
 	} : undefined, {
 		type: 'link',
