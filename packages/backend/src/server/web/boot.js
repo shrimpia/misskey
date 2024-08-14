@@ -171,37 +171,40 @@
 				<path d="M12 9v2m0 4v.01"></path>
 				<path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75"></path>
 			</svg>
-			<h1>Failed to load<br>読み込みに失敗しました</h1>
-			<button class="button-big" onclick="location.reload(true);">
-				<span class="button-label-big">Reload / リロード</span>
-			</button>
-			<p><b>The following actions may solve the problem. / 以下を行うと解決する可能性があります。</b></p>
-			<p>Clear the browser cache / ブラウザのキャッシュをクリアする</p>
-			<p>Update your os and browser / ブラウザおよびOSを最新バージョンに更新する</p>
-			<p>Disable an adblocker / アドブロッカーを無効にする</p>
-	 		<p>&#40;Tor Browser&#41; Set dom.webaudio.enabled to true / dom.webaudio.enabledをtrueに設定する</p>
-			<details style="color: #86b300;">
-				<summary>Other options / その他のオプション</summary>
-				<a href="/flush">
-					<button class="button-small">
-						<span class="button-label-small">Clear preferences and cache</span>
-					</button>
-				</a>
-				<br>
-				<a href="/cli">
-					<button class="button-small">
-						<span class="button-label-small">Start the simple client</span>
-					</button>
-				</a>
-				<br>
-				<a href="/bios">
-					<button class="button-small">
-						<span class="button-label-small">Start the repair tool</span>
-					</button>
-				</a>
-			</details>
-			<br>
+			<h1>読み込みに失敗しました</h1>
 			<div id="errors"></div>
+			<button class="button-big" onclick="location.reload(true);">
+				<span class="button-label-big">ページをリロードする</span>
+			</button>
+			<p><b>以下を行うと解決する可能性があります。</b></p>
+			<ul>
+				<li>ブラウザのキャッシュをクリアする</li>
+				<li>ブラウザおよびOSを最新バージョンに更新する</li>
+				<li>アドブロッカーを無効にする</li>
+			</ul>
+			<p>ブラウザのキャッシュをクリアする</p>
+			<details style="color: red;">
+				<summary>Other options / その他のオプション</summary>
+				<details style="color: red;">
+					<summary>以下の設定は、お使いのデバイスでのMisskey設定を初期化してしまうものもあります。<br/>十分な理解がない限りは使用しないでください。それでも問題なければ開いてください。</summary>
+					<a href="/cli">
+						<button class="button-small">
+							<span class="button-label-small">シンプルクライアントを起動する</span>
+						</button>
+					</a>
+					<br>
+					<a href="/bios">
+						<button class="button-small">
+							<span class="button-label-small">リペアツール</span>
+						</button>
+					</a>
+					<a href="/flush">
+						<button class="button-small">
+							<span class="button-label-small">ユーザー設定とキャッシュを全て削除する</span>
+						</button>
+					</a>
+					</details>
+			</details>
 			`;
 			errorsElement = document.getElementById('errors');
 		}
@@ -222,6 +225,10 @@
 		#misskey_app,
 		#splash {
 			display: none !important;
+		}
+
+		ul {
+			list-style-type: none;
 		}
 
 		body,
@@ -320,6 +327,6 @@
 			#errorInfo {
 				width: 50%;
 			}
-		}`)
+		}`);
 	}
 })();
