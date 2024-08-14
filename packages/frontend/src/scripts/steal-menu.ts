@@ -9,7 +9,7 @@ import { i18n } from '@/i18n';
 import { MenuItem } from '@/types/menu';
 
 // #region shrimpia
-export function stealMenu(note: Note, el: HTMLElement) {
+export function stealMenu(note: Note, el?: HTMLElement) {
 	pleaseLogin();
 	const menuItems: MenuItem[] = [];
 	if (defaultStore.state.stealEnabled) {
