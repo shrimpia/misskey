@@ -189,4 +189,11 @@ export const navbarItemDef = reactive({
 		icon: 'ti ti-calendar-bolt',
 		to: '/events',
 	},
+	portal: {
+		title: 'シュリンピアポータル',
+		icon: 'ti ti-building-broadcast-tower',
+		action: () => {
+			window.open('https://portal.shrimpia.network', '_blank', 'noopener');
+		},
+	},
 });

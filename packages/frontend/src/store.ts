@@ -147,6 +147,7 @@ export const defaultStore = markRaw(new Storage('base', {
 			'-',
 			'ui',
 			'events',
+			'portal',
 		],
 	},
 	visibility: {
@@ -459,10 +460,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
-  contextMenu: {
+	contextMenu: {
 		where: 'device',
 		default: 'app' as 'app' | 'appWithShift' | 'native',
-  },
+	},
 
 	sound_masterVolume: {
 		where: 'device',
