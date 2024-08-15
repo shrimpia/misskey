@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"watch": "vite",
+		"watch": "vite --host 127.0.0.1",
 		"dev": "vite --config vite.config.local-dev.ts --debug hmr",
 		"build": "vite build",
 		"storybook-dev": "nodemon --verbose --watch src --ext \"mdx,ts,vue\" --ignore \"*.stories.ts\" --exec \"pnpm build-storybook-pre && pnpm exec storybook dev -p 6006 --ci\"",
