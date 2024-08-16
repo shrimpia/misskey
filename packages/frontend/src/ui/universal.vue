@@ -11,6 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<template #header>
 			<div>
 				<XAnnouncements v-if="$i"/>
+				<ShrimpiaHeadline/>
 				<XStatusBars :class="$style.statusbars"/>
 			</div>
 		</template>
@@ -116,6 +117,7 @@ const XWidgets = defineAsyncComponent(() => import('./universal.widgets.vue'));
 const XSidebar = defineAsyncComponent(() => import('@/ui/_common_/navbar.vue'));
 const XStatusBars = defineAsyncComponent(() => import('@/ui/_common_/statusbars.vue'));
 const XAnnouncements = defineAsyncComponent(() => import('@/ui/_common_/announcements.vue'));
+const ShrimpiaHeadline = defineAsyncComponent(() => import('@/ui/_common_/shrimpia-headline.vue'));
 
 const isRoot = computed(() => mainRouter.currentRoute.value.name === 'index');
 

@@ -5,6 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div class="gbhvwtnk" :class="{ wallpaper }" :style="`--globalHeaderHeight:${globalHeaderHeight}px`">
+	<ShrimpiaHeadline/>
 	<XHeaderMenu v-if="showMenuOnTop" v-get-size="(w, h) => globalHeaderHeight = h"/>
 
 	<div class="columns" :class="{ fullView, withGlobalHeader: showMenuOnTop }">
@@ -59,6 +60,7 @@ import { miLocalStorage } from '@/local-storage.js';
 import { mainRouter } from '@/router/main.js';
 const XHeaderMenu = defineAsyncComponent(() => import('./classic.header.vue'));
 const XWidgets = defineAsyncComponent(() => import('./universal.widgets.vue'));
+const ShrimpiaHeadline = defineAsyncComponent(() => import('@/ui/_common_/shrimpia-headline.vue'));
 
 const isRoot = computed(() => mainRouter.currentRoute.value.name === 'index');
 

@@ -9,6 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 	<div :class="$style.main">
 		<XAnnouncements v-if="$i"/>
+		<ShrimpiaHeadline/>
 		<XStatusBars/>
 		<div ref="columnsEl" :class="[$style.sections, { [$style.center]: deckStore.reactiveState.columnAlign.value === 'center', [$style.snapScroll]: snapScroll }]" @contextmenu.self.prevent="onContextmenu" @wheel.self="onWheel">
 			<!-- sectionを利用しているのは、deck.vue側でcolumnに対してfirst-of-typeを効かせるため -->
@@ -121,6 +122,7 @@ import { mainRouter } from '@/router/main.js';
 import { MenuItem } from '@/types/menu.js';
 const XStatusBars = defineAsyncComponent(() => import('@/ui/_common_/statusbars.vue'));
 const XAnnouncements = defineAsyncComponent(() => import('@/ui/_common_/announcements.vue'));
+const ShrimpiaHeadline = defineAsyncComponent(() => import('@/ui/_common_/shrimpia-headline.vue'));
 
 const columnComponents = {
 	main: XMainColumn,
