@@ -14,6 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { onMounted, ref, nextTick } from 'vue';
+import { MfmNode, parse } from 'mfm-js';
 import { fetchEvents, Event } from '@/scripts/portal-api/events';
 import MkA from '@/components/global/MkA.vue';
 import { fetchHints } from '@/scripts/portal-api/hints';
@@ -69,6 +70,45 @@ const changeText = async () => {
 	setTimeout(changeText, duration * 1000 + 500);
 };
 
+const toPlainText = (nodes: MfmNode[]): string => {
+	return nodes.map((node) => {
+		switch (node.type) {
+			case 'text':
+				return node.props.text;
+			case 'mention':
+				return node.props.acct;
+			case 'hashtag':
+				return '#' + node.props.hashtag;
+			case 'url':
+				return node.props.url;
+			case 'search':
+				return node.props.content;
+			case 'emojiCode':
+				return `:${node.props.name}:`;
+			case 'unicodeEmoji':
+				return node.props.emoji;
+			case 'mathBlock':
+			case 'mathInline':
+				return node.props.formula;
+			case 'blockCode':
+			case 'inlineCode':
+				return node.props.code;
+			case 'center':
+			case 'plain':
+			case 'quote':
+			case 'fn':
+			case 'small':
+			case 'bold':
+			case 'italic':
+			case 'strike':
+			case 'link':
+				return toPlainText(node.children);
+			default:
+				return '';
+		}
+	}).join(' ');
+};
+
 const fetchEventArticles = async () => {
 	try {
 		const today = new Date();
@@ -80,8 +120,9 @@ const fetchEventArticles = async () => {
 				? `【${ev.startDate.getMonth() + 1}/${ev.startDate.getDate()}～】`
 				: `【${ev.startDate.getMonth() + 1}/${ev.startDate.getDate()} ${ev.startDate.getHours()}:${ev.startDate.getMinutes().toString().padStart(2, '0')}～】`;
 
-			// 本文は最大80文字に制限
-			const description = ev.description.length > 80 ? ev.description.slice(0, 80) + '...' : ev.description;
+			// 本文は最大140文字に制限
+			let description = toPlainText(parse(ev.description));
+			description = description.length > 140 ? description.slice(0, 140) + '...' : ev.description;
 			a.push({
 				text: `${date} ${ev.name}　${description}`,
 				iconClass: 'ti ti-calendar-bolt',
