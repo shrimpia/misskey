@@ -2,6 +2,9 @@
 
 Ebisskeyとしての変更履歴です。Misskeyのリリースノートは [CHANGELOG](/CHANGELOG.md) を確認してください。
 
+## 2025.10.0
+- Enhance: removed `reactionsCount` from `/api/stats` response due to performance reasons (cherry-pick from https://github.com/niri-la/misskey.niri.la/pull/224)
+
 ## 2025.9.0-sh.1
 * シュリンピア固有の日本語訳テキストの多くをバニラ版に置き換え
 * シュリンピア固有のテーマ2種を更新し、さらに2種を追加
