@@ -8,7 +8,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<XSidebar v-if="!isMobile"/>
 
 	<div :class="$style.main">
-		<XAnnouncements v-if="$i"/>
 		<ShrimpiaHeadline/>
 		<XStatusBars/>
 		<div ref="columnsEl" :class="[$style.sections, { [$style.center]: deckStore.reactiveState.columnAlign.value === 'center', [$style.snapScroll]: snapScroll }]" @contextmenu.self.prevent="onContextmenu" @wheel.self="onWheel">

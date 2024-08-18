@@ -18,6 +18,7 @@ import { MfmNode, parse } from 'mfm-js';
 import { fetchEvents, Event } from '@/scripts/portal-api/events';
 import MkA from '@/components/global/MkA.vue';
 import { fetchHints } from '@/scripts/portal-api/hints';
+import { $i } from '@/account';
 
 const articleQueue = ref<Article[]>([]);
 const currentIndex = ref(0);
@@ -31,6 +32,13 @@ type Article = {
 	text: string;
 	iconClass: string;
 	link?: string;
+};
+
+const iconClasses = {
+	'info': 'ti ti-info-circle',
+	'warning': 'ti ti-alert-triangle',
+	'error': 'ti ti-circle-x',
+	'success': 'ti ti-check',
 };
 
 const fillQueue = () => {
@@ -48,6 +56,18 @@ const fillQueue = () => {
 	q = q.map((a) => [Math.random(), a] as const)
 		.sort((a, b) => a[0] - b[0])
 		.map(a => a[1]);
+
+	// 未読のお知らせを先頭に追加
+	const unreadAnnouncements = $i?.unreadAnnouncements.filter(a => a.display === 'banner') ?? [];
+	const announcementArticles = unreadAnnouncements.map(a => ({
+		title: a.title,
+		text: a.text.length > 140 ? a.text.slice(0, 140) + '...' : a.text,
+		iconClass: iconClasses[a.icon],
+		link: '/announcements/' + a.id,
+	}));
+
+	q = [...announcementArticles, ...q];
+
 	articleQueue.value = q;
 };
 
