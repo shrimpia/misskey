@@ -77,6 +77,8 @@
 		codeBoolean: '#c59eff',
 		deckBg: '#000',
 		htmlThemeColor: '@bg',
+		headlineBg: '#000000',
+		headlineFg: '#f6696d',
 		X2: ':darken<2<@panel',
 		X3: 'rgba(255, 255, 255, 0.05)',
 		X4: 'rgba(255, 255, 255, 0.1)',
