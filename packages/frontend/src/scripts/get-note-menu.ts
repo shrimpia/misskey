@@ -497,6 +497,9 @@ export function getRenoteMenu(props: {
 	renoteButton: ShallowRef<HTMLElement | undefined>;
 	mock?: boolean;
 }) {
+	const isRenote = Misskey.note.isPureRenote(props.note);
+	const isMyRenote = $i && ($i.id === props.note.userId);
+	const isModerator = $i?.isModerator || $i?.isAdmin;
 	const appearNote = getAppearNote(props.note);
 
 	const channelRenoteItems: MenuItem[] = [];
@@ -584,6 +587,19 @@ export function getRenoteMenu(props: {
 				});
 			},
 		}]);
+
+		if (isRenote && (isMyRenote || isModerator)) {
+			normalRenoteItems.push({
+				text: i18n.ts.unrenote,
+				icon: 'ti ti-trash',
+				danger: true,
+				action: () => {
+					misskeyApi('notes/delete', {
+						noteId: props.note.id,
+					});
+				},
+			});
+		}
 
 		normalExternalChannelRenoteItems.push({
 			type: 'parent',
