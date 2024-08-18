@@ -27,6 +27,7 @@ let hintArticles: Article[] = [];
 const currentArticle = ref<Article | null>(null);
 
 type Article = {
+	title: string;
 	text: string;
 	iconClass: string;
 	link?: string;
@@ -50,6 +51,15 @@ const fillQueue = () => {
 	articleQueue.value = q;
 };
 
+const escapeHtml = (unsafe: string) => {
+	return unsafe
+		.replaceAll('&', '&amp;')
+		.replaceAll('<', '&lt;')
+		.replaceAll('>', '&gt;')
+		.replaceAll('"', '&quot;')
+		.replaceAll('\'', '&#039;');
+};
+
 const changeText = async () => {
 	if (!textEl.value) return;
 	if (!articleQueue.value.length) {
@@ -59,7 +69,7 @@ const changeText = async () => {
 	if (!article) return;
 	textEl.value.classList.remove('marquee');
 
-	textEl.value.textContent = article.text;
+	textEl.value.innerHTML = `<b>${escapeHtml(article.title)}</b>　${escapeHtml(article.text)}`;
 	currentArticle.value = article;
 	const speed = 120;
 	const duration = textEl.value.offsetWidth / speed;
@@ -122,15 +132,15 @@ const fetchEventArticles = async () => {
 
 			// 本文は最大140文字に制限
 			let description = toPlainText(parse(ev.description));
-			description = description.length > 140 ? description.slice(0, 140) + '...' : ev.description;
 			a.push({
-				text: `${date} ${ev.name}　${description}`,
+				title: `${date} ${ev.name}`,
+				text: description.length > 140 ? description.slice(0, 140) + '...' : description,
 				iconClass: 'ti ti-calendar-bolt',
 				link: '/events',
 			});
 			eventArticles = a;
 		}
-	} catch (e) {
+	} catch (error) {
 		console.error('Failed to call Shrimpia Portal, so event articles are not displayed.');
 	}
 };
@@ -138,11 +148,12 @@ const fetchEventArticles = async () => {
 const fetchHintArticles = async () => {
 	try {
 		hintArticles = (await fetchHints()).map(h => ({
+			title: '',
 			text: h.content,
 			iconClass: 'ti ti-bulb',
 			link: h.url ?? undefined,
 		}));
-	} catch (e) {
+	} catch (error) {
 		console.error('Failed to call Shrimpia Portal, so hint articles are not displayed.');
 	}
 };
@@ -159,7 +170,7 @@ onMounted(async () => {
 .root {
 	width: 100%;
 	min-width: 0;
-	font-size: 12px;
+	font-size: 14px;
 	background: black;
 	color: var(--accent);
 	align-items: center;
@@ -169,7 +180,7 @@ onMounted(async () => {
 	display: flex;
 	width: 100%;
 	align-items: stretch;
-	padding: 4px 0;
+	padding: 5px 0;
 	min-width: 0;
 	overflow: hidden;
 }
@@ -178,8 +189,8 @@ onMounted(async () => {
 	margin-right: 4px;
 	display: flex;
 	padding: 0 8px;
-	font-size: 10px;
 	align-items: center;
+	font-weight: bold;
 	justify-content: center;
 	background: black;
 	box-shadow: black 8px 0 8px;
