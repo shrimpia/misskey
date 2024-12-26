@@ -211,7 +211,6 @@ import { useTooltip } from '@/scripts/use-tooltip.js';
 import { claimAchievement } from '@/scripts/achievements.js';
 import { getNoteSummary } from '@/scripts/get-note-summary.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
-import { notePage } from '@/filters/note.js';
 import { showMovedDialog } from '@/scripts/show-moved-dialog.js';
 import { stealMenu } from '@/scripts/steal-menu.js';
 import { isEnabledUrlPreview } from '@/instance.js';
