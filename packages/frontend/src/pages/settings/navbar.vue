@@ -54,7 +54,7 @@ import MkContainer from '@/components/MkContainer.vue';
 import * as os from '@/os.js';
 import { navbarItemDef } from '@/navbar.js';
 import { defaultStore } from '@/store.js';
-import { unisonReload } from '@/scripts/unison-reload.js';
+import { reloadAsk } from '@/scripts/reload-ask.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { MenuItem } from '@/types/menu.js';
@@ -68,21 +68,10 @@ const items = ref(defaultStore.state.menu.map(x => ({
 
 const menuDisplay = computed(defaultStore.makeGetterSetter('menuDisplay'));
 
-async function reloadAsk() {
-	const { canceled } = await os.confirm({
-		type: 'info',
-		text: i18n.ts.reloadToApplySetting,
-	});
-	if (canceled) return;
-
-	unisonReload();
-}
-
-async function addItem(e: MouseEvent) {
+async function addItem(ev: MouseEvent) {
 	const menu = Object.keys(navbarItemDef).filter(k => !defaultStore.state.menu.includes(k));
 	os.popupMenu([
 		...menu.map(k => ({
-			type: 'button',
 			text: navbarItemDef[k].title,
 			icon: navbarItemDef[k].icon,
 			action() {
@@ -92,7 +81,6 @@ async function addItem(e: MouseEvent) {
 				}];
 			},
 		})), {
-			type: 'button',
 			text: i18n.ts.divider,
 			// Note: アイコン指定しないとテキストの位置が他の項目とずれる
 			icon: 'ti',
@@ -103,7 +91,7 @@ async function addItem(e: MouseEvent) {
 				}];
 			},
 		},
-	], e.target || e.currentTarget);
+	], ev.target || ev.currentTarget);
 }
 
 function removeItem(index: number) {
@@ -112,7 +100,7 @@ function removeItem(index: number) {
 
 async function save() {
 	defaultStore.set('menu', items.value.map(x => x.type));
-	await reloadAsk();
+	await reloadAsk({ reason: i18n.ts.reloadToApplySetting, unison: true });
 }
 
 function reset() {
@@ -121,10 +109,6 @@ function reset() {
 		type: x,
 	}));
 }
-
-watch(menuDisplay, async () => {
-	await reloadAsk();
-});
 
 const headerActions = computed(() => []);
 
@@ -144,7 +128,7 @@ definePageMetadata(() => ({
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
-	color: var(--navFg);
+	color: var(--MI_THEME-navFg);
 }
 
 .itemIcon {
