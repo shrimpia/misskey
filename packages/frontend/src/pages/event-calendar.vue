@@ -123,7 +123,7 @@ const getDateString = (event: Event) => {
 }
 
 .official {
-	color: var(--accent);
+	color: var(--MI_THEME-accent);
 }
 
 .title {
@@ -140,7 +140,7 @@ const getDateString = (event: Event) => {
 .content {
 	padding: 16px;
 	margin-top: 16px;
-	border: dashed 1px var(--divider);
+	border: dashed 1px var(--MI_THEME-divider);
 	border-radius: 8px;
 }
 </style>

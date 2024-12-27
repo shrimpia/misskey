@@ -191,8 +191,8 @@ onMounted(async () => {
 	width: 100%;
 	min-width: 0;
 	font-size: 14px;
-	background: var(--headlineBg);
-	color: var(--headlineFg);
+	background: var(--MI_THEME-headlineBg);
+	color: var(--MI_THEME-headlineFg);
 	align-items: center;
 }
 
@@ -212,8 +212,8 @@ onMounted(async () => {
 	align-items: center;
 	font-weight: bold;
 	justify-content: center;
-	background: var(--headlineBg);
-	box-shadow: var(--headlineBg) 8px 0 8px;
+	background: var(--MI_THEME-headlineBg);
+	box-shadow: var(--MI_THEME-headlineBg) 8px 0 8px;
 	z-index: 1;
 }
 
