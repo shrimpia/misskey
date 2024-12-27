@@ -114,6 +114,13 @@ export class NoteEntityService implements OnModuleInit {
 			) {
 				packedNote.visibility = 'followers';
 			}
+
+			//#region shrimpia
+			//ローカルのみかつ自分がログインしていない場合は非表示
+			if (packedNote.localOnly && meId == null) {
+				packedNote.visibility = 'followers';
+			}
+			//#endregion
 		}
 
 		if (meId === packedNote.userId) return;
