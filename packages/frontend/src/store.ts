@@ -520,6 +520,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'account',
 		default: false,
 	},
+	headlineEnabled: {
+		where: 'account',
+		default: false,
+	},
 	// -- Tweak
 	infoButtonForNoteActionsEnabled: {
 		where: 'account',

@@ -170,7 +170,7 @@ const menuDef = computed(() => [{
 		active: currentPage.value?.route.name === 'other',
 	}, {
 		icon: 'ti ti-bulb-filled',
-		text: 'Ebisskey',
+		text: '固有機能',
 		to: '/settings/ebisskey',
 		active: currentPage.value?.route.name === 'ebisskey',
 	}],

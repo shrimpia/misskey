@@ -979,11 +979,11 @@ export interface Locale extends ILocale {
      */
     "mediaSilencedInstancesDescription": string;
     /**
-     * 連合を許可するサーバー
+     * 国交を締結している国家
      */
     "federationAllowedHosts": string;
     /**
-     * 連合を許可するサーバーのホストを改行で区切って設定します。
+     * 国交を締結している国家のホストを改行で区切って設定します。
      */
     "federationAllowedHostsDescription": string;
     /**
@@ -4375,7 +4375,7 @@ export interface Locale extends ILocale {
      */
     "enableChartsForFederatedInstances": string;
     /**
-     * リモートサーバーの情報を取得
+     * 他国の情報を取得
      */
     "enableStatsForFederatedInstances": string;
     /**
@@ -5131,7 +5131,7 @@ export interface Locale extends ILocale {
      */
     "genEmbedCode": string;
     /**
-     * このユーザーのノート一覧
+     * この国民のノート一覧
      */
     "noteOfThisUser": string;
     /**
@@ -5167,7 +5167,7 @@ export interface Locale extends ILocale {
      */
     "passkeyVerificationFailed": string;
     /**
-     * パスキーの検証に成功しましたが、パスワードレスログインが無効になっています。
+     * パスキーの検証に成功しましたが、パスワードレス帰国が無効になっています。
      */
     "passkeyVerificationSucceededButPasswordlessLoginDisabled": string;
     /**
@@ -5183,11 +5183,11 @@ export interface Locale extends ILocale {
      */
     "testCaptchaWarning": string;
     /**
-     * 禁止ワード（ユーザーの名前）
+     * 禁止ワード（国民の名前）
      */
     "prohibitedWordsForNameOfUser": string;
     /**
-     * このリストに含まれる文字列がユーザーの名前に含まれる場合、ユーザーの名前の変更を拒否します。モデレーター権限を持つユーザーはこの制限の影響を受けません。
+     * このリストに含まれる文字列が国民の名前に含まれる場合、国民の名前の変更を拒否します。モデレーター権限を持つユーザーはこの制限の影響を受けません。
      */
     "prohibitedWordsForNameOfUserDescription": string;
     /**
@@ -5199,7 +5199,7 @@ export interface Locale extends ILocale {
      */
     "yourNameContainsProhibitedWordsDescription": string;
     /**
-     * 投稿者により、表示にはログインが必要と設定されています
+     * 投稿者により、表示には入国が必要と設定されています
      */
     "thisContentsAreMarkedAsSigninRequiredByAuthor": string;
     /**
@@ -5220,11 +5220,11 @@ export interface Locale extends ILocale {
     "acknowledgeNotesAndEnable": string;
     "_accountSettings": {
         /**
-         * コンテンツの表示にログインを必須にする
+         * コンテンツの表示に入国を必須にする
          */
         "requireSigninToViewContents": string;
         /**
-         * あなたが作成した全てのノートなどのコンテンツを表示するのにログインを必須にします。クローラーに情報が収集されるのを防ぐ効果が期待できます。
+         * あなたが作成した全てのノートなどのコンテンツを表示するのに入国を必須にします。クローラーに情報が収集されるのを防ぐ効果が期待できます。
          */
         "requireSigninToViewContentsDescription1": string;
         /**
@@ -8507,11 +8507,11 @@ export interface Locale extends ILocale {
          */
         "denied": string;
         /**
-         * 以下のユーザーとして操作しています
+         * 以下の国民として操作しています
          */
         "scopeUser": string;
         /**
-         * アプリケーションにアクセス許可を与えるには、ログインが必要です。
+         * アプリケーションにアクセス許可を与えるには、入国手続きが必要です。
          */
         "pleaseLogin": string;
         /**
@@ -9479,7 +9479,7 @@ export interface Locale extends ILocale {
          */
         "exportOfXCompleted": ParameterizedString<"x">;
         /**
-         * ログインがありました
+         * 入国しました
          */
         "login": string;
         "_types": {
@@ -9540,7 +9540,7 @@ export interface Locale extends ILocale {
              */
             "exportCompleted": string;
             /**
-             * ログイン
+             * 入国
              */
             "login": string;
             /**

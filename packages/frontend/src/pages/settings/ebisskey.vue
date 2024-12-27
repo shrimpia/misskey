@@ -1,10 +1,9 @@
 <template>
 <div class="_gaps_m">
-	<h1>Ebisskey</h1>
 	<FormSection>
 		<template #label>独自機能</template>
 		<div class="_gaps_m">
-			<div>Ebisskeyが追加する独自機能を有効・無効にします。</div>
+			<div>シュリンピア固有の機能を有効・無効にします。</div>
 
 			<MkSwitch v-model="nicknameEnabled">
 				ニックネーム機能
@@ -17,6 +16,12 @@
 				パクる機能
 				<template #caption>
 					ノートをコピーしてそのまま投稿する機能。
+				</template>
+			</MkSwitch>
+			<MkSwitch v-model="headlineEnabled">
+				シュリンピアヘッドライン <span class="_beta">{{ i18n.ts.beta }}</span>
+				<template #caption>
+					帝国のお知らせ、ヒント、イベント情報などをお知らせします。
 				</template>
 			</MkSwitch>
 		</div>
@@ -57,32 +62,19 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { Note, User } from 'misskey-js/built/entities';
 import MkSwitch from '@/components/MkSwitch.vue';
 import FormSection from '@/components/form/section.vue';
 import { defaultStore } from '@/store';
-import * as os from '@/os';
-import { unisonReload } from '@/scripts/unison-reload';
 import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
-import MkNote from '@/components/MkNote.vue';
 import { $i } from '@/account';
-import MkButton from '@/components/MkButton.vue';
-import { confetti } from '@/scripts/confetti';
-
-async function reloadAsk() {
-	const { canceled } = await os.confirm({
-		type: 'info',
-		text: i18n.ts.reloadToApplySetting,
-	});
-	if (canceled) return;
-
-	unisonReload();
-}
+import { reloadAsk } from '@/scripts/reload-ask';
 
 const nicknameEnabled = computed(defaultStore.makeGetterSetter('nicknameEnabled'));
 const stealEnabled = computed(defaultStore.makeGetterSetter('stealEnabled'));
+const headlineEnabled = computed(defaultStore.makeGetterSetter('headlineEnabled'));
 const infoButtonForNoteActionsEnabled = computed(defaultStore.makeGetterSetter('infoButtonForNoteActionsEnabled'));
 const reactableRemoteReactionEnabled = computed(defaultStore.makeGetterSetter('reactableRemoteReactionEnabled'));
 const rememberPostFormToggleStateEnabled = computed(defaultStore.makeGetterSetter('rememberPostFormToggleStateEnabled'));
@@ -90,31 +82,13 @@ const usePostFormWindow = computed(defaultStore.makeGetterSetter('usePostFormWin
 const ebiNoteViewEnabled = computed(defaultStore.makeGetterSetter('ebiNoteViewEnabledLab'));
 const showFollowingMessageInsteadOfButtonEnabled = computed(defaultStore.makeGetterSetter('showFollowingMessageInsteadOfButtonEnabled'));
 
-const noteMock: Note = {
-	id: 'abc',
-	createdAt: new Date().toISOString(),
-	text: '> **エビ**（海老・蝦・魵）は、節足動物門・甲殻亜門・軟甲綱・十脚目（エビ目）のうち、カニ下目（短尾類）とヤドカリ下目（異尾類）以外の全ての種の総称である。すなわち、かつての**長尾類**（長尾亜目 Macrura）にあたる。現在、長尾亜目という分類群は廃止されており、学術的な分類ではなく便宜上の区分である。\n\n出典：https://ja.wikipedia.org/wiki/%E3%82%A8%E3%83%93',
-	cw: null,
-	user: $i as User,
-	userId: $i.id,
-	replyId: '',
-	renoteId: '',
-	files: [],
-	fileIds: [],
-	visibility: 'home',
-	reactions: {},
-	renoteCount: 20,
-	repliesCount: 10,
-	emojis: [],
-	localOnly: true,
-};
-
 watch([
 	stealEnabled,
+	headlineEnabled,
 	infoButtonForNoteActionsEnabled,
 	reactableRemoteReactionEnabled,
 ], async () => {
-	await reloadAsk();
+	await reloadAsk({ reason: i18n.ts.reloadToApplySetting, unison: true });
 });
 
 const headerActions = computed(() => []);
