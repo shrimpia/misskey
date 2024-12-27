@@ -139,6 +139,28 @@ export function playMisskeySfx(operationType: OperationType) {
 }
 
 /**
+ * [シュリンピア拡張] リアクションの音を再生する
+ * @param reaction リアクション
+ */
+export function playReactionSfx(reaction: string) {
+	const sound = defaultStore.state['sound_reaction'];
+	// サウンドがない場合は4犬であれど再生しない
+	if (sound.type === null) return;
+
+	// リアクション文字列が 4ttenakuinu である場合は特別な音を再生する
+	if (reaction.includes('4ttenakuinu')) {
+		playMisskeySfxFileInternal({
+			type: 'shrimpia/4',
+			volume: defaultStore.state.sound_reaction.volume,
+		});
+		return;
+	}
+
+	// 通常のリアクション効果音を再生する
+	playMisskeySfx('reaction');
+}
+
+/**
  * サウンド設定形式で指定された音声を再生する
  * @param soundStore サウンド設定
  */

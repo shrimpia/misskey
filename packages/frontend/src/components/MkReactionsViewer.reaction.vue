@@ -75,7 +75,7 @@ async function toggleReaction(ev) {
 		if (confirm.canceled) return;
 
 		if (oldReaction !== props.reaction) {
-			sound.playMisskeySfx('reaction');
+			sound.playReactionSfx(props.reaction);
 		}
 
 		if (mock) {
@@ -97,7 +97,7 @@ async function toggleReaction(ev) {
 			}
 		});
 	} else {
-		sound.playMisskeySfx('reaction');
+		sound.playReactionSfx(props.reaction);
 
 		if (mock) {
 			emit('reactionToggled', props.reaction, (props.count + 1));

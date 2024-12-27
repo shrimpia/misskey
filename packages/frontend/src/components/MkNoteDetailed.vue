@@ -457,7 +457,7 @@ function react(): void {
 	} else {
 		blur();
 		reactionPicker.show(reactButton.value ?? null, note.value, reaction => {
-			sound.playMisskeySfx('reaction');
+			sound.playReactionSfx(reaction);
 
 			misskeyApi('notes/reactions/create', {
 				noteId: appearNote.value.id,
