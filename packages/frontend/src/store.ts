@@ -522,7 +522,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	headlineEnabled: {
 		where: 'account',
-		default: false,
+		default: true,
 	},
 	// -- Tweak
 	infoButtonForNoteActionsEnabled: {
