@@ -54,6 +54,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private featuredService: FeaturedService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
+			// Shrimpia: チャンネルIDを指定しているとき、meがnullの場合はエラーを返す
+			if (!me && ps.channelId) {
+				throw new Error('Unauthorized');
+			}
+
 			let noteIds: string[];
 			if (ps.channelId) {
 				noteIds = await this.featuredService.getInChannelNotesRanking(ps.channelId, 50);

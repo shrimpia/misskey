@@ -26,14 +26,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</div>
 				</div>
 
-				<MkFoldableSection>
+				<MkFoldableSection v-if="$i">
 					<template #header><i class="ti ti-pin ti-fw" style="margin-right: 0.5em;"></i>{{ i18n.ts.pinnedNotes }}</template>
 					<div v-if="channel.pinnedNotes && channel.pinnedNotes.length > 0" class="_gaps">
 						<MkNote v-for="note in channel.pinnedNotes" :key="note.id" class="_panel" :note="note"/>
 					</div>
 				</MkFoldableSection>
 			</div>
-			<div v-if="channel && tab === 'timeline'" key="timeline" class="_gaps">
+			<div v-if="channel && $i && tab === 'timeline'" key="timeline" class="_gaps">
 				<MkInfo v-if="channel.isArchived" warn>{{ i18n.ts.thisChannelArchived }}</MkInfo>
 
 				<!-- スマホ・タブレットの場合、キーボードが表示されると投稿が見づらくなるので、デスクトップ場合のみ自動でフォーカスを当てる -->
@@ -41,10 +41,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 				<MkTimeline :key="channelId" src="channel" :channel="channelId" @before="before" @after="after" @note="miLocalStorage.setItemAsJson(`channelLastReadedAt:${channel.id}`, Date.now())"/>
 			</div>
-			<div v-else-if="tab === 'featured'" key="featured">
+			<div v-else-if="$i && tab === 'featured'" key="featured">
 				<MkNotes :pagination="featuredPagination"/>
 			</div>
-			<div v-else-if="tab === 'search'" key="search">
+			<div v-else-if="$i && tab === 'search'" key="search">
 				<div class="_gaps">
 					<div>
 						<MkInput v-model="searchQuery" @enter="search()">
@@ -72,6 +72,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { computed, watch, ref } from 'vue';
 import * as Misskey from 'misskey-js';
+import { url } from '@@/js/config.js';
 import MkPostForm from '@/components/MkPostForm.vue';
 import MkTimeline from '@/components/MkTimeline.vue';
 import XChannelFollowButton from '@/components/MkChannelFollowButton.vue';
@@ -82,7 +83,6 @@ import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { deviceKind } from '@/scripts/device-kind.js';
 import MkNotes from '@/components/MkNotes.vue';
-import { url } from '@@/js/config.js';
 import { favoritedChannelsCache } from '@/cache.js';
 import MkButton from '@/components/MkButton.vue';
 import MkInput from '@/components/MkInput.vue';
@@ -243,23 +243,28 @@ const headerActions = computed(() => {
 	}
 });
 
-const headerTabs = computed(() => [{
-	key: 'overview',
-	title: i18n.ts.overview,
-	icon: 'ti ti-info-circle',
-}, {
-	key: 'timeline',
-	title: i18n.ts.timeline,
-	icon: 'ti ti-home',
-}, {
-	key: 'featured',
-	title: i18n.ts.featured,
-	icon: 'ti ti-bolt',
-}, {
-	key: 'search',
-	title: i18n.ts.search,
-	icon: 'ti ti-search',
-}]);
+// Shrimpia: 非ログインの場合は概要のみを表示
+const headerTabs = computed(() => {
+	const items = [{
+		key: 'overview',
+		title: i18n.ts.overview,
+		icon: 'ti ti-info-circle',
+	}, {
+		key: 'timeline',
+		title: i18n.ts.timeline,
+		icon: 'ti ti-home',
+	}, {
+		key: 'featured',
+		title: i18n.ts.featured,
+		icon: 'ti ti-bolt',
+	}, {
+		key: 'search',
+		title: i18n.ts.search,
+		icon: 'ti ti-search',
+	}];
+
+	return $i ? items : items.filter(item => item.key === 'overview');
+});
 
 definePageMetadata(() => ({
 	title: channel.value ? channel.value.name : i18n.ts.channel,
