@@ -76,6 +76,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div v-if="maxTextLength - textLength < 100" :class="['_acrylic', $style.textCount, { [$style.textOver]: textLength > maxTextLength }]">{{ maxTextLength - textLength }}</div>
 	</div>
 	<input v-show="withHashtags" ref="hashtagsInputEl" v-model="hashtags" :class="$style.hashtags" :placeholder="i18n.ts.hashtags" list="hashtags">
+
+	<div v-if="!defaultStore.reactiveState.postGuidelineWarningDisabled.value" :class="$style.filesWarn">
+		<div :class="$style.filesWarnText">
+			<Mfm :text="postGuidelineWarning"/>
+		</div>
+		<button class="_textButton" :class="$style.filesWarnClose" @click="closePostGuidelineWarning">
+			<i class="ti ti-x"></i>
+		</button>
+	</div>
 	<XPostFormAttaches v-model="files" @detach="detachFile" @changeSensitive="updateFileSensitive" @changeName="updateFileName" @replaceFile="replaceFile"/>
 	<MkPollEditor v-if="poll" v-model="poll" @destroyed="poll = null"/>
 	<MkNotePreview v-if="showPreview" :class="$style.preview" :text="text" :files="files" :poll="poll ?? undefined" :useCw="useCw" :cw="cw" :user="postAccount ?? $i"/>
@@ -243,6 +252,9 @@ const submitText = computed((): string => {
 				? i18n.ts.reply
 				: i18n.ts.note;
 });
+
+// Shrimpia
+const postGuidelineWarning = `[投稿ガイドライン](https://docs.shrimpia.network/guidelines/creating-note/)を確認してください。不適切な投稿は罰則の対象となります。`;
 
 const textLength = computed((): number => {
 	return (text.value + imeText.value).length;
@@ -991,6 +1003,10 @@ function openAccountMenu(ev: MouseEvent) {
 	}, ev);
 }
 
+function closePostGuidelineWarning() {
+	defaultStore.set('postGuidelineWarningDisabled', true);
+}
+
 onMounted(() => {
 	if (props.autofocus) {
 		focus();
@@ -1437,5 +1453,17 @@ html[data-color-scheme=light] .preview {
 		gap: 0;
 	}
 
+}
+
+.filesWarn {
+	display: flex;
+	gap: 8px;
+	background: var(--MI_THEME-infoWarnBg);
+	color: var(--MI_THEME-infoWarnFg);
+	padding: 8px 16px;
+}
+
+.filesWarnText {
+	flex: 1;
 }
 </style>

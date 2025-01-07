@@ -623,6 +623,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'account',
 		default: {} as Record<string, string>,
 	},
+	postGuidelineWarningDisabled: {
+		where: 'account',
+		default: false,
+	},
 	// #endregion
 }));
 
