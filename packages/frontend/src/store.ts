@@ -579,6 +579,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'account',
 		default: '#B93E43',
 	},
+	useTextAreaAutoSize: {
+		where: 'account',
+		default: false,
+	},
 	ebiNoteViewEnabledLab: {
 		where: 'account',
 		default: false,

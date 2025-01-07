@@ -9,13 +9,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<template #header><i class="ti ti-align-left"></i> {{ i18n.ts._pages.blocks.text }}</template>
 
 	<section>
-		<textarea ref="inputEl" v-model="text" :class="$style.textarea"></textarea>
+		<textarea ref="inputEl" v-model="text" v-autosize :class="$style.textarea"></textarea>
 	</section>
 </XContainer>
 </template>
 
 <script lang="ts" setup>
- 
+
 import { watch, ref, shallowRef, onMounted, onUnmounted } from 'vue';
 import * as Misskey from 'misskey-js';
 import XContainer from '../page-editor.container.vue';

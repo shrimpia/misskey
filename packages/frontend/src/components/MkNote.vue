@@ -12,7 +12,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	:class="[$style.root, { [$style.showActionsOnlyHover]: defaultStore.state.showNoteActionsOnlyHover, [$style.skipRender]: defaultStore.state.skipNoteRender }]"
 	:tabindex="isDeleted ? '-1' : '0'"
 >
-	<ShVisibilityColoring v-if="!appearNote.channel && (appearNote.visibility !== 'public' || appearNote.localOnly)" :visibility="appearNote.visibility" :localOnly="appearNote.localOnly ?? false"/>
+	<ShVisibilityColoring v-if="defaultStore.state.useNoteVisibilityColoring && !appearNote.channel && (appearNote.visibility !== 'public' || appearNote.localOnly)" :visibility="appearNote.visibility" :localOnly="appearNote.localOnly ?? false"/>
 	<MkNoteSub v-if="appearNote.reply && !renoteCollapsed" :note="appearNote.reply" :class="$style.replyTo"/>
 	<div v-if="pinned" :class="$style.tip"><i class="ti ti-pin"></i> {{ i18n.ts.pinnedNote }}</div>
 	<!--<div v-if="appearNote._prId_" class="tip"><i class="ti ti-speakerphone"></i> {{ i18n.ts.promotion }}<button class="_textButton hide" @click="readPromo()">{{ i18n.ts.hideThisNote }} <i class="ti ti-x"></i></button></div>-->
