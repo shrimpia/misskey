@@ -541,6 +541,14 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
+	useAirReply: {
+		where: 'account',
+		default: false,
+	},
+	airReplyButtonPlacement: {
+		where: 'account',
+		default: 'noteMenu' as 'noteMenu' | 'renoteMenu' | 'noteFooter',
+	},
 	ebiNoteViewEnabledLab: {
 		where: 'account',
 		default: false,

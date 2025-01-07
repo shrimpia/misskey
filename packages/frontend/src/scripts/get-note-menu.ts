@@ -5,19 +5,19 @@
 
 import { defineAsyncComponent, Ref, ShallowRef } from 'vue';
 import * as Misskey from 'misskey-js';
+import { url } from '@@/js/config.js';
 import { claimAchievement } from './achievements.js';
+import type { MenuItem } from '@/types/menu.js';
 import { $i } from '@/account.js';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { copyToClipboard } from '@/scripts/copy-to-clipboard.js';
-import { url } from '@@/js/config.js';
 import { defaultStore, noteActions } from '@/store.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { getUserMenu } from '@/scripts/get-user-menu.js';
 import { clipsCache, favoritedChannelsCache } from '@/cache.js';
-import type { MenuItem } from '@/types/menu.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { isSupportShare } from '@/scripts/navigator.js';
 import { getAppearNote } from '@/scripts/get-appear-note.js';
@@ -348,6 +348,22 @@ export function getNoteMenu(props: {
 			});
 		}
 
+		// Shrimpia
+		if (defaultStore.state.useAirReply && defaultStore.state.airReplyButtonPlacement === 'noteMenu') {
+			menuItems.push({
+				icon: 'ti ti-bubble-text',
+				text: 'エアリプ',
+				action: () => {
+					// 公開範囲を引き継いだ投稿フォームを作成
+					os.post({
+						reply: appearNote,
+						channel: appearNote.channel,
+						isAirReply: true,
+					});
+				},
+			});
+		}
+
 		menuItems.push({ type: 'divider' });
 
 		menuItems.push(statePromise.then(state => state.isFavorited ? {
@@ -627,7 +643,8 @@ export function getRenoteMenu(props: {
 			},
 		}]);
 
-		if (isRenote && (isMyRenote || isModerator)) {
+		// Ebisskey
+		if (isRenote) {
 			normalRenoteItems.push({
 				text: i18n.ts.unrenote,
 				icon: 'ti ti-trash',
@@ -635,6 +652,22 @@ export function getRenoteMenu(props: {
 				action: () => {
 					misskeyApi('notes/delete', {
 						noteId: props.note.id,
+					});
+				},
+			});
+		}
+
+		// Ebisskey
+		if (defaultStore.state.useAirReply && defaultStore.state.airReplyButtonPlacement === 'renoteMenu') {
+			normalRenoteItems.push({
+				icon: 'ti ti-bubble-text',
+				text: 'エアリプ',
+				action: () => {
+					// 公開範囲を引き継いだ投稿フォームを作成
+					os.post({
+						reply: appearNote,
+						channel: appearNote.channel,
+						isAirReply: true,
 					});
 				},
 			});

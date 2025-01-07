@@ -48,6 +48,23 @@
 		<div class="_gaps_m">
 			<div>まだ開発中の機能を試してみませんか。一部の機能はちゃんと動かないかもしれません。</div>
 
+			<!-- エアリプ機能 -->
+			<MkFolder open>
+				<template #label><i class="ti ti-bubble-text"/> エアリプ機能</template>
+				<div class="_gaps_m">
+					<div>特定のノートに曖昧な返信を行うための、公開範囲を合わせた投稿ボタンを有効化します。</div>
+					<MkSwitch v-model="useAirReply">
+						エアリプ機能を有効にする
+					</MkSwitch>
+					<MkSelect v-if="useAirReply" v-model="airReplyButtonPlacement">
+						<template #label>ボタンの位置</template>
+						<option value="noteMenu">ノートのメニュー</option>
+						<option value="renoteMenu">リノートボタンのメニュー</option>
+						<option value="noteFooter">ノートの下部</option>
+					</MkSelect>
+				</div>
+			</MkFolder>
+
 			<MkSwitch v-model="usePostFormWindow">
 				投稿フォームをウィンドウとして表示
 			</MkSwitch>
