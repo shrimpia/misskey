@@ -18,7 +18,7 @@ import { ApiError } from '../../error.js';
 export const meta = {
 	tags: ['notes', 'channels'],
 
-	requireCredential: true, // Shrimpia: チャンネルのタイムラインを取得するためには認証が必要
+	requireCredential: false,
 
 	res: {
 		type: 'array',
