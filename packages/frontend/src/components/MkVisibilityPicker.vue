@@ -9,11 +9,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div :class="[$style.label, $style.item]">
 			{{ i18n.ts.visibility }}
 		</div>
-		<button key="public" :disabled="isSilenced || isReplyVisibilitySpecified" class="_button" :class="[$style.item, { [$style.active]: v === 'public' }]" data-index="1" @click="choose('public')">
+		<button key="public" :disabled="isSilenced || isReplyVisibilitySpecified" class="_button" :class="[$style.item, {[$style.itemWithError]: isSilenced}, { [$style.active]: v === 'public' }]" data-index="1" @click="choose('public')">
 			<div :class="$style.icon"><i class="ti ti-world"></i></div>
 			<div :class="$style.body">
 				<span :class="$style.itemTitle">{{ i18n.ts._visibility.public }}</span>
-				<span :class="$style.itemDescription">{{ i18n.ts._visibility.publicDescription }}</span>
+				<!-- Ebisskey -->
+				<span v-if="!isSilenced" :class="$style.itemDescription">{{ i18n.ts._visibility.publicDescription }}</span>
+				<span v-else :class="$style.itemError">サイレンス中のため利用不可</span>
 			</div>
 		</button>
 		<button key="home" :disabled="isReplyVisibilitySpecified" class="_button" :class="[$style.item, { [$style.active]: v === 'home' }]" data-index="2" @click="choose('home')">
@@ -154,5 +156,12 @@ function choose(visibility: typeof Misskey.noteVisibilities[number]): void {
 
 .itemDescription {
 	opacity: 0.6;
+}
+
+// Ebisskey
+.itemError {
+	display: block;
+	font-weight: bold;
+	color: var(--MI_THEME-error);
 }
 </style>
