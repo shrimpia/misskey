@@ -91,7 +91,18 @@
 						<MkColorInput v-model="noteVisibilityColorLocalOnly">
 							<template #label>{{ i18n.ts._visibility.public }}（{{ i18n.ts._visibility.disableFederation }}）</template>
 						</MkColorInput>
+<MkButton v-if="noteVisibilityColorChanged" primary @click="saveColors"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
+				</template>
+			</div>
+
+			<div class="_panel _padding _gaps_m">
+				<MkSwitch v-model="useTextAreaAutoSize">
+					テキストエリアの自動サイズ調整
+					<template #caption>
+						入力したテキストの行数に合わせてテキストエリアの高さを自動調整します。<br/>
+						一部のブラウザで正常に動作しないかもしれません。
 					</template>
+</MkSwitch>
 				</div>
 			</MkFolder>
 
@@ -125,14 +136,12 @@ const usePostFormWindow = computed(defaultStore.makeGetterSetter('usePostFormWin
 const useAirReply = computed(defaultStore.makeGetterSetter('useAirReply'));
 const airReplyButtonPlacement = computed(defaultStore.makeGetterSetter('airReplyButtonPlacement'));
 const useNoteVisibilityColoring = computed(defaultStore.makeGetterSetter('useNoteVisibilityColoring'));
-const noteVisibilityColorHome = computed(defaultStore.makeGetterSetter('noteVisibilityColorHome'));
-const noteVisibilityColorFollowers = computed(defaultStore.makeGetterSetter('noteVisibilityColorFollowers'));
-const noteVisibilityColorSpecified = computed(defaultStore.makeGetterSetter('noteVisibilityColorSpecified'));
-const noteVisibilityColorLocalOnly = computed(defaultStore.makeGetterSetter('noteVisibilityColorLocalOnly'));
+const useTextAreaAutoSize = computed(defaultStore.makeGetterSetter('useTextAreaAutoSize'));
 
 watch([
 	stealEnabled,
 	infoButtonForNoteActionsEnabled,
+	useTextAreaAutoSize,
 ], async () => {
 	await reloadAsk({ reason: i18n.ts.reloadToApplySetting, unison: true });
 });
