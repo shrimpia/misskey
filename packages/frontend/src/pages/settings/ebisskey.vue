@@ -65,6 +65,31 @@
 				</div>
 			</MkFolder>
 
+			<MkFolder open>
+				<template #label><i class="ti ti-tag"/> 公開範囲に応じた色分け</template>
+				<div class="_gaps_m">
+					<div>ノートの公開範囲に応じて、特殊な色付き表示を行います。</div>
+					<MkSwitch v-model="useNoteVisibilityColoring">
+						色分けを有効にする
+					</MkSwitch>
+
+					<template v-if="useNoteVisibilityColoring">
+						<MkColorInput v-model="noteVisibilityColorHome">
+							<template #label>{{ i18n.ts._visibility.home }}</template>
+						</MkColorInput>
+						<MkColorInput v-model="noteVisibilityColorFollowers">
+							<template #label>{{ i18n.ts._visibility.followers }}</template>
+						</MkColorInput>
+						<MkColorInput v-model="noteVisibilityColorSpecified">
+							<template #label>{{ i18n.ts._visibility.specified }}</template>
+						</MkColorInput>
+						<MkColorInput v-model="noteVisibilityColorLocalOnly">
+							<template #label>{{ i18n.ts._visibility.disableFederation }}</template>
+						</MkColorInput>
+					</template>
+				</div>
+			</MkFolder>
+
 			<MkSwitch v-model="usePostFormWindow">
 				投稿フォームをウィンドウとして表示
 			</MkSwitch>
@@ -74,29 +99,16 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue';
-import { Note, User } from 'misskey-js/built/entities';
+import { computed, watch } from 'vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import FormSection from '@/components/form/section.vue';
 import { defaultStore } from '@/store';
-import * as os from '@/os';
-import { unisonReload } from '@/scripts/unison-reload';
-import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
-import MkNote from '@/components/MkNote.vue';
-import { $i } from '@/account';
-import MkButton from '@/components/MkButton.vue';
-import { confetti } from '@/scripts/confetti';
-
-async function reloadAsk() {
-	const { canceled } = await os.confirm({
-		type: 'info',
-		text: i18n.ts.reloadToApplySetting,
-	});
-	if (canceled) return;
-
-	unisonReload();
-}
+import { i18n } from '@/i18n';
+import { reloadAsk } from '@/scripts/reload-ask.js';
+import MkFolder from '@/components/MkFolder.vue';
+import MkSelect from '@/components/MkSelect.vue';
+import MkColorInput from '@/components/MkColorInput.vue';
 
 const nicknameEnabled = computed(defaultStore.makeGetterSetter('nicknameEnabled'));
 const stealEnabled = computed(defaultStore.makeGetterSetter('stealEnabled'));
@@ -104,34 +116,21 @@ const infoButtonForNoteActionsEnabled = computed(defaultStore.makeGetterSetter('
 const reactableRemoteReactionEnabled = computed(defaultStore.makeGetterSetter('reactableRemoteReactionEnabled'));
 const rememberPostFormToggleStateEnabled = computed(defaultStore.makeGetterSetter('rememberPostFormToggleStateEnabled'));
 const usePostFormWindow = computed(defaultStore.makeGetterSetter('usePostFormWindow'));
-const ebiNoteViewEnabled = computed(defaultStore.makeGetterSetter('ebiNoteViewEnabledLab'));
 const showFollowingMessageInsteadOfButtonEnabled = computed(defaultStore.makeGetterSetter('showFollowingMessageInsteadOfButtonEnabled'));
-
-const noteMock: Note = {
-	id: 'abc',
-	createdAt: new Date().toISOString(),
-	text: '> **エビ**（海老・蝦・魵）は、節足動物門・甲殻亜門・軟甲綱・十脚目（エビ目）のうち、カニ下目（短尾類）とヤドカリ下目（異尾類）以外の全ての種の総称である。すなわち、かつての**長尾類**（長尾亜目 Macrura）にあたる。現在、長尾亜目という分類群は廃止されており、学術的な分類ではなく便宜上の区分である。\n\n出典：https://ja.wikipedia.org/wiki/%E3%82%A8%E3%83%93',
-	cw: null,
-	user: $i as User,
-	userId: $i.id,
-	replyId: '',
-	renoteId: '',
-	files: [],
-	fileIds: [],
-	visibility: 'home',
-	reactions: {},
-	renoteCount: 20,
-	repliesCount: 10,
-	emojis: [],
-	localOnly: true,
-};
+const useAirReply = computed(defaultStore.makeGetterSetter('useAirReply'));
+const airReplyButtonPlacement = computed(defaultStore.makeGetterSetter('airReplyButtonPlacement'));
+const useNoteVisibilityColoring = computed(defaultStore.makeGetterSetter('useNoteVisibilityColoring'));
+const noteVisibilityColorHome = computed(defaultStore.makeGetterSetter('noteVisibilityColorHome'));
+const noteVisibilityColorFollowers = computed(defaultStore.makeGetterSetter('noteVisibilityColorFollowers'));
+const noteVisibilityColorSpecified = computed(defaultStore.makeGetterSetter('noteVisibilityColorSpecified'));
+const noteVisibilityColorLocalOnly = computed(defaultStore.makeGetterSetter('noteVisibilityColorLocalOnly'));
 
 watch([
 	stealEnabled,
 	infoButtonForNoteActionsEnabled,
 	reactableRemoteReactionEnabled,
 ], async () => {
-	await reloadAsk();
+	await reloadAsk({ reason: i18n.ts.reloadToApplySetting, unison: true });
 });
 
 const headerActions = computed(() => []);

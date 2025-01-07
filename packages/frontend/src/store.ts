@@ -549,6 +549,26 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'account',
 		default: 'noteMenu' as 'noteMenu' | 'renoteMenu' | 'noteFooter',
 	},
+	useNoteVisibilityColoring: {
+		where: 'account',
+		default: false,
+	},
+	noteVisibilityColorHome: {
+		where: 'account',
+		default: '#FFB900',
+	},
+	noteVisibilityColorFollowers: {
+		where: 'account',
+		default: '#0078D7',
+	},
+	noteVisibilityColorSpecified: {
+		where: 'account',
+		default: '#111111',
+	},
+	noteVisibilityColorLocalOnly: {
+		where: 'account',
+		default: '#B93E43',
+	},
 	ebiNoteViewEnabledLab: {
 		where: 'account',
 		default: false,
