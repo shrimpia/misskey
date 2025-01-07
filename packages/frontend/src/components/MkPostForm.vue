@@ -11,6 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	@dragleave="onDragleave"
 	@drop.stop="onDrop"
 >
+	<ShVisibilityColoring v-if="!channel && (visibility !== 'public' || localOnly)" :visibility="visibility" :localOnly="localOnly"/>
 	<header :class="$style.header">
 		<div :class="$style.headerLeft">
 			<button v-if="!fixed" :class="$style.cancel" class="_button" @click="cancel"><i class="ti ti-x"></i></button>
@@ -20,7 +21,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</div>
 		<div :class="$style.headerRight">
 			<template v-if="!(channel != null && fixed)">
-				<button v-if="channel == null" ref="visibilityButton" v-click-anime v-tooltip="i18n.ts.visibility" :class="['_button', $style.headerRightItem, $style.visibility]" @click="setVisibility">
+				<button v-if="channel == null" ref="visibilityButton" v-click-anime v-tooltip="i18n.ts.visibility" :disabled="isAirReply" :class="['_button', $style.headerRightItem, $style.visibility]" @click="setVisibility">
 					<span v-if="visibility === 'public'"><i class="ti ti-world"></i></span>
 					<span v-if="visibility === 'home'"><i class="ti ti-home"></i></span>
 					<span v-if="visibility === 'followers'"><i class="ti ti-lock"></i></span>
@@ -32,7 +33,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.headerRightButtonText">{{ channel.name }}</span>
 				</button>
 			</template>
-			<button v-click-anime v-tooltip="i18n.ts._visibility.disableFederation" class="_button" :class="[$style.headerRightItem, { [$style.danger]: localOnly }]" :disabled="channel != null || visibility === 'specified'" @click="toggleLocalOnly">
+			<button v-click-anime v-tooltip="i18n.ts._visibility.disableFederation" class="_button" :class="[$style.headerRightItem, { [$style.danger]: localOnly }]" :disabled="channel != null || visibility === 'specified' || isAirReply" @click="toggleLocalOnly">
 				<span v-if="!localOnly"><i class="ti ti-rocket"></i></span>
 				<span v-else><i class="ti ti-rocket-off"></i></span>
 			</button>
@@ -46,13 +47,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<template v-if="posted"></template>
 					<template v-else-if="posting"><MkEllipsis/></template>
 					<template v-else>{{ submitText }}</template>
-					<i style="margin-left: 6px;" :class="posted ? 'ti ti-check' : reply ? 'ti ti-arrow-back-up' : renote ? 'ti ti-quote' : 'ti ti-send'"></i>
+					<i style="margin-left: 6px;" :class="posted ? 'ti ti-check' : isAirReply ? 'ti ti-bubble-text' : reply ? 'ti ti-arrow-back-up' : renote ? 'ti ti-quote' : 'ti ti-send'"></i>
 				</div>
 			</button>
 		</div>
 	</header>
 	<MkNoteSimple v-if="reply" :class="$style.targetNote" :note="reply"/>
 	<MkNoteSimple v-if="renote" :class="$style.targetNote" :note="renote"/>
+	<MkInfo v-if="props.isAirReply" :class="$style.airReplyInfo">
+		公開範囲を合わせた、通常のノートを作成します。<br/>相手に通知は届きません。
+	</MkInfo>
 	<div v-if="quoteId" :class="$style.withQuote"><i class="ti ti-quote"></i> {{ i18n.ts.quoteAttached }}<button @click="quoteId = null"><i class="ti ti-x"></i></button></div>
 	<div v-if="visibility === 'specified'" :class="$style.toSpecified">
 		<span style="margin-right: 8px;">{{ i18n.ts.recipient }}</span>
@@ -106,6 +110,8 @@ import * as Misskey from 'misskey-js';
 import insertTextAtCursor from 'insert-text-at-cursor';
 import { toASCII } from 'punycode/';
 import { host, url } from '@@/js/config.js';
+import ShVisibilityColoring from './ShVisibilityColoring.vue';
+import type { PostFormProps } from '@/types/post-form.js';
 import MkNoteSimple from '@/components/MkNoteSimple.vue';
 import MkNotePreview from '@/components/MkNotePreview.vue';
 import XPostFormAttaches from '@/components/MkPostFormAttaches.vue';
@@ -129,7 +135,6 @@ import { miLocalStorage } from '@/local-storage.js';
 import { claimAchievement } from '@/scripts/achievements.js';
 import { emojiPicker } from '@/scripts/emoji-picker.js';
 import { mfmFunctionPicker } from '@/scripts/mfm-function-picker.js';
-import type { PostFormProps } from '@/types/post-form.js';
 
 const $i = signinRequired();
 
@@ -197,7 +202,9 @@ const draftKey = computed((): string => {
 	if (props.renote) {
 		key += `renote:${props.renote.id}`;
 	} else if (props.reply) {
-		key += `reply:${props.reply.id}`;
+		// Ebisskey
+		const keyPrefix = props.isAirReply ? 'air-reply' : 'reply';
+		key += `${keyPrefix}:${props.reply.id}`;
 	} else {
 		key += `note:${$i.id}`;
 	}
@@ -208,6 +215,8 @@ const draftKey = computed((): string => {
 const placeholder = computed((): string => {
 	if (props.renote) {
 		return i18n.ts._postForm.quotePlaceholder;
+	} else if (props.isAirReply) {
+		return 'このノートにエアリプ…';
 	} else if (props.reply) {
 		return i18n.ts._postForm.replyPlaceholder;
 	} else if (props.channel) {
@@ -228,9 +237,11 @@ const placeholder = computed((): string => {
 const submitText = computed((): string => {
 	return props.renote
 		? i18n.ts.quote
-		: props.reply
-			? i18n.ts.reply
-			: i18n.ts.note;
+		: props.isAirReply
+			? 'エアリプ'
+			: props.reply
+				? i18n.ts.reply
+				: i18n.ts.note;
 });
 
 const textLength = computed((): number => {
@@ -782,7 +793,7 @@ async function post(ev?: MouseEvent) {
 	let postData = {
 		text: text.value === '' ? null : text.value,
 		fileIds: files.value.length > 0 ? files.value.map(f => f.id) : undefined,
-		replyId: props.reply ? props.reply.id : undefined,
+		replyId: !props.isAirReply && props.reply ? props.reply.id : undefined,
 		renoteId: props.renote ? props.renote.id : quoteId.value ? quoteId.value : undefined,
 		channelId: props.channel ? props.channel.id : undefined,
 		poll: poll.value,
@@ -1241,6 +1252,10 @@ html[data-color-scheme=light] .preview {
 	padding: 8px 0 8px 8px;
 	border-radius: 8px;
 	background: var(--MI_THEME-X4);
+}
+
+.airReplyInfo {
+	margin: 0 20px 16px 20px;
 }
 
 .hasNotSpecifiedMentions {

@@ -535,11 +535,43 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'account',
 		default: true,
 	},
+	featuredTimelineEnabled: {
+		where: 'account',
+		default: true,
+	},
 
 	// -- Labs
 	usePostFormWindow: {
 		where: 'device',
 		default: false,
+	},
+	useAirReply: {
+		where: 'account',
+		default: false,
+	},
+	airReplyButtonPlacement: {
+		where: 'account',
+		default: 'noteMenu' as 'noteMenu' | 'renoteMenu' | 'noteFooter',
+	},
+	useNoteVisibilityColoring: {
+		where: 'account',
+		default: false,
+	},
+	noteVisibilityColorHome: {
+		where: 'account',
+		default: '#FFB900',
+	},
+	noteVisibilityColorFollowers: {
+		where: 'account',
+		default: '#0078D7',
+	},
+	noteVisibilityColorSpecified: {
+		where: 'account',
+		default: '#111111',
+	},
+	noteVisibilityColorLocalOnly: {
+		where: 'account',
+		default: '#B93E43',
 	},
 	ebiNoteViewEnabledLab: {
 		where: 'account',
@@ -563,7 +595,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	defaultNumberQuoteVisibility: {
 		where: 'account',
-		default: 'inherits',
+		default: 'inherits' as 'inherits' | 'public' | 'home' | 'followers' | 'specified',
 	},
 	defaultNumberQuoteLocalOnly: {
 		where: 'account',
