@@ -292,6 +292,10 @@ rt {
 	overflow: clip;
 }
 
+._padding {
+	padding: var(--MI-margin);
+}
+
 ._margin {
 	margin: var(--MI-margin) 0;
 }

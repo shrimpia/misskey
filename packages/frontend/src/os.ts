@@ -11,6 +11,7 @@ import * as Misskey from 'misskey-js';
 import type { ComponentProps as CP } from 'vue-component-type-helpers';
 import type { Form, GetFormResultType } from '@/scripts/form.js';
 import type { MenuItem } from '@/types/menu.js';
+import type { PostFormProps } from '@/types/post-form.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { defaultStore } from '@/store.js';
 import { i18n } from '@/i18n.js';
@@ -25,12 +26,10 @@ import MkEmojiPickerDialog from '@/components/MkEmojiPickerDialog.vue';
 import MkPopupMenu from '@/components/MkPopupMenu.vue';
 import MkContextMenu from '@/components/MkContextMenu.vue';
 import { copyToClipboard } from '@/scripts/copy-to-clipboard.js';
-import { defaultStore } from './store.js';
 import { pleaseLogin } from '@/scripts/please-login.js';
 import { showMovedDialog } from '@/scripts/show-moved-dialog.js';
 import { getHTMLElementOrNull } from '@/scripts/get-dom-node-or-null.js';
 import { focusParent } from '@/scripts/focus.js';
-import type { PostFormProps } from '@/types/post-form.js';
 
 export const openingWindowsCount = ref(0);
 
@@ -709,8 +708,7 @@ export function post(props: PostFormProps = {}): Promise<void> {
 		//       Vueが渡されたコンポーネントに内部的に__propsというプロパティを生やす影響で、
 		//       複数のpost formを開いたときに場合によってはエラーになる
 		//       もちろん複数のpost formを開けること自体Misskeyサイドのバグなのだが
-		const component = defaultStore.state.usePostFormWindow ? MkPostFormWindow : MkPostFormDialog;
-		const { dispose } = popup(component, props, {
+		const { dispose } = popup(MkPostFormDialog, props, {
 			closed: () => {
 				resolve();
 				dispose();
