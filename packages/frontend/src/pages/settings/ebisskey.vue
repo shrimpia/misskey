@@ -35,12 +35,17 @@
 			<MkSwitch v-model="rememberPostFormToggleStateEnabled">
 				投稿フォームにて、プレビューのオン・オフを記憶する
 			</MkSwitch>
+			<MkSwitch v-model="featuredTimelineEnabled">
+				ハイライトタイムラインをホームに表示する
+			</MkSwitch>
+			<!--
 			<MkSwitch v-model="reactableRemoteReactionEnabled">
 				リモートのカスタム絵文字リアクションでも、このサーバーに同じ名前の絵文字があればリアクションできるようにする
 			</MkSwitch>
 			<MkSwitch v-model="showFollowingMessageInsteadOfButtonEnabled">
 				既にフォローしている場合、通知欄にフォローボタンを表示しない
 			</MkSwitch>
+			-->
 		</div>
 	</FormSection>
 	<FormSection>
@@ -113,10 +118,9 @@ import MkColorInput from '@/components/MkColorInput.vue';
 const nicknameEnabled = computed(defaultStore.makeGetterSetter('nicknameEnabled'));
 const stealEnabled = computed(defaultStore.makeGetterSetter('stealEnabled'));
 const infoButtonForNoteActionsEnabled = computed(defaultStore.makeGetterSetter('infoButtonForNoteActionsEnabled'));
-const reactableRemoteReactionEnabled = computed(defaultStore.makeGetterSetter('reactableRemoteReactionEnabled'));
 const rememberPostFormToggleStateEnabled = computed(defaultStore.makeGetterSetter('rememberPostFormToggleStateEnabled'));
+const featuredTimelineEnabled = computed(defaultStore.makeGetterSetter('featuredTimelineEnabled'));
 const usePostFormWindow = computed(defaultStore.makeGetterSetter('usePostFormWindow'));
-const showFollowingMessageInsteadOfButtonEnabled = computed(defaultStore.makeGetterSetter('showFollowingMessageInsteadOfButtonEnabled'));
 const useAirReply = computed(defaultStore.makeGetterSetter('useAirReply'));
 const airReplyButtonPlacement = computed(defaultStore.makeGetterSetter('airReplyButtonPlacement'));
 const useNoteVisibilityColoring = computed(defaultStore.makeGetterSetter('useNoteVisibilityColoring'));
@@ -128,7 +132,6 @@ const noteVisibilityColorLocalOnly = computed(defaultStore.makeGetterSetter('not
 watch([
 	stealEnabled,
 	infoButtonForNoteActionsEnabled,
-	reactableRemoteReactionEnabled,
 ], async () => {
 	await reloadAsk({ reason: i18n.ts.reloadToApplySetting, unison: true });
 });

@@ -535,6 +535,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'account',
 		default: true,
 	},
+	featuredTimelineEnabled: {
+		where: 'account',
+		default: true,
+	},
 
 	// -- Labs
 	usePostFormWindow: {
