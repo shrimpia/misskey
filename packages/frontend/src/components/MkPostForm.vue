@@ -11,6 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	@dragleave="onDragleave"
 	@drop.stop="onDrop"
 >
+	<ShVisibilityColoring v-if="!channel && (visibility !== 'public' || localOnly)" :visibility="visibility" :localOnly="localOnly"/>
 	<header :class="$style.header">
 		<div :class="$style.headerLeft">
 			<button v-if="!fixed" :class="$style.cancel" class="_button" @click="cancel"><i class="ti ti-x"></i></button>
@@ -53,7 +54,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</header>
 	<MkNoteSimple v-if="reply" :class="$style.targetNote" :note="reply"/>
 	<MkNoteSimple v-if="renote" :class="$style.targetNote" :note="renote"/>
-<MkInfo v-if="props.isAirReply" :class="$style.airReplyInfo">
+	<MkInfo v-if="props.isAirReply" :class="$style.airReplyInfo">
 		公開範囲を合わせた、通常のノートを作成します。<br/>相手に通知は届きません。
 	</MkInfo>
 	<div v-if="quoteId" :class="$style.withQuote"><i class="ti ti-quote"></i> {{ i18n.ts.quoteAttached }}<button @click="quoteId = null"><i class="ti ti-x"></i></button></div>
@@ -109,6 +110,7 @@ import * as Misskey from 'misskey-js';
 import insertTextAtCursor from 'insert-text-at-cursor';
 import { toASCII } from 'punycode/';
 import { host, url } from '@@/js/config.js';
+import ShVisibilityColoring from './ShVisibilityColoring.vue';
 import type { PostFormProps } from '@/types/post-form.js';
 import MkNoteSimple from '@/components/MkNoteSimple.vue';
 import MkNotePreview from '@/components/MkNotePreview.vue';
@@ -200,7 +202,7 @@ const draftKey = computed((): string => {
 	if (props.renote) {
 		key += `renote:${props.renote.id}`;
 	} else if (props.reply) {
-// Ebisskey
+		// Ebisskey
 		const keyPrefix = props.isAirReply ? 'air-reply' : 'reply';
 		key += `${keyPrefix}:${props.reply.id}`;
 	} else {
@@ -213,7 +215,7 @@ const draftKey = computed((): string => {
 const placeholder = computed((): string => {
 	if (props.renote) {
 		return i18n.ts._postForm.quotePlaceholder;
-} else if (props.isAirReply) {
+	} else if (props.isAirReply) {
 		return 'このノートにエアリプ…';
 	} else if (props.reply) {
 		return i18n.ts._postForm.replyPlaceholder;
@@ -235,11 +237,11 @@ const placeholder = computed((): string => {
 const submitText = computed((): string => {
 	return props.renote
 		? i18n.ts.quote
-: props.isAirReply
+		: props.isAirReply
 			? 'エアリプ'
-		: props.reply
-			? i18n.ts.reply
-			: i18n.ts.note;
+			: props.reply
+				? i18n.ts.reply
+				: i18n.ts.note;
 });
 
 const textLength = computed((): number => {
