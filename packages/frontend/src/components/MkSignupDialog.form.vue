@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<MkSpacer :marginMin="20" :marginMax="32">
 		<form class="_gaps_m" autocomplete="new-password" @submit.prevent="onSubmit">
 			<MkInput v-if="instance.disableRegistration" v-model="invitationCode" type="text" :spellcheck="false" required>
-				<template #label>{{ i18n.ts.invitationCode }}</template>
+				<template #label>{{ i18n.ts.invitationCode }} <div v-tooltip:dialog="requireInvitationMessage" class="_button _help"><i class="ti ti-help-circle"></i></div></template>
 				<template #prefix><i class="ti ti-key"></i></template>
 			</MkInput>
 			<MkInput v-model="username" type="text" pattern="^[a-zA-Z0-9_]{1,20}$" :spellcheck="false" autocomplete="username" required data-cy-signup-username @update:modelValue="onChangeUsername">
@@ -140,6 +140,9 @@ const shouldDisableSubmitting = computed((): boolean => {
 		usernameState.value !== 'ok' ||
 		passwordRetypeState.value !== 'match';
 });
+
+// Shrimpia
+const requireInvitationMessage = '現在、帝国への入国にはビザが必要です。ビザの入手方法については、公式のアナウンスをご確認ください。';
 
 function getPasswordStrength(source: string): number {
 	let strength = 0;
