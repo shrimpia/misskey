@@ -89,7 +89,7 @@
 							<template #label>{{ i18n.ts._visibility.specified }}</template>
 						</MkColorInput>
 						<MkColorInput v-model="noteVisibilityColorLocalOnly">
-							<template #label>{{ i18n.ts._visibility.disableFederation }}</template>
+							<template #label>{{ i18n.ts._visibility.public }}（{{ i18n.ts._visibility.disableFederation }}）</template>
 						</MkColorInput>
 					</template>
 				</div>
