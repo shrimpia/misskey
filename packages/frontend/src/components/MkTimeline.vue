@@ -30,7 +30,7 @@ import { defaultStore } from '@/store.js';
 import { Paging } from '@/components/MkPagination.vue';
 
 const props = withDefaults(defineProps<{
-	src: BasicTimelineType | 'mentions' | 'directs' | 'list' | 'antenna' | 'channel' | 'role';
+	src: BasicTimelineType | 'mentions' | 'directs' | 'list' | 'antenna' | 'channel' | 'role' | 'featured';
 	list?: string;
 	antenna?: string;
 	channel?: string;
@@ -166,6 +166,8 @@ function updatePaginationQuery() {
 	let endpoint: keyof Misskey.Endpoints | null;
 	let query: TimelineQueryType | null;
 
+	console.log('updatePaginationQuery', props.src);
+
 	if (props.src === 'antenna') {
 		endpoint = 'antennas/notes';
 		query = {
@@ -212,6 +214,9 @@ function updatePaginationQuery() {
 			withFiles: props.onlyFiles ? true : undefined,
 			listId: props.list,
 		};
+	} else if (props.src === 'featured') {
+		endpoint = 'notes/featured';
+		query = {};
 	} else if (props.src === 'channel') {
 		endpoint = 'channels/timeline';
 		query = {

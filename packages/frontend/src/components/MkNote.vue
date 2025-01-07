@@ -12,6 +12,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	:class="[$style.root, { [$style.showActionsOnlyHover]: defaultStore.state.showNoteActionsOnlyHover, [$style.skipRender]: defaultStore.state.skipNoteRender }]"
 	:tabindex="isDeleted ? '-1' : '0'"
 >
+	<ShVisibilityColoring v-if="!appearNote.channel && (appearNote.visibility !== 'public' || appearNote.localOnly)" :visibility="appearNote.visibility" :localOnly="appearNote.localOnly ?? false"/>
 	<MkNoteSub v-if="appearNote.reply && !renoteCollapsed" :note="appearNote.reply" :class="$style.replyTo"/>
 	<div v-if="pinned" :class="$style.tip"><i class="ti ti-pin"></i> {{ i18n.ts.pinnedNote }}</div>
 	<!--<div v-if="appearNote._prId_" class="tip"><i class="ti ti-speakerphone"></i> {{ i18n.ts.promotion }}<button class="_textButton hide" @click="readPromo()">{{ i18n.ts.hideThisNote }} <i class="ti ti-x"></i></button></div>-->
@@ -135,6 +136,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<button v-if="stealButtonVisible" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown.prevent="stealMenu(appearNote, stealButton)">
 					<i class="ti ti-swipe"></i>
 				</button>
+				<button v-if="defaultStore.state.useAirReply && defaultStore.state.airReplyButtonPlacement === 'noteFooter'" :class="$style.footerButton" class="_button" @click.prevent="airReply()">
+					<i class="ti ti-bubble-text"></i>
+				</button>
 				<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown.prevent="clip()">
 					<i class="ti ti-paperclip"></i>
 				</button>
@@ -191,6 +195,7 @@ import MkPoll from '@/components/MkPoll.vue';
 import MkUsersTooltip from '@/components/MkUsersTooltip.vue';
 import MkUrlPreview from '@/components/MkUrlPreview.vue';
 import MkInstanceTicker from '@/components/MkInstanceTicker.vue';
+import ShVisibilityColoring from '@/components/ShVisibilityColoring.vue';
 import { pleaseLogin, type OpenOnRemoteOptions } from '@/scripts/please-login.js';
 import { checkWordMute } from '@/scripts/check-word-mute.js';
 import { notePage } from '@/filters/note.js';
@@ -452,6 +457,16 @@ function reply(): void {
 		channel: appearNote.value.channel,
 	}).then(() => {
 		focus();
+	});
+}
+
+// Ebisskey
+function airReply(): void {
+	// 公開範囲を引き継いだ投稿フォームを作成
+	os.post({
+		reply: appearNote,
+		channel: appearNote.value.channel,
+		isAirReply: true,
 	});
 }
 
