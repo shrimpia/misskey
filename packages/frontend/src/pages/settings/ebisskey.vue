@@ -95,9 +95,10 @@
 				</div>
 			</MkFolder>
 
-			<MkSwitch v-model="usePostFormWindow">
+<!-- 不具合で動かないため一度オフ -->
+			<!-- 			<MkSwitch v-model="usePostFormWindow">
 				投稿フォームをウィンドウとして表示
-			</MkSwitch>
+			</MkSwitch> -->
 		</div>
 	</FormSection>
 </div>
