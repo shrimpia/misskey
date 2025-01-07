@@ -563,7 +563,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	defaultNumberQuoteVisibility: {
 		where: 'account',
-		default: 'inherits',
+		default: 'inherits' as 'inherits' | 'public' | 'home' | 'followers' | 'specified',
 	},
 	defaultNumberQuoteLocalOnly: {
 		where: 'account',
