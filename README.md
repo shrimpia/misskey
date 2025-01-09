@@ -19,6 +19,9 @@ Ebisskey固有のリリースノートは [CHANGELOG-EBISSKEY.md](CHANGELOG-EBIS
 基本的に[Misskey Hubの手順](https://misskey-hub.net/docs/install/manual.html)が適用できます。
 ただし、cloneする場合は `https://github.com/shrimpia/misskey.git` をURLに指定してください。
 
+## コントリビューション
+IssueやPRを作成する場合、[CONTRIBUTING.md](CONTRIBUTING.md)をお読みください。
+
 ### 本家 Misskeyから移行する
 
 1. リモートブランチのURLを変更する
