@@ -113,13 +113,6 @@ export class NoteEntityService implements OnModuleInit {
 			) {
 				packedNote.visibility = 'followers';
 			}
-
-			//#region shrimpia
-			//ローカルのみかつ自分がログインしていない場合は非表示
-			if (packedNote.localOnly && meId == null) {
-				packedNote.visibility = 'followers';
-			}
-			//#endregion
 		}
 		return packedNote.visibility;
 	}
@@ -134,6 +127,13 @@ export class NoteEntityService implements OnModuleInit {
 		if (packedNote.user.requireSigninToViewContents && meId == null) {
 			hide = true;
 		}
+
+		//#region shrimpia
+		//ローカルのみかつ自分がログインしていない場合は非表示
+		if (packedNote.localOnly && meId == null) {
+			hide = true;
+		}
+		//#endregion
 
 		if (!hide) {
 			const hiddenBefore = packedNote.user.makeNotesHiddenBefore;
