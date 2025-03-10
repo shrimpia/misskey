@@ -733,3 +733,8 @@ _moderationLogTypes:
   resetPassword: "Resetează parola"
 _reversi:
   total: "Total"
+_remoteLookupErrors:
+  _noSuchObject:
+    title: "Nu a fost găsit"
+_search:
+  searchScopeAll: "Tot"

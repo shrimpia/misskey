@@ -840,3 +840,9 @@ _reversi:
   black: "꺼멍"
   white: "허영"
   total: "합게"
+_remoteLookupErrors:
+  _noSuchObject:
+    title: "몬 찾앗십니다"
+_search:
+  searchScopeAll: "말캉"
+  searchScopeUser: "사용자 지정"
