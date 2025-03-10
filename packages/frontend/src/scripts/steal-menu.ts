@@ -1,10 +1,10 @@
-import { Note } from 'misskey-js/entities.js';
 import { pleaseLogin } from './please-login.js';
+import type { Note } from 'misskey-js/entities.js';
+import type { MenuItem } from '@/types/menu.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { defaultStore } from '@/store.js';
 import { alert, confirm, popupMenu, post } from '@/os.js';
 import { i18n } from '@/i18n.js';
-import { MenuItem } from '@/types/menu.js';
 
 // #region shrimpia
 export function stealMenu(note: Note, el?: HTMLElement) {
