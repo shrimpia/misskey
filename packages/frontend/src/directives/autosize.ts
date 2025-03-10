@@ -1,4 +1,4 @@
-import { Directive } from 'vue';
+import type { Directive } from 'vue';
 import { defaultStore } from '@/store.js';
 
 const onInput = (arg: Event | HTMLTextAreaElement) => {

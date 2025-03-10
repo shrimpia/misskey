@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	v-ripple="canToggle"
 	class="_button"
 	:class="[$style.root, { [$style.reacted]: note.myReaction == reaction, [$style.canToggle]: canToggle || alternative, [$style.small]: defaultStore.state.reactionsDisplaySize === 'small', [$style.large]: defaultStore.state.reactionsDisplaySize === 'large' }]"
-	@click="toggleReaction()"
+	@click="toggleReaction"
 	@contextmenu.prevent.stop="menu"
 >
 	<MkReactionIcon :class="defaultStore.state.limitWidthOfReaction ? $style.limitWidth : ''" :reaction="reaction" :emojiUrl="note.reactionEmojis[reaction.substring(1, reaction.length - 1)]"/>
@@ -18,10 +18,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, onMounted, shallowRef, watch, ComputedRef } from 'vue';
+import { computed, inject, onMounted, shallowRef, watch } from 'vue';
 import * as Misskey from 'misskey-js';
 import { getUnicodeEmoji } from '@@/js/emojilist.js';
 import MkCustomEmojiDetailedDialog from './MkCustomEmojiDetailedDialog.vue';
+import type { ComputedRef } from 'vue';
 import XDetails from '@/components/MkReactionsViewer.details.vue';
 import MkReactionIcon from '@/components/MkReactionIcon.vue';
 import * as os from '@/os.js';
@@ -97,6 +98,15 @@ async function toggleReaction(ev) {
 			}
 		});
 	} else {
+		if (defaultStore.state.confirmOnReact) {
+			const confirm = await os.confirm({
+				type: 'question',
+				text: i18n.tsx.reactAreYouSure({ emoji: props.reaction.replace('@.', '') }),
+			});
+
+			if (confirm.canceled) return;
+		}
+
 		sound.playReactionSfx(props.reaction);
 
 		if (mock) {
