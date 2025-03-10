@@ -109,11 +109,13 @@ export class UserListService implements OnApplicationShutdown, OnModuleInit {
 		this.globalEventService.publishInternalEvent('userListMemberAdded', { userListId: list.id, memberId: target.id });
 		this.globalEventService.publishUserListStream(list.id, 'userAdded', await this.userEntityService.pack(target));
 
+		// #region Ebisskey プロキシアカウントを無効化
 		// このインスタンス内にこのリモートユーザーをフォローしているユーザーがいなくても投稿を受け取るためにダミーのユーザーがフォローしたということにする
-		if (this.userEntityService.isRemoteUser(target)) {
-			const proxy = await this.systemAccountService.fetch('proxy');
-			this.queueService.createFollowJob([{ from: { id: proxy.id }, to: { id: target.id } }]);
-		}
+		// if (this.userEntityService.isRemoteUser(target)) {
+		// 	const proxy = await this.systemAccountService.fetch('proxy');
+		// 	this.queueService.createFollowJob([{ from: { id: proxy.id }, to: { id: target.id } }]);
+		// }
+		// #endregion
 	}
 
 	@bindThis
