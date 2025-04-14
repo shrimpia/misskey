@@ -8,10 +8,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<template #header><MkPageHeader/></template>
 	<MkSpacer :contentMax="800">
 		<Transition
-			:enterActiveClass="defaultStore.state.animation ? $style.transition_fade_enterActive : ''"
-			:leaveActiveClass="defaultStore.state.animation ? $style.transition_fade_leaveActive : ''"
-			:enterFromClass="defaultStore.state.animation ? $style.transition_fade_enterFrom : ''"
-			:leaveToClass="defaultStore.state.animation ? $style.transition_fade_leaveTo : ''"
+			:enterActiveClass="prefer.s.animation ? $style.transition_fade_enterActive : ''"
+			:leaveActiveClass="prefer.s.animation ? $style.transition_fade_leaveActive : ''"
+			:enterFromClass="prefer.s.animation ? $style.transition_fade_enterFrom : ''"
+			:leaveToClass="prefer.s.animation ? $style.transition_fade_leaveTo : ''"
 			mode="out-in"
 		>
 			<MkLoading v-if="fetching"/>
@@ -54,18 +54,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { onMounted, ref, computed } from 'vue';
-import * as os from '@/os.js';
-import { misskeyApi } from '@/scripts/misskey-api.js';
+import type { Event } from '@/scripts/portal-api/events.js';
 import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { $i, updateAccount } from '@/account.js';
 import { infoImageUrl } from '@/instance.js';
-import { defaultStore } from '@/store.js';
 import MkInfo from '@/components/MkInfo.vue';
 import MkMention from '@/components/MkMention.vue';
-import { fetchEvents, Event } from '@/scripts/portal-api/events.js';
+import { fetchEvents } from '@/scripts/portal-api/events.js';
+import { definePage } from '@/page.js';
+import { prefer } from '@/preferences.js';
 
-definePageMetadata(() => ({
+definePage(() => ({
 	title: 'イベントカレンダー',
 	icon: 'ti ti-calendar-bolt',
 }));

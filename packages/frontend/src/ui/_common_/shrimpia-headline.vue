@@ -14,11 +14,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { onMounted, ref, nextTick } from 'vue';
-import { MfmNode, parse } from 'mfm-js';
-import { fetchEvents, Event } from '@/scripts/portal-api/events';
+import { parse } from 'mfm-js';
+import type { MfmNode } from 'mfm-js';
+import type { Event } from '@/scripts/portal-api/events';
+import { fetchEvents } from '@/scripts/portal-api/events';
 import MkA from '@/components/global/MkA.vue';
 import { fetchHints } from '@/scripts/portal-api/hints';
-import { $i } from '@/account';
+import { $i } from '@/i.js';
 
 const articleQueue = ref<Article[]>([]);
 const currentIndex = ref(0);
