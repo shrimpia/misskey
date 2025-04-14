@@ -101,7 +101,7 @@ function react(ev: MouseEvent) {
 	if (!targetEl) return;
 
 	reactionPicker.show(targetEl, null, async (reaction) => {
-		sound.playMisskeySfx('reaction');
+		sound.playReactionSfx(reaction);
 		misskeyApi('chat/messages/react', {
 			messageId: props.message.id,
 			reaction: reaction,
