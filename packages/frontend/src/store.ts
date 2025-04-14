@@ -7,7 +7,7 @@ import { markRaw, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import lightTheme from '@@/themes/l-light.json5';
 import darkTheme from '@@/themes/d-green-lime.json5';
-import { hemislphere } from '@@/js/intl-const.js';
+import { hemisphere } from '@@/js/intl-const.js';
 import type { DeviceKind } from '@/utility/device-kind.js';
 import type { Plugin } from '@/plugin.js';
 import { miLocalStorage } from '@/local-storage.js';

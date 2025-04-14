@@ -132,7 +132,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<i v-else class="ti ti-plus"></i>
 					<p v-if="(appearNote.reactionAcceptance === 'likeOnly' || prefer.s.showReactionsCount) && appearNote.reactionCount > 0" :class="$style.footerButtonCount">{{ number(appearNote.reactionCount) }}</p>
 				</button>
-				<<<<<<< HEAD
 				<button v-if="stealButtonVisible" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown.prevent="stealMenu(appearNote, stealButton)">
 					<i class="ti ti-swipe"></i>
 				</button>
@@ -140,17 +139,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<i class="ti ti-bubble-text"></i>
 				</button>
 				<button v-if="prefer.s.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown.prevent="clip()">
-					=======
-					<button v-if="prefer.s.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown.prevent="clip()">
-						>>>>>>> 2025.4.0
-						<i class="ti ti-paperclip"></i>
-					</button>
-					<MkA v-if="prefer.s['ebisskey.infoButtonForNoteActionsEnabled'] && prefer.s.showNoteActionsOnlyHover" :to="notePage(note)" :class="$style.footerButton" class="_button">
-						<i class="ti ti-info-circle"></i>
-					</MkA>
-					<button ref="menuButton" :class="$style.footerButton" class="_button" @mousedown="showMenu()">
-						<i class="ti ti-dots"></i>
-					</button>
+					<i class="ti ti-paperclip"></i>
+				</button>
+				<MkA v-if="prefer.s['ebisskey.infoButtonForNoteActionsEnabled'] && prefer.s.showNoteActionsOnlyHover" :to="notePage(note)" :class="$style.footerButton" class="_button">
+					<i class="ti ti-info-circle"></i>
+				</MkA>
+				<button ref="menuButton" :class="$style.footerButton" class="_button" @mousedown="showMenu()">
+					<i class="ti ti-dots"></i>
 				</button>
 			</footer>
 		</div>
