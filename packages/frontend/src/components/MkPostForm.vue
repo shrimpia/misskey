@@ -76,7 +76,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</div>
 	<input v-show="withHashtags" ref="hashtagsInputEl" v-model="hashtags" :class="$style.hashtags" :placeholder="i18n.ts.hashtags" list="hashtags">
 
-	<div v-if="!defaultStore.reactiveState.postGuidelineWarningDisabled.value" :class="$style.filesWarn">
+	<div v-if="!prefer.r['shrimpia.postGuidelineWarningDisabled'].value" :class="$style.filesWarn">
 		<div :class="$style.filesWarnText">
 			<Mfm :text="postGuidelineWarning"/>
 		</div>
@@ -263,7 +263,7 @@ const submitText = computed((): string => {
 });
 
 // Shrimpia
-const postGuidelineWarning = `[投稿ガイドライン](https://docs.shrimpia.network/guidelines/creating-note/)を確認してください。不適切な投稿は罰則の対象となります。`;
+const postGuidelineWarning = '[投稿ガイドライン](https://docs.shrimpia.network/guidelines/creating-note/)を確認してください。不適切な投稿は罰則の対象となります。';
 
 const textLength = computed((): number => {
 	return (text.value + imeText.value).length;
@@ -1066,7 +1066,7 @@ function openAccountMenu(ev: MouseEvent) {
 }
 
 function closePostGuidelineWarning() {
-	defaultStore.set('postGuidelineWarningDisabled', true);
+	prefer.commit('shrimpia.postGuidelineWarningDisabled', true);
 }
 
 onMounted(() => {

@@ -149,7 +149,7 @@ export function playMisskeySfx(operationType: OperationType) {
  * @param reaction リアクション
  */
 export function playReactionSfx(reaction: string) {
-	const sound = defaultStore.state['sound_reaction'];
+	const sound = prefer.s['sound.on.reaction'];
 	// サウンドがない場合は4犬であれど再生しない
 	if (sound.type === null) return;
 
@@ -157,7 +157,7 @@ export function playReactionSfx(reaction: string) {
 	if (reaction.includes('4ttenakuinu')) {
 		playMisskeySfxFileInternal({
 			type: 'shrimpia/4',
-			volume: defaultStore.state.sound_reaction.volume,
+			volume: prefer.s['sound.on.reaction'].volume,
 		});
 		return;
 	}
