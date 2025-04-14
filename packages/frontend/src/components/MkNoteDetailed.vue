@@ -149,19 +149,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<i v-else class="ti ti-plus"></i>
 				<p v-if="(appearNote.reactionAcceptance === 'likeOnly' || prefer.s.showReactionsCount) && appearNote.reactionCount > 0" :class="$style.noteFooterButtonCount">{{ number(appearNote.reactionCount) }}</p>
 			</button>
-			<<<<<<< HEAD
 			<button v-if="stealButtonVisible" ref="stealButton" class="button _button" :class="$style.noteFooterButton" @mousedown.prevent="stealMenu(appearNote, stealButton)">
 				<i class="ti ti-swipe"></i>
 			</button>
-			<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" class="_button" :class="$style.noteFooterButton" @mousedown.prevent="clip()">
-				=======
-				<button v-if="prefer.s.showClipButtonInNoteFooter" ref="clipButton" class="_button" :class="$style.noteFooterButton" @mousedown.prevent="clip()">
-					>>>>>>> 2025.4.0
-					<i class="ti ti-paperclip"></i>
-				</button>
-				<button ref="menuButton" class="_button" :class="$style.noteFooterButton" @mousedown.prevent="showMenu()">
-					<i class="ti ti-dots"></i>
-				</button>
+			<button v-if="prefer.s.showClipButtonInNoteFooter" ref="clipButton" class="_button" :class="$style.noteFooterButton" @mousedown.prevent="clip()">
+				<i class="ti ti-paperclip"></i>
+			</button>
+			<button ref="menuButton" class="_button" :class="$style.noteFooterButton" @mousedown.prevent="showMenu()">
+				<i class="ti ti-dots"></i>
 			</button>
 		</footer>
 	</article>
@@ -321,7 +316,7 @@ const showTicker = (prefer.s.instanceTicker === 'always') || (prefer.s.instanceT
 const conversation = ref<Misskey.entities.Note[]>([]);
 const replies = ref<Misskey.entities.Note[]>([]);
 const canRenote = computed(() => ['public', 'home'].includes(appearNote.value.visibility) || appearNote.value.userId === $i?.id);
-const stealButtonVisible = appearNote.value.text && defaultStore.state.stealEnabled;
+const stealButtonVisible = appearNote.value.text && prefer.s['ebisskey.stealEnabled'];
 
 const pleaseLoginContext = computed<OpenOnRemoteOptions>(() => ({
 	type: 'lookup',

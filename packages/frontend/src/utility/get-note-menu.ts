@@ -351,7 +351,7 @@ export function getNoteMenu(props: {
 		}
 
 		// Shrimpia
-		if (defaultStore.state.useAirReply && defaultStore.state.airReplyButtonPlacement === 'noteMenu') {
+		if (prefer.s['ebisskey.useAirReply'] && prefer.s['ebisskey.airReplyButtonPlacement'] === 'noteMenu') {
 			menuItems.push({
 				icon: 'ti ti-bubble-text',
 				text: 'エアリプ',
@@ -666,7 +666,7 @@ export function getRenoteMenu(props: {
 		}
 
 		// Ebisskey
-		if (defaultStore.state.useAirReply && defaultStore.state.airReplyButtonPlacement === 'renoteMenu') {
+		if (prefer.s['ebisskey.useAirReply'] && prefer.s['ebisskey.airReplyButtonPlacement'] === 'renoteMenu') {
 			normalRenoteItems.push({
 				icon: 'ti ti-bubble-text',
 				text: 'エアリプ',

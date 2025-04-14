@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	@dragleave="onDragleave"
 	@drop.stop="onDrop"
 >
-	<ShVisibilityColoring v-if="defaultStore.state.useNoteVisibilityColoring && !channel && (visibility !== 'public' || localOnly)" :visibility="visibility" :localOnly="localOnly"/>
+	<ShVisibilityColoring v-if="prefer.s['ebisskey.useNoteVisibilityColoring'] && !channel && (visibility !== 'public' || localOnly)" :visibility="visibility" :localOnly="localOnly"/>
 	<header :class="$style.header">
 		<div :class="$style.headerLeft">
 			<button v-if="!fixed" :class="$style.cancel" class="_button" @click="cancel"><i class="ti ti-x"></i></button>
@@ -307,8 +307,8 @@ watch(visibleUsers, () => {
 
 // #region Shrimpia
 watch(showPreview, () => {
-	if (!defaultStore.state.rememberPostFormToggleStateEnabled) return;
-	defaultStore.set('showPostFormPreview', showPreview.value);
+	if (!prefer.s['ebisskey.rememberPostFormToggleStateEnabled']) return;
+	prefer.commit('ebisskey.showPostFormPreview', showPreview.value);
 });
 // #endregion
 

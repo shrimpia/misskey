@@ -310,7 +310,7 @@ const headerTabs = computed(() => [...(prefer.r.pinnedUserLists.value.map(l => (
 	title: i18n.ts._timelines[tl],
 	icon: basicTimelineIconClass(tl),
 	iconOnly: true,
-})), ...(defaultStore.reactiveState.featuredTimelineEnabled.value ? [{
+})), ...(prefer.r['ebisskey.featuredTimelineEnabled'].value ? [{
 	key: 'featured',
 	icon: 'ti ti-bolt',
 	title: i18n.ts.featured,

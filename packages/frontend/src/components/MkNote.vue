@@ -12,7 +12,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	:class="[$style.root, { [$style.showActionsOnlyHover]: prefer.s.showNoteActionsOnlyHover, [$style.skipRender]: prefer.s.skipNoteRender }]"
 	:tabindex="isDeleted ? '-1' : '0'"
 >
-	<ShVisibilityColoring v-if="defaultStore.state.useNoteVisibilityColoring && !appearNote.channel && (appearNote.visibility !== 'public' || appearNote.localOnly)" :visibility="appearNote.visibility" :localOnly="appearNote.localOnly ?? false"/>
+	<ShVisibilityColoring v-if="prefer.s['ebisskey.useNoteVisibilityColoring'] && !appearNote.channel && (appearNote.visibility !== 'public' || appearNote.localOnly)" :visibility="appearNote.visibility" :localOnly="appearNote.localOnly ?? false"/>
 	<MkNoteSub v-if="appearNote.reply && !renoteCollapsed" :note="appearNote.reply" :class="$style.replyTo"/>
 	<div v-if="pinned" :class="$style.tip"><i class="ti ti-pin"></i> {{ i18n.ts.pinnedNote }}</div>
 	<div v-if="isRenote" :class="$style.renote">
@@ -136,16 +136,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<button v-if="stealButtonVisible" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown.prevent="stealMenu(appearNote, stealButton)">
 					<i class="ti ti-swipe"></i>
 				</button>
-				<button v-if="prefer.s.useAirReply && defaultStore.state.airReplyButtonPlacement === 'noteFooter'" :class="$style.footerButton" class="_button" @click.prevent="airReply()">
+				<button v-if="prefer.s['ebisskey.useAirReply'] && prefer.s['ebisskey.airReplyButtonPlacement'] === 'noteFooter'" :class="$style.footerButton" class="_button" @click.prevent="airReply()">
 					<i class="ti ti-bubble-text"></i>
 				</button>
-				<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown.prevent="clip()">
+				<button v-if="prefer.s.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown.prevent="clip()">
 					=======
 					<button v-if="prefer.s.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown.prevent="clip()">
 						>>>>>>> 2025.4.0
 						<i class="ti ti-paperclip"></i>
 					</button>
-					<MkA v-if="defaultStore.state.infoButtonForNoteActionsEnabled && defaultStore.state.showNoteActionsOnlyHover" :to="notePage(note)" :class="$style.footerButton" class="_button">
+					<MkA v-if="prefer.s['ebisskey.infoButtonForNoteActionsEnabled'] && prefer.s.showNoteActionsOnlyHover" :to="notePage(note)" :class="$style.footerButton" class="_button">
 						<i class="ti ti-info-circle"></i>
 					</MkA>
 					<button ref="menuButton" :class="$style.footerButton" class="_button" @mousedown="showMenu()">
@@ -309,7 +309,7 @@ const translation = ref<Misskey.entities.NotesTranslateResponse | null>(null);
 const translating = ref(false);
 const showTicker = (prefer.s.instanceTicker === 'always') || (prefer.s.instanceTicker === 'remote' && appearNote.value.user.instance);
 const canRenote = computed(() => ['public', 'home'].includes(appearNote.value.visibility) || (appearNote.value.visibility === 'followers' && appearNote.value.userId === $i?.id));
-const stealButtonVisible = appearNote.value.text && defaultStore.state.stealEnabled;
+const stealButtonVisible = appearNote.value.text && prefer.s['ebisskey.stealEnabled'];
 const renoteCollapsed = ref(
 	prefer.s.collapseRenotes && isRenote && (
 		($i && ($i.id === note.value.userId || $i.id === appearNote.value.userId)) || // `||` must be `||`! See https://github.com/misskey-dev/misskey/issues/13131

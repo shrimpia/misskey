@@ -5,7 +5,7 @@
 
 <script lang="ts" setup>
 import { defineProps, computed } from 'vue';
-import { defaultStore } from '@/store.js';
+import { prefer } from '@/preferences.js';
 
 const props = defineProps<{
 	visibility: string;
@@ -14,16 +14,16 @@ const props = defineProps<{
 
 const color = computed(() => {
 	switch (props.visibility) {
-		case 'home': return defaultStore.state.noteVisibilityColorHome;
-		case 'followers': return defaultStore.state.noteVisibilityColorFollowers;
-		case 'specified': return defaultStore.state.noteVisibilityColorSpecified;
+		case 'home': return prefer.s['ebisskey.noteVisibilityColorHome'];
+		case 'followers': return prefer.s['ebisskey.noteVisibilityColorFollowers'];
+		case 'specified': return prefer.s['ebisskey.noteVisibilityColorSpecified'];
 		default: return 'transparent';
 	}
 });
 
 const background = computed(() => {
 	if (props.localOnly) {
-		const theColor = props.visibility === 'public' ? defaultStore.state.noteVisibilityColorLocalOnly : color.value;
+		const theColor = props.visibility === 'public' ? prefer.s['ebisskey.noteVisibilityColorLocalOnly'] : color.value;
 		return `repeating-linear-gradient(135deg, transparent, transparent 5px, ${theColor} 5px, ${theColor} 10px);`;
 	}
 	return color.value;

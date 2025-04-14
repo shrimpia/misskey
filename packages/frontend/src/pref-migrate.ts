@@ -138,6 +138,29 @@ export function migrateOldSettings() {
 		prefer.commit('sound.on.reaction', store.s.sound_reaction as any);
 		prefer.commit('defaultNoteVisibility', store.s.defaultNoteVisibility);
 		prefer.commit('defaultNoteLocalOnly', store.s.defaultNoteLocalOnly);
+		prefer.commit('ebisskey.nicknameEnabled', store.s.nicknameEnabled);
+		prefer.commit('ebisskey.stealEnabled', store.s.stealEnabled);
+		prefer.commit('ebisskey.infoButtonForNoteActionsEnabled', store.s.infoButtonForNoteActionsEnabled);
+		prefer.commit('ebisskey.rememberPostFormToggleStateEnabled', store.s.rememberPostFormToggleStateEnabled);
+		prefer.commit('ebisskey.featuredTimelineEnabled', store.s.featuredTimelineEnabled);
+		prefer.commit('ebisskey.useAirReply', store.s.useAirReply);
+		prefer.commit('ebisskey.airReplyButtonPlacement', store.s.airReplyButtonPlacement);
+		prefer.commit('ebisskey.useNoteVisibilityColoring', store.s.useNoteVisibilityColoring);
+		prefer.commit('ebisskey.noteVisibilityColorHome', store.s.noteVisibilityColorHome);
+		prefer.commit('ebisskey.noteVisibilityColorFollowers', store.s.noteVisibilityColorFollowers);
+		prefer.commit('ebisskey.noteVisibilityColorSpecified', store.s.noteVisibilityColorSpecified);
+		prefer.commit('ebisskey.noteVisibilityColorLocalOnly', store.s.noteVisibilityColorLocalOnly);
+		prefer.commit('ebisskey.useTextAreaAutoSize', store.s.useTextAreaAutoSize);
+		prefer.commit('ebisskey.ebiNoteViewEnabledLab', store.s.ebiNoteViewEnabledLab);
+		prefer.commit('ebisskey.useDefaultNoteVisibilityOnRenote', store.s.useDefaultNoteVisibilityOnRenote);
+		prefer.commit('ebisskey.showPostFormPreview', store.s.showPostFormPreview);
+		prefer.commit('ebisskey.defaultRenoteVisibility', store.s.defaultRenoteVisibility);
+		prefer.commit('ebisskey.defaultRenoteLocalOnly', store.s.defaultRenoteLocalOnly);
+		prefer.commit('ebisskey.defaultNumberQuoteVisibility', store.s.defaultNumberQuoteVisibility);
+		prefer.commit('ebisskey.defaultNumberQuoteLocalOnly', store.s.defaultNumberQuoteLocalOnly);
+		prefer.commit('ebisskey.stealConfirmed', store.s.stealConfirmed);
+		prefer.commit('ebisskey.showTimelineOnUserHome', store.s.showTimelineOnUserHome);
+		prefer.commit('ebisskey.nicknameMap', store.s.nicknameMap);
 
 		window.setTimeout(() => {
 			unisonReload();

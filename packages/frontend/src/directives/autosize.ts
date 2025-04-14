@@ -1,5 +1,5 @@
 import type { Directive } from 'vue';
-import { defaultStore } from '@/store.js';
+import { prefer } from '@/preferences.js';
 
 const onInput = (arg: Event | HTMLTextAreaElement) => {
 	const el = 'target' in arg ? (arg.target as HTMLTextAreaElement) : arg;
@@ -10,7 +10,7 @@ const onInput = (arg: Event | HTMLTextAreaElement) => {
 
 export default {
 	mounted(el: HTMLTextAreaElement) {
-		if (!defaultStore.state.useTextAreaAutoSize) return;
+		if (!prefer.s['ebisskey.useTextAreaAutoSize']) return;
 		onInput(el);
 		el.addEventListener('input', onInput);
 		el.style.resize = 'none';

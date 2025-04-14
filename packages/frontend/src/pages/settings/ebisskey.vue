@@ -45,14 +45,6 @@
 				<MkSwitch v-model="featuredTimelineEnabled">
 					<SearchLabel>ハイライトタイムラインをホームに表示する</SearchLabel>
 				</MkSwitch>
-				<!--
-				<MkSwitch v-model="reactableRemoteReactionEnabled">
-					リモートのカスタム絵文字リアクションでも、このサーバーに同じ名前の絵文字があればリアクションできるようにする
-				</MkSwitch>
-				<MkSwitch v-model="showFollowingMessageInsteadOfButtonEnabled">
-					既にフォローしている場合、通知欄にフォローボタンを表示しない
-				</MkSwitch>
-				-->
 			</div>
 		</FormSection>
 		<FormSection>
@@ -130,28 +122,28 @@
 import { computed, ref, watch } from 'vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import FormSection from '@/components/form/section.vue';
-import { defaultStore } from '@/store';
-import { definePageMetadata } from '@/scripts/page-metadata';
 import { i18n } from '@/i18n';
-import { reloadAsk } from '@/scripts/reload-ask.js';
+import { reloadAsk } from '@/utility/reload-ask.js';
 import MkSelect from '@/components/MkSelect.vue';
 import MkColorInput from '@/components/MkColorInput.vue';
 import MkButton from '@/components/MkButton.vue';
+import { prefer } from '@/preferences';
+import { definePage } from '@/page';
 
-const nicknameEnabled = computed(defaultStore.makeGetterSetter('nicknameEnabled'));
-const stealEnabled = computed(defaultStore.makeGetterSetter('stealEnabled'));
-const infoButtonForNoteActionsEnabled = computed(defaultStore.makeGetterSetter('infoButtonForNoteActionsEnabled'));
-const rememberPostFormToggleStateEnabled = computed(defaultStore.makeGetterSetter('rememberPostFormToggleStateEnabled'));
-const featuredTimelineEnabled = computed(defaultStore.makeGetterSetter('featuredTimelineEnabled'));
-const useAirReply = computed(defaultStore.makeGetterSetter('useAirReply'));
-const airReplyButtonPlacement = computed(defaultStore.makeGetterSetter('airReplyButtonPlacement'));
-const useNoteVisibilityColoring = computed(defaultStore.makeGetterSetter('useNoteVisibilityColoring'));
-const useTextAreaAutoSize = computed(defaultStore.makeGetterSetter('useTextAreaAutoSize'));
+const nicknameEnabled = prefer.model('ebisskey.nicknameEnabled');
+const stealEnabled = prefer.model('ebisskey.stealEnabled');
+const infoButtonForNoteActionsEnabled = prefer.model('ebisskey.infoButtonForNoteActionsEnabled');
+const rememberPostFormToggleStateEnabled = prefer.model('ebisskey.rememberPostFormToggleStateEnabled');
+const featuredTimelineEnabled = prefer.model('ebisskey.featuredTimelineEnabled');
+const useAirReply = prefer.model('ebisskey.useAirReply');
+const airReplyButtonPlacement = prefer.model('ebisskey.airReplyButtonPlacement');
+const useNoteVisibilityColoring = prefer.model('ebisskey.useNoteVisibilityColoring');
+const useTextAreaAutoSize = prefer.model('ebisskey.useTextAreaAutoSize');
 
-const noteVisibilityColorHome = ref(defaultStore.state.noteVisibilityColorHome);
-const noteVisibilityColorFollowers = ref(defaultStore.state.noteVisibilityColorFollowers);
-const noteVisibilityColorSpecified = ref(defaultStore.state.noteVisibilityColorSpecified);
-const noteVisibilityColorLocalOnly = ref(defaultStore.state.noteVisibilityColorLocalOnly);
+const noteVisibilityColorHome = ref(prefer.s['ebisskey.noteVisibilityColorHome']);
+const noteVisibilityColorFollowers = ref(prefer.s['ebisskey.noteVisibilityColorFollowers']);
+const noteVisibilityColorSpecified = ref(prefer.s['ebisskey.noteVisibilityColorSpecified']);
+const noteVisibilityColorLocalOnly = ref(prefer.s['ebisskey.noteVisibilityColorLocalOnly']);
 const noteVisibilityColorChanged = ref(false);
 
 watch([
@@ -176,10 +168,10 @@ watch([
 
 function saveColors() {
 	if (noteVisibilityColorChanged.value) {
-		defaultStore.set('noteVisibilityColorHome', noteVisibilityColorHome.value);
-		defaultStore.set('noteVisibilityColorFollowers', noteVisibilityColorFollowers.value);
-		defaultStore.set('noteVisibilityColorSpecified', noteVisibilityColorSpecified.value);
-		defaultStore.set('noteVisibilityColorLocalOnly', noteVisibilityColorLocalOnly.value);
+		prefer.commit('ebisskey.noteVisibilityColorHome', noteVisibilityColorHome.value);
+		prefer.commit('ebisskey.noteVisibilityColorFollowers', noteVisibilityColorFollowers.value);
+		prefer.commit('ebisskey.noteVisibilityColorSpecified', noteVisibilityColorSpecified.value);
+		prefer.commit('ebisskey.noteVisibilityColorLocalOnly', noteVisibilityColorLocalOnly.value);
 		noteVisibilityColorChanged.value = false;
 	}
 }
@@ -188,7 +180,7 @@ const headerActions = computed(() => []);
 
 const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePage({
 	title: 'Ebisskey',
 	icon: 'ti ti-bulb-filled',
 });
