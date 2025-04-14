@@ -9,6 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 	<div :class="$style.contents" @contextmenu.stop="onContextmenu">
 		<div>
+			<XPreferenceMakeBackupSuggestionBanner v-if="!store.r.enablePreferencesAutoCloudBackup.value && store.r.showPreferencesAutoCloudBackupSuggestion.value"/>
 			<XPreferenceRestore v-if="shouldSuggestRestoreBackup"/>
 			<XAnnouncements v-if="$i"/>
 			<XStatusBars :class="$style.statusbars"/>
@@ -34,6 +35,7 @@ import XCommon from './_common_/common.vue';
 import type { PageMetadata } from '@/page.js';
 import XMobileFooterMenu from '@/ui/_common_/mobile-footer-menu.vue';
 import XPreferenceRestore from '@/ui/_common_/PreferenceRestore.vue';
+import XPreferenceMakeBackupSuggestionBanner from '@/ui/_common_/PreferenceMakeBackupSuggestionBanner.vue';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
 import { $i } from '@/i.js';
@@ -44,6 +46,7 @@ import { mainRouter } from '@/router.js';
 import { prefer } from '@/preferences.js';
 import { shouldSuggestRestoreBackup } from '@/preferences/utility.js';
 import { DI } from '@/di.js';
+import { store } from '@/store.js';
 
 const XWidgets = defineAsyncComponent(() => import('./_common_/widgets.vue'));
 const XSidebar = defineAsyncComponent(() => import('@/ui/_common_/navbar.vue'));
