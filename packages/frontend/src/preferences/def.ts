@@ -414,9 +414,6 @@ export const PREF_DEF = {
 	'ebisskey.infoButtonForNoteActionsEnabled': {
 		default: true,
 	},
-	'ebisskey.rememberPostFormToggleStateEnabled': {
-		default: true,
-	},
 	'ebisskey.featuredTimelineEnabled': {
 		default: true,
 	},

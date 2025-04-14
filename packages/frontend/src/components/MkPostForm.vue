@@ -305,13 +305,6 @@ watch(visibleUsers, () => {
 	deep: true,
 });
 
-// #region Shrimpia
-watch(showPreview, () => {
-	if (!prefer.s['ebisskey.rememberPostFormToggleStateEnabled']) return;
-	prefer.commit('ebisskey.showPostFormPreview', showPreview.value);
-});
-// #endregion
-
 if (props.mention) {
 	text.value = props.mention.host ? `@${props.mention.username}@${toASCII(props.mention.host)}` : `@${props.mention.username}`;
 	text.value += ' ';

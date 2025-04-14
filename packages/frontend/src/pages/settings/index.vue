@@ -156,7 +156,7 @@ const menuDef = computed<SuperMenuDef[]>(() => [{
 		active: currentPage.value?.route.name === 'other',
 	}, {
 		icon: 'ti ti-bulb-filled',
-		text: 'Ebisskey',
+		text: '独自機能',
 		to: '/settings/ebisskey',
 		active: currentPage.value?.route.name === 'ebisskey',
 	}],

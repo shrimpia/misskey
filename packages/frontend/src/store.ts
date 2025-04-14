@@ -479,10 +479,6 @@ export const store = markRaw(new Pizzax('base', {
 		where: 'account',
 		default: true,
 	},
-	rememberPostFormToggleStateEnabled: {
-		where: 'account',
-		default: true,
-	},
 	reactableRemoteReactionEnabled: {
 		where: 'account',
 		default: true,

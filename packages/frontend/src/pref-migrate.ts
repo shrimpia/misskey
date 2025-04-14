@@ -141,7 +141,6 @@ export function migrateOldSettings() {
 		prefer.commit('ebisskey.nicknameEnabled', store.s.nicknameEnabled);
 		prefer.commit('ebisskey.stealEnabled', store.s.stealEnabled);
 		prefer.commit('ebisskey.infoButtonForNoteActionsEnabled', store.s.infoButtonForNoteActionsEnabled);
-		prefer.commit('ebisskey.rememberPostFormToggleStateEnabled', store.s.rememberPostFormToggleStateEnabled);
 		prefer.commit('ebisskey.featuredTimelineEnabled', store.s.featuredTimelineEnabled);
 		prefer.commit('ebisskey.useAirReply', store.s.useAirReply);
 		prefer.commit('ebisskey.airReplyButtonPlacement', store.s.airReplyButtonPlacement);

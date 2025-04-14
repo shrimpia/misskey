@@ -47,11 +47,12 @@
 						</MkSwitch>
 					</MkPreferenceContainer>
 				</SearchMarker>
-				<MkPreferenceContainer k="ebisskey.rememberPostFormToggleStateEnabled">
-					<MkSwitch v-model="rememberPostFormToggleStateEnabled">
-						<SearchLabel>投稿フォームにて、プレビューのオン・オフを記憶する</SearchLabel>
-					</MkSwitch>
-				</MkPreferenceContainer>
+				<MkSwitch :modelValue="true" disabled>
+					<SearchLabel>投稿フォームにて、プレビューのオン・オフを記憶する</SearchLabel>
+					<template #caption>
+						この機能は本家に正式実装されたため、独自機能としては廃止しました。
+					</template>
+				</MkSwitch>
 				<MkPreferenceContainer k="ebisskey.featuredTimelineEnabled">
 					<MkSwitch v-model="featuredTimelineEnabled">
 						<SearchLabel>ハイライトタイムラインをホームに表示する</SearchLabel>
@@ -151,7 +152,6 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
-import type { Note } from 'misskey-js/entities.js';
 import MkSwitch from '@/components/MkSwitch.vue';
 import FormSection from '@/components/form/section.vue';
 import { i18n } from '@/i18n';
@@ -165,13 +165,10 @@ import MkFeatureBanner from '@/components/MkFeatureBanner.vue';
 import MkPreferenceContainer from '@/components/MkPreferenceContainer.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import { PREF_DEF } from '@/preferences/def';
-import { $i } from '@/i';
-import MkNote from '@/components/MkNote.vue';
 
 const nicknameEnabled = prefer.model('ebisskey.nicknameEnabled');
 const stealEnabled = prefer.model('ebisskey.stealEnabled');
 const infoButtonForNoteActionsEnabled = prefer.model('ebisskey.infoButtonForNoteActionsEnabled');
-const rememberPostFormToggleStateEnabled = prefer.model('ebisskey.rememberPostFormToggleStateEnabled');
 const featuredTimelineEnabled = prefer.model('ebisskey.featuredTimelineEnabled');
 const useAirReply = prefer.model('ebisskey.useAirReply');
 const airReplyButtonPlacement = prefer.model('ebisskey.airReplyButtonPlacement');
@@ -183,25 +180,6 @@ const noteVisibilityColorFollowers = ref(prefer.s['ebisskey.noteVisibilityColorF
 const noteVisibilityColorSpecified = ref(prefer.s['ebisskey.noteVisibilityColorSpecified']);
 const noteVisibilityColorLocalOnly = ref(prefer.s['ebisskey.noteVisibilityColorLocalOnly']);
 const noteVisibilityColorChanged = ref(false);
-
-const noteMockupVisibility = ref<'public' | 'home' | 'followers' | 'specified'>('home');
-const noteMockupLocalOnly = ref(false);
-
-const noteMockup = computed(() => $i ? ({
-	id: '0',
-	createdAt: new Date().toISOString(),
-	text: 'こんにちは',
-	userId: $i.id,
-	user: $i,
-	visibility: noteMockupVisibility.value,
-	localOnly: noteMockupLocalOnly.value,
-	reactionAcceptance: null,
-	reactionEmojis: {},
-	reactions: {},
-	reactionCount: 0,
-	renoteCount: 0,
-	repliesCount: 0,
-} satisfies Note) : null);
 
 watch([
 	noteVisibilityColorHome,
