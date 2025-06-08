@@ -4,24 +4,28 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="$style.root">
-	<XSidebar v-if="!isMobile" :class="$style.sidebar" :showWidgetButton="!isDesktop" @widgetButtonClick="widgetsShowing = true"/>
+<div :class="[$style.root, { '_forceShrinkSpacer': deviceKind === 'smartphone' }]">
+	<XTitlebar v-if="prefer.r.showTitlebar.value" style="flex-shrink: 0;"/>
 
-	<div :class="$style.contents" @contextmenu.stop="onContextmenu">
-		<div>
-			<XPreferenceMakeBackupSuggestionBanner v-if="!store.r.enablePreferencesAutoCloudBackup.value && store.r.showPreferencesAutoCloudBackupSuggestion.value"/>
-			<XPreferenceRestore v-if="shouldSuggestRestoreBackup"/>
-			<ShrimpiaHeadline v-if="prefer.s['shrimpia.headlineEnabled']"/>
-			<XAnnouncements v-if="$i"/>
-			<XStatusBars :class="$style.statusbars"/>
+	<div :class="$style.nonTitlebarArea">
+		<XSidebar v-if="!isMobile" :class="$style.sidebar" :showWidgetButton="!isDesktop" @widgetButtonClick="widgetsShowing = true"/>
+
+		<div :class="[$style.contents, !isMobile && prefer.r.showTitlebar.value ? $style.withSidebarAndTitlebar : null]" @contextmenu.stop="onContextmenu">
+			<div>
+				<XPreferenceMakeBackupSuggestionBanner v-if="!store.r.enablePreferencesAutoCloudBackup.value && store.r.showPreferencesAutoCloudBackupSuggestion.value"/>
+				<XPreferenceRestore v-if="shouldSuggestRestoreBackup"/>
+				<ShrimpiaHeadline v-if="prefer.s['shrimpia.headlineEnabled']"/>
+				<XAnnouncements v-else-if="$i"/>
+				<XStatusBars :class="$style.statusbars"/>
+			</div>
+			<StackingRouterView v-if="prefer.s['experimental.stackingRouterView']" :class="$style.content"/>
+			<RouterView v-else :class="$style.content"/>
+			<XMobileFooterMenu v-if="isMobile" ref="navFooter" v-model:drawerMenuShowing="drawerMenuShowing" v-model:widgetsShowing="widgetsShowing"/>
 		</div>
-		<StackingRouterView v-if="prefer.s['experimental.stackingRouterView']" :class="$style.content"/>
-		<RouterView v-else :class="$style.content"/>
-		<XMobileFooterMenu v-if="isMobile" ref="navFooter" v-model:drawerMenuShowing="drawerMenuShowing" v-model:widgetsShowing="widgetsShowing"/>
-	</div>
 
-	<div v-if="isDesktop && !pageMetadata?.needWideArea" :class="$style.widgets">
-		<XWidgets/>
+		<div v-if="isDesktop && !pageMetadata?.needWideArea" :class="$style.widgets">
+			<XWidgets/>
+		</div>
 	</div>
 
 	<XCommon v-model:drawerMenuShowing="drawerMenuShowing" v-model:widgetsShowing="widgetsShowing"/>
@@ -37,6 +41,8 @@ import type { PageMetadata } from '@/page.js';
 import XMobileFooterMenu from '@/ui/_common_/mobile-footer-menu.vue';
 import XPreferenceRestore from '@/ui/_common_/PreferenceRestore.vue';
 import XPreferenceMakeBackupSuggestionBanner from '@/ui/_common_/PreferenceMakeBackupSuggestionBanner.vue';
+import XTitlebar from '@/ui/_common_/titlebar.vue';
+import XSidebar from '@/ui/_common_/navbar.vue';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
 import { $i } from '@/i.js';
@@ -50,7 +56,6 @@ import { DI } from '@/di.js';
 import { store } from '@/store.js';
 
 const XWidgets = defineAsyncComponent(() => import('./_common_/widgets.vue'));
-const XSidebar = defineAsyncComponent(() => import('@/ui/_common_/navbar.vue'));
 const XStatusBars = defineAsyncComponent(() => import('@/ui/_common_/statusbars.vue'));
 const XAnnouncements = defineAsyncComponent(() => import('@/ui/_common_/announcements.vue'));
 const ShrimpiaHeadline = defineAsyncComponent(() => import('@/ui/_common_/shrimpia-headline.vue'));
@@ -133,8 +138,15 @@ $widgets-hide-threshold: 1090px;
 	height: 100dvh;
 	overflow: clip;
 	contain: strict;
-	box-sizing: border-box;
 	display: flex;
+	flex-direction: column;
+	background: var(--MI_THEME-navBg);
+}
+
+.nonTitlebarArea {
+	display: flex;
+	flex: 1;
+	min-height: 0;
 }
 
 .sidebar {
@@ -147,7 +159,12 @@ $widgets-hide-threshold: 1090px;
 	flex: 1;
 	height: 100%;
 	min-width: 0;
-	background: var(--MI_THEME-bg);
+
+	&.withSidebarAndTitlebar {
+		background: var(--MI_THEME-navBg);
+		border-radius: 12px 0 0 0;
+		overflow: clip;
+	}
 }
 
 .content {
