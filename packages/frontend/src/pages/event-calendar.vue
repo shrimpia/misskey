@@ -18,14 +18,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 			<MkError v-else-if="error" @retry="init()"/>
 
-			<div v-else-if="empty" key="_empty_" class="empty">
-				<slot name="empty">
-					<div class="_fullinfo">
-						<img :src="infoImageUrl" class="_ghost"/>
-						<div>{{ i18n.ts.nothing }}</div>
-					</div>
-				</slot>
-			</div>
+			<MkResult v-else-if="empty" type="empty"/>
 
 			<div v-else class="_gaps">
 				<MkInfo>
@@ -55,8 +48,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { onMounted, ref, computed } from 'vue';
 import type { Event } from '@/scripts/portal-api/events.js';
-import { i18n } from '@/i18n.js';
-import { infoImageUrl } from '@/instance.js';
 import MkInfo from '@/components/MkInfo.vue';
 import MkMention from '@/components/MkMention.vue';
 import { fetchEvents } from '@/scripts/portal-api/events.js';
