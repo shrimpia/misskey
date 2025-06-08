@@ -77,7 +77,7 @@ import { globalEvents, useGlobalEvent } from '@/events.js';
 import { isSeparatorNeeded, getSeparatorInfo } from '@/utility/timeline-date-separate.js';
 
 const props = withDefaults(defineProps<{
-	src: BasicTimelineType | 'mentions' | 'directs' | 'list' | 'antenna' | 'channel' | 'role';
+	src: BasicTimelineType | 'mentions' | 'directs' | 'list' | 'antenna' | 'channel' | 'featured' | 'role';
 	list?: string;
 	antenna?: string;
 	channel?: string;
@@ -326,6 +326,9 @@ function updatePaginationQuery() {
 		query = {
 			roleId: props.role,
 		};
+	} else if (props.src === 'featured') {
+		endpoint = 'notes/featured';
+		query = {};
 	} else {
 		throw new Error('Unrecognized timeline type: ' + props.src);
 	}
