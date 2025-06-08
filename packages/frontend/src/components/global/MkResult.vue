@@ -41,7 +41,10 @@ const props = defineProps<{
 .img {
 	vertical-align: bottom;
 	height: 128px;
-	aspect-ratio: 1;
+	// #region Shrimpia: 横長になってしまう問題に対処
+	// aspect-ratio: 1;
+	margin: auto;
+  // #endregion
 	margin-bottom: 16px;
 	border-radius: 16px;
 }
