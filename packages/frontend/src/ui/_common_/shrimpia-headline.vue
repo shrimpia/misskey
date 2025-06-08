@@ -195,6 +195,7 @@ onMounted(async () => {
 	font-size: 14px;
 	background: var(--MI_THEME-headlineBg);
 	color: var(--MI_THEME-headlineFg);
+	font-weight: bold;
 	align-items: center;
 }
 
