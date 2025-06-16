@@ -558,7 +558,7 @@ function smallerVisibility(a: Visibility, b: Visibility): Visibility {
 
 export function getRenoteMenu(props: {
 	note: Misskey.entities.Note;
-	renoteButton: ShallowRef<HTMLElement | undefined>;
+	renoteButton: ShallowRef<HTMLElement | null | undefined>;
 	mock?: boolean;
 }) {
 	const isRenote = Misskey.note.isPureRenote(props.note);
