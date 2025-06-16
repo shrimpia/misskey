@@ -148,7 +148,7 @@ export function openInstanceMenu(ev: MouseEvent) {
 		target: '_blank',
 	}, {
 		type: 'a',
-		text: 'Shrimpia Park',
+		text: '公式Discord',
 		icon: 'ti ti-brand-discord',
 		href: 'https://go.shrimpia.network/discord',
 		target: '_blank',
