@@ -505,7 +505,7 @@ function airReply(): void {
 	// 公開範囲を引き継いだ投稿フォームを作成
 	os.post({
 		reply: appearNote,
-		channel: appearNote.value.channel,
+		channel: appearNote.channel,
 		isAirReply: true,
 	});
 }
