@@ -37,6 +37,8 @@ export const themeProps = Object.keys(lightTheme.props).filter(key => !key.start
 
 export const getBuiltinThemes = () => Promise.all(
 	[
+		// Shrimpia
+		'l-shrimpia',
 		'l-light',
 		'l-coffee',
 		'l-apricot',
@@ -47,6 +49,8 @@ export const getBuiltinThemes = () => Promise.all(
 		'l-sushi',
 		'l-u0',
 
+		// Shrimpia
+		'd-shrimpia',
 		'd-dark',
 		'd-persimmon',
 		'd-astro',
