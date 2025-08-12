@@ -72,6 +72,7 @@ export type Channels = {
 			withRenotes?: boolean;
 			withFiles?: boolean;
 			withBots?: boolean;
+			localOnly?: boolean;
 		};
 		events: {
 			note: (payload: Note) => void;

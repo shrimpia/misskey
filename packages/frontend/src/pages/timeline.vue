@@ -21,6 +21,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:withSensitive="withSensitive"
 			:withBots="withBots"
 			:onlyFiles="onlyFiles"
+			:onlyLocals="onlyLocals"
 			:sound="true"
 		/>
 	</div>
@@ -64,6 +65,10 @@ const withRenotes = computed<boolean>({
 const withBots = computed<boolean>({
 	get: () => store.r.tl.value.filter.withBots,
 	set: (x) => saveTlFilter('withBots', x),
+});
+const onlyLocals = computed<boolean>({
+	get: () => store.r.tl.value.filter.onlyLocals,
+	set: (x) => saveTlFilter('onlyLocals', x),
 });
 
 // computed内での無限ループを防ぐためのフラグ
@@ -264,6 +269,15 @@ const headerActions = computed(() => {
 					ref: withBots,
 					disabled: !isBasicTimeline(src.value),
 				});
+
+				if (src.value === 'home') {
+					menuItems.push({
+						type: 'switch',
+						icon: 'ti ti-rocket-off',
+						text: i18n.ts.localOnly,
+						ref: onlyLocals,
+					});
+				}
 
 				os.popupMenu(menuItems, ev.currentTarget ?? ev.target);
 			},

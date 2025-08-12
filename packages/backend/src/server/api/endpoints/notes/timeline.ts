@@ -49,6 +49,7 @@ export const paramDef = {
 		withFiles: { type: 'boolean', default: false },
 		withRenotes: { type: 'boolean', default: true },
 		withBots: { type: 'boolean', default: true },
+		localOnly: { type: 'boolean', default: false },
 	},
 	required: [],
 } as const;
@@ -88,6 +89,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					withFiles: ps.withFiles,
 					withRenotes: ps.withRenotes,
 					withBots: ps.withBots,
+					localOnly: ps.localOnly,
 				}, me);
 
 				process.nextTick(() => {
@@ -114,6 +116,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				alwaysIncludeMyNotes: true,
 				excludePureRenotes: !ps.withRenotes,
 				excludeBots: !ps.withBots,
+				localOnly: ps.localOnly,
 				noteFilter: note => {
 					if (note.reply && note.reply.visibility === 'followers') {
 						if (!Object.hasOwn(followings, note.reply.userId) && note.reply.userId !== me.id) return false;
@@ -131,6 +134,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					withFiles: ps.withFiles,
 					withRenotes: ps.withRenotes,
 					withBots: ps.withBots,
+					localOnly: ps.localOnly,
 				}, me),
 			});
 
@@ -142,7 +146,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		});
 	}
 
-	private async getFromDb(ps: { untilId: string | null; sinceId: string | null; limit: number; includeMyRenotes: boolean; includeRenotedMyNotes: boolean; includeLocalRenotes: boolean; withFiles: boolean; withRenotes: boolean; withBots: boolean; }, me: MiLocalUser) {
+	private async getFromDb(ps: { untilId: string | null; sinceId: string | null; limit: number; includeMyRenotes: boolean; includeRenotedMyNotes: boolean; includeLocalRenotes: boolean; withFiles: boolean; withRenotes: boolean; withBots: boolean; localOnly: boolean; }, me: MiLocalUser) {
 		const followees = await this.userFollowingService.getFollowees(me.id);
 		const followingChannels = await this.channelFollowingsRepository.find({
 			where: {
@@ -246,6 +250,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 		if (!ps.withBots) {
 			query.andWhere('user.isBot = false');
+		}
+
+		if (ps.localOnly) {
+			query.andWhere('user.host IS NULL');
 		}
 		//#endregion
 

@@ -91,12 +91,14 @@ const props = withDefaults(defineProps<{
 	withSensitive?: boolean;
 	withBots?: boolean;
 	onlyFiles?: boolean;
+	onlyLocals?: boolean;
 }>(), {
 	withRenotes: true,
 	withReplies: false,
 	withSensitive: true,
 	withBots: true,
 	onlyFiles: false,
+	onlyLocals: false,
 	sound: false,
 	customSound: null,
 });
@@ -120,6 +122,7 @@ if (props.src === 'antenna') {
 			withRenotes: props.withRenotes,
 			withFiles: props.onlyFiles ? true : undefined,
 			withBots: props.withBots,
+			localOnly: props.onlyLocals ? true : undefined,
 		})),
 		useShallowRef: true,
 	}));
@@ -324,6 +327,7 @@ function connectChannel() {
 			withRenotes: props.withRenotes,
 			withFiles: props.onlyFiles ? true : undefined,
 			withBots: props.withBots,
+			localOnly: props.onlyLocals ? true : undefined,
 		});
 		connection2 = stream.useChannel('main');
 	} else if (props.src === 'local') {
@@ -387,7 +391,7 @@ if (store.s.realtimeMode) {
 	connectChannel();
 }
 
-watch(() => [props.list, props.antenna, props.channel, props.role, props.withRenotes, props.withBots], () => {
+watch(() => [props.list, props.antenna, props.channel, props.role, props.withRenotes, props.withBots, props.onlyLocals], () => {
 	if (store.s.realtimeMode) {
 		disconnectChannel();
 		connectChannel();

@@ -37,6 +37,7 @@ type TimelineOptions = {
 	excludeReplies?: boolean;
 	excludePureRenotes: boolean;
 	excludeBots?: boolean;
+	localOnly?: boolean,
 	ignoreAuthorFromUserSuspension?: boolean;
 	dbFallback: (untilId: string | null, sinceId: string | null, limit: number) => Promise<MiNote[]>,
 };
@@ -106,6 +107,11 @@ export class FanoutTimelineEndpointService {
 			if (ps.excludeBots) {
 				const parentFilter = filter;
 				filter = (note) => note.user?.isBot !== true && parentFilter(note);
+			}
+
+			if (ps.localOnly) {
+				const parentFilter = filter;
+				filter = (note) => note.user?.host == null && parentFilter(note);
 			}
 
 			if (ps.me) {
