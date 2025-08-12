@@ -51,6 +51,7 @@ export const paramDef = {
 		withFiles: { type: 'boolean', default: false },
 		withRenotes: { type: 'boolean', default: true },
 		withReplies: { type: 'boolean', default: false },
+		withBots: { type: 'boolean', default: true },
 		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
 		sinceId: { type: 'string', format: 'misskey:id' },
 		untilId: { type: 'string', format: 'misskey:id' },
@@ -95,6 +96,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					limit: ps.limit,
 					withFiles: ps.withFiles,
 					withReplies: ps.withReplies,
+					withBots: ps.withBots,
 				}, me);
 
 				process.nextTick(() => {
@@ -120,12 +122,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					: ['localTimeline'],
 				alwaysIncludeMyNotes: true,
 				excludePureRenotes: !ps.withRenotes,
+				excludeBots: !ps.withBots,
 				dbFallback: async (untilId, sinceId, limit) => await this.getFromDb({
 					untilId,
 					sinceId,
 					limit,
 					withFiles: ps.withFiles,
 					withReplies: ps.withReplies,
+					withBots: ps.withBots,
 				}, me),
 			});
 
@@ -145,6 +149,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		limit: number,
 		withFiles: boolean,
 		withReplies: boolean,
+		withBots?: boolean,
 	}, me: MiLocalUser | null) {
 		const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'),
 			ps.sinceId, ps.untilId)
@@ -161,6 +166,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 		if (ps.withFiles) {
 			query.andWhere('note.fileIds != \'{}\'');
+		}
+
+		if (!ps.withBots) {
+			query.andWhere('user.isBot = false');
 		}
 
 		if (!ps.withReplies) {

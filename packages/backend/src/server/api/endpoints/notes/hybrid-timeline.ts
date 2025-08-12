@@ -46,7 +46,7 @@ export const meta = {
 		bothWithRepliesAndWithFiles: {
 			message: 'Specifying both withReplies and withFiles is not supported',
 			code: 'BOTH_WITH_REPLIES_AND_WITH_FILES',
-			id: 'dfaa3eb7-8002-4cb7-bcc4-1095df46656f'
+			id: 'dfaa3eb7-8002-4cb7-bcc4-1095df46656f',
 		},
 	},
 } as const;
@@ -66,6 +66,7 @@ export const paramDef = {
 		withFiles: { type: 'boolean', default: false },
 		withRenotes: { type: 'boolean', default: true },
 		withReplies: { type: 'boolean', default: false },
+		withBots: { type: 'boolean', default: true },
 	},
 	required: [],
 } as const;
@@ -112,6 +113,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					includeLocalRenotes: ps.includeLocalRenotes,
 					withFiles: ps.withFiles,
 					withReplies: ps.withReplies,
+					withBots: ps.withBots,
 				}, me);
 
 				process.nextTick(() => {
@@ -158,6 +160,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				useDbFallback: this.serverSettings.enableFanoutTimelineDbFallback,
 				alwaysIncludeMyNotes: true,
 				excludePureRenotes: !ps.withRenotes,
+				excludeBots: !ps.withBots,
 				noteFilter: note => {
 					if (note.reply && note.reply.visibility === 'followers') {
 						if (!Object.hasOwn(followings, note.reply.userId) && note.reply.userId !== me.id) return false;
@@ -174,6 +177,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					includeLocalRenotes: ps.includeLocalRenotes,
 					withFiles: ps.withFiles,
 					withReplies: ps.withReplies,
+					withBots: ps.withBots,
 				}, me),
 			});
 
@@ -194,6 +198,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		includeLocalRenotes: boolean,
 		withFiles: boolean,
 		withReplies: boolean,
+		withBots?: boolean,
 	}, me: MiLocalUser) {
 		const followees = await this.userFollowingService.getFollowees(me.id);
 		const followingChannels = await this.channelFollowingsRepository.find({
@@ -274,6 +279,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				qb.orWhere('note.fileIds != \'{}\'');
 				qb.orWhere('0 < (SELECT COUNT(*) FROM poll WHERE poll."noteId" = note.id)');
 			}));
+		}
+
+		if (!ps.withBots) {
+			query.andWhere('user.isBot = false');
 		}
 
 		if (ps.withFiles) {

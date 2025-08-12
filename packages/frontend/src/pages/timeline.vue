@@ -19,6 +19,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:withRenotes="withRenotes"
 			:withReplies="withReplies"
 			:withSensitive="withSensitive"
+			:withBots="withBots"
 			:onlyFiles="onlyFiles"
 			:sound="true"
 		/>
@@ -59,6 +60,10 @@ const src = computed<TimelinePageSrc>({
 const withRenotes = computed<boolean>({
 	get: () => store.r.tl.value.filter.withRenotes,
 	set: (x) => saveTlFilter('withRenotes', x),
+});
+const withBots = computed<boolean>({
+	get: () => store.r.tl.value.filter.withBots,
+	set: (x) => saveTlFilter('withBots', x),
 });
 
 // computed内での無限ループを防ぐためのフラグ
@@ -252,6 +257,12 @@ const headerActions = computed(() => {
 					text: i18n.ts.fileAttachedOnly,
 					ref: onlyFiles,
 					disabled: isBasicTimeline(src.value) && hasWithReplies(src.value) ? withReplies : false,
+				}, {
+					type: 'switch',
+					icon: 'ti ti-robot',
+					text: i18n.ts.showBotNotes,
+					ref: withBots,
+					disabled: !isBasicTimeline(src.value),
 				});
 
 				os.popupMenu(menuItems, ev.currentTarget ?? ev.target);

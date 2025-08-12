@@ -89,11 +89,13 @@ const props = withDefaults(defineProps<{
 	withRenotes?: boolean;
 	withReplies?: boolean;
 	withSensitive?: boolean;
+	withBots?: boolean;
 	onlyFiles?: boolean;
 }>(), {
 	withRenotes: true,
 	withReplies: false,
 	withSensitive: true,
+	withBots: true,
 	onlyFiles: false,
 	sound: false,
 	customSound: null,
@@ -117,6 +119,7 @@ if (props.src === 'antenna') {
 		computedParams: computed(() => ({
 			withRenotes: props.withRenotes,
 			withFiles: props.onlyFiles ? true : undefined,
+			withBots: props.withBots,
 		})),
 		useShallowRef: true,
 	}));
@@ -126,6 +129,7 @@ if (props.src === 'antenna') {
 			withRenotes: props.withRenotes,
 			withReplies: props.withReplies,
 			withFiles: props.onlyFiles ? true : undefined,
+			withBots: props.withBots,
 		})),
 		useShallowRef: true,
 	}));
@@ -135,6 +139,7 @@ if (props.src === 'antenna') {
 			withRenotes: props.withRenotes,
 			withReplies: props.withReplies,
 			withFiles: props.onlyFiles ? true : undefined,
+			withBots: props.withBots,
 		})),
 		useShallowRef: true,
 	}));
@@ -143,6 +148,7 @@ if (props.src === 'antenna') {
 		computedParams: computed(() => ({
 			withRenotes: props.withRenotes,
 			withFiles: props.onlyFiles ? true : undefined,
+			withBots: props.withBots,
 		})),
 		useShallowRef: true,
 	}));
@@ -317,6 +323,7 @@ function connectChannel() {
 		connection = stream.useChannel('homeTimeline', {
 			withRenotes: props.withRenotes,
 			withFiles: props.onlyFiles ? true : undefined,
+			withBots: props.withBots,
 		});
 		connection2 = stream.useChannel('main');
 	} else if (props.src === 'local') {
@@ -324,17 +331,20 @@ function connectChannel() {
 			withRenotes: props.withRenotes,
 			withReplies: props.withReplies,
 			withFiles: props.onlyFiles ? true : undefined,
+			withBots: props.withBots,
 		});
 	} else if (props.src === 'social') {
 		connection = stream.useChannel('hybridTimeline', {
 			withRenotes: props.withRenotes,
 			withReplies: props.withReplies,
 			withFiles: props.onlyFiles ? true : undefined,
+			withBots: props.withBots,
 		});
 	} else if (props.src === 'global') {
 		connection = stream.useChannel('globalTimeline', {
 			withRenotes: props.withRenotes,
 			withFiles: props.onlyFiles ? true : undefined,
+			withBots: props.withBots,
 		});
 	} else if (props.src === 'mentions') {
 		connection = stream.useChannel('main');
@@ -377,7 +387,7 @@ if (store.s.realtimeMode) {
 	connectChannel();
 }
 
-watch(() => [props.list, props.antenna, props.channel, props.role, props.withRenotes], () => {
+watch(() => [props.list, props.antenna, props.channel, props.role, props.withRenotes, props.withBots], () => {
 	if (store.s.realtimeMode) {
 		disconnectChannel();
 		connectChannel();
