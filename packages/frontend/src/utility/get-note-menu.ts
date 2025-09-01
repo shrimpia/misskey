@@ -39,7 +39,7 @@ export async function getNoteClipMenu(props: {
 		}
 	}
 
-	const appearNote = getAppearNote(props.note);
+	const appearNote = getAppearNote(props.note) ?? props.note;
 
 	const clips = await clipsCache.fetch();
 	const menu: MenuItem[] = [...clips.map(clip => ({
@@ -179,7 +179,7 @@ export function getNoteMenu(props: {
 	translating: Ref<boolean>;
 	currentClip?: Misskey.entities.Clip;
 }) {
-	const appearNote = getAppearNote(props.note);
+	const appearNote = getAppearNote(props.note) ?? props.note;
 	const link = appearNote.url ?? appearNote.uri;
 
 	const cleanups = [] as (() => void)[];
@@ -571,9 +571,7 @@ export function getRenoteMenu(props: {
 	mock?: boolean;
 }) {
 	const isRenote = Misskey.note.isPureRenote(props.note);
-	const isMyRenote = $i && ($i.id === props.note.userId);
-	const isModerator = $i?.isModerator || $i?.isAdmin;
-	const appearNote = getAppearNote(props.note);
+	const appearNote = getAppearNote(props.note) ?? props.note;
 
 	const channelRenoteItems: MenuItem[] = [];
 	const normalRenoteItems: MenuItem[] = [];

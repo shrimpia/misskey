@@ -92,8 +92,6 @@ class HomeTimelineChannel extends Channel {
 			}
 		}
 
-		this.connection.cacheNote(note);
-
 		this.send('note', note);
 	}
 
