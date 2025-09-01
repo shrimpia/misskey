@@ -155,7 +155,6 @@ import { computed, ref, watch } from 'vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import FormSection from '@/components/form/section.vue';
 import { i18n } from '@/i18n';
-import { reloadAsk } from '@/utility/reload-ask.js';
 import MkSelect from '@/components/MkSelect.vue';
 import MkColorInput from '@/components/MkColorInput.vue';
 import MkButton from '@/components/MkButton.vue';
@@ -165,6 +164,7 @@ import MkFeatureBanner from '@/components/MkFeatureBanner.vue';
 import MkPreferenceContainer from '@/components/MkPreferenceContainer.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import { PREF_DEF } from '@/preferences/def';
+import { suggestReload } from '@/utility/reload-suggest';
 
 const nicknameEnabled = prefer.model('ebisskey.nicknameEnabled');
 const stealEnabled = prefer.model('ebisskey.stealEnabled');
@@ -198,7 +198,7 @@ watch([
 	useNoteVisibilityColoring,
 	useTextAreaAutoSize,
 ], async () => {
-	await reloadAsk({ reason: i18n.ts.reloadToApplySetting, unison: true });
+	suggestReload();
 });
 
 function saveColors() {
