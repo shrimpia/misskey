@@ -5231,7 +5231,7 @@ export interface Locale extends ILocale {
      */
     "testCaptchaWarning": string;
     /**
-     * 禁止ワード（国民の名前）
+     * 禁止ワード（ユーザーの名前）
      */
     "prohibitedWordsForNameOfUser": string;
     /**
@@ -5497,6 +5497,10 @@ export interface Locale extends ILocale {
      * 低くすると画質を保てますが、ファイルサイズは増加します。<br>高くするとファイルサイズを減らせますが、画質は低下します。
      */
     "defaultImageCompressionLevel_description": string;
+    /**
+     * Botのノートを表示
+     */
+    "showBotNotes": string;
     /**
      * 分
      */
@@ -6357,11 +6361,11 @@ export interface Locale extends ILocale {
                  */
                 "public": string;
                 /**
-                 * ホームタイムラインのみに公開。フォロワー・プロフィールを見に来たユーザー・リノートから、他のユーザーも見ることができます。
+                 * ホームタイムラインのみに公開。フォロワー・プロフィールを見に来た人・リノートから、他のユーザーも見ることができます。
                  */
                 "home": string;
                 /**
-                 * フォロワーにのみ公開。本ユーザー以外がリノートすることはできず、またフォロワー以外は閲覧できません。
+                 * フォロワーにのみ公開。本人以外がリノートすることはできず、またフォロワー以外は閲覧できません。
                  */
                 "followers": string;
                 /**

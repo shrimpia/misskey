@@ -25,6 +25,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		:withRenotes="withRenotes"
 		:withReplies="withReplies"
 		:withSensitive="withSensitive"
+		:withBots="withBots"
 		:onlyFiles="onlyFiles"
 		:sound="true"
 		:customSound="soundSetting"
@@ -57,6 +58,7 @@ const withRenotes = ref(props.column.withRenotes ?? true);
 const withReplies = ref(props.column.withReplies ?? false);
 const withSensitive = ref(props.column.withSensitive ?? true);
 const onlyFiles = ref(props.column.onlyFiles ?? false);
+const withBots = ref(props.column.withBots ?? true);
 
 watch(withRenotes, v => {
 	updateColumn(props.column.id, {
@@ -82,6 +84,12 @@ watch(onlyFiles, v => {
 	});
 });
 
+
+watch(withBots, v => {
+	updateColumn(props.column.id, {
+		withBots: v,
+	});
+});
 watch(soundSetting, v => {
 	updateColumn(props.column.id, { soundSetting: v });
 });
@@ -152,6 +160,10 @@ const menu = computed<MenuItem[]>(() => {
 		type: 'switch',
 		text: i18n.ts.withSensitive,
 		ref: withSensitive,
+	}, {
+		type: 'switch',
+		text: i18n.ts.showBotNotes,
+		ref: withBots,
 	});
 
 	return menuItems;
