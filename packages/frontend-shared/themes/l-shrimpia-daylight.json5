@@ -1,0 +1,33 @@
+{
+	id: 'network.shrimpia.themes.daylight',
+
+	name: "Shrimpia Daylight",
+	author: 'Shrimpia Network',
+	desc: 'シュリンピアの明るい空',
+	base: 'light',
+
+	props: {
+		accent: '#F24149',
+		love: '@accent',
+		bg: '#A5CAEF',
+		fg: '#000000',
+		fgOnAccent: '#ffffff',
+		fgOnWhite: '#000000',
+		panel: '#D0E3F7',
+
+		link: '@accent',
+		hashtag: '@accent',
+		renote: '#5a5a5a',
+		infoBg: '#FFE1E2',
+		infoFg: '@accent',
+		infoWarnBg: '#FFE551',
+		infoWarnFg: '#352D00',
+		buttonBg: 'rgba(0, 0, 0, 0.05)',
+		buttonHoverBg: 'rgba(0, 0, 0, 0.1)',
+		badge: '@accent',
+		success: '#86b300',
+		error: '#D93737',
+		warn: '#9A8300',
+		deckBg: '@bg',
+	},
+}
