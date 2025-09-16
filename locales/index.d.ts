@@ -25,7 +25,7 @@ export interface Locale extends ILocale {
      */
     "introMisskey": string;
     /**
-     * {name}は、オープンソースのプラットフォーム<b>Misskey</b>の帝国のひとつです。
+     * {name}は、オープンソースのプラットフォーム<b>Misskey</b>のサーバーのひとつです。
      */
     "poweredByMisskeyDescription": ParameterizedString<"name">;
     /**
@@ -143,15 +143,15 @@ export interface Locale extends ILocale {
      */
     "noAccountDescription": string;
     /**
-     * 帰国
+     * ログイン
      */
     "login": string;
     /**
-     * 帰国手続き中
+     * ログイン中
      */
     "loggingIn": string;
     /**
-     * 出国
+     * ログアウト
      */
     "logout": string;
     /**
@@ -419,7 +419,7 @@ export interface Locale extends ILocale {
      */
     "pageLoadErrorDescription": string;
     /**
-     * 帝国からの応答がありません。しばらく待ってから再度試してください。
+     * サーバーの応答がありません。しばらく待ってから再度試してください。
      */
     "serverIsDead": string;
     /**
@@ -719,11 +719,11 @@ export interface Locale extends ILocale {
      */
     "youCanCleanRemoteFilesCache": string;
     /**
-     * 諸外国のセンシティブなファイルをキャッシュする
+     * リモートのセンシティブなファイルをキャッシュする
      */
     "cacheRemoteSensitiveFiles": string;
     /**
-     * この設定を無効にすると、諸外国のセンシティブなファイルはキャッシュせず直リンクするようになります。
+     * この設定を無効にすると、リモートのセンシティブなファイルはキャッシュせず直リンクするようになります。
      */
     "cacheRemoteSensitiveFilesDescription": string;
     /**
@@ -751,7 +751,7 @@ export interface Locale extends ILocale {
      */
     "flagShowTimelineRepliesDescription": string;
     /**
-     * フォロー中のユーザーからのフォロリクを自動承認
+     * フォロー中ユーザーからのフォロリクを自動承認
      */
     "autoAcceptFollowed": string;
     /**
@@ -763,7 +763,7 @@ export interface Locale extends ILocale {
      */
     "reloadAccountsList": string;
     /**
-     * 帰国に失敗しました
+     * ログインに失敗しました
      */
     "loginFailed": string;
     /**
@@ -815,11 +815,11 @@ export interface Locale extends ILocale {
      */
     "followConfirm": ParameterizedString<"name">;
     /**
-     * プロキシュリンプ
+     * プロキシアカウント
      */
     "proxyAccount": string;
     /**
-     * プロキシュリンプは、特定の条件下でユーザーのリモートフォローを代行するアカウントです。例えば、ユーザーがリモートユーザーをリストに入れたとき、リストに入れられたユーザーを誰もフォローしていないとアクティビティが帝国に配達されないため、代わりにプロキシュリンプがフォローするようにします。
+     * プロキシアカウントは、特定の条件下でユーザーのリモートフォローを代行するアカウントです。例えば、ユーザーがリモートユーザーをリストに入れたとき、リストに入れられたユーザーを誰もフォローしていないとアクティビティがサーバーに配達されないため、代わりにプロキシアカウントがフォローするようにします。
      */
     "proxyAccountDescription": string;
     /**
@@ -847,7 +847,7 @@ export interface Locale extends ILocale {
      */
     "federation": string;
     /**
-     * 国家
+     * サーバー
      */
     "instances": string;
     /**
@@ -891,7 +891,7 @@ export interface Locale extends ILocale {
      */
     "silenceThisInstance": string;
     /**
-     * 国家をメディアサイレンス
+     * サーバーをメディアサイレンス
      */
     "mediaSilenceThisInstance": string;
     /**
@@ -939,7 +939,7 @@ export interface Locale extends ILocale {
      */
     "disk": string;
     /**
-     * 帝国の情報
+     * サーバー情報
      */
     "instanceInfo": string;
     /**
@@ -967,35 +967,35 @@ export interface Locale extends ILocale {
      */
     "clearCachedFilesConfirm": string;
     /**
-     * 断絶中の国家
+     * ブロックしたサーバー
      */
     "blockedInstances": string;
     /**
-     * 国交を断絶したい国家のホストを改行で区切って設定します。断絶された国家は、我が国と貿易できなくなります。
+     * ブロックしたいサーバーのホストを改行で区切って設定します。ブロックされたサーバーは、このインスタンスとやり取りできなくなります。
      */
     "blockedInstancesDescription": string;
     /**
-     * サイレンスした国家
+     * サイレンスしたサーバー
      */
     "silencedInstances": string;
     /**
-     * サイレンスしたい国家のホストを改行で区切って設定します。サイレンスされた国家に所属するユーザーはすべて「サイレンス」として扱われ、フォローがすべてリクエストになります。ブロックした国家には影響しません。
+     * サイレンスしたいサーバーのホストを改行で区切って設定します。サイレンスされたサーバーに所属するアカウントはすべて「サイレンス」として扱われ、フォローがすべてリクエストになります。ブロックしたインスタンスには影響しません。
      */
     "silencedInstancesDescription": string;
     /**
-     * メディアサイレンスした国家
+     * メディアサイレンスしたサーバー
      */
     "mediaSilencedInstances": string;
     /**
-     * メディアサイレンスしたい国家のホストを改行で区切って設定します。メディアサイレンスされた国家に所属するアカウントによるファイルはすべてセンシティブとして扱われ、カスタム絵文字が使用できないようになります。ブロックしたインスタンスには影響しません。
+     * メディアサイレンスしたいサーバーのホストを改行で区切って設定します。メディアサイレンスされたサーバーに所属するアカウントによるファイルはすべてセンシティブとして扱われ、カスタム絵文字が使用できないようになります。ブロックしたインスタンスには影響しません。
      */
     "mediaSilencedInstancesDescription": string;
     /**
-     * 国交を締結している国家
+     * 連合を許可するサーバー
      */
     "federationAllowedHosts": string;
     /**
-     * 国交を締結している国家のホストを改行で区切って設定します。
+     * 連合を許可するサーバーのホストを改行で区切って設定します。
      */
     "federationAllowedHostsDescription": string;
     /**
@@ -1231,11 +1231,11 @@ export interface Locale extends ILocale {
      */
     "noMoreHistory": string;
     /**
-     * チャットを始める
+     * メッセージを送る
      */
     "startChat": string;
     /**
-     * {n}尾が読みました
+     * {n}人が読みました
      */
     "nUsersRead": ParameterizedString<"n">;
     /**
@@ -1255,7 +1255,7 @@ export interface Locale extends ILocale {
      */
     "basicNotesBeforeCreateAccount": string;
     /**
-     * 帝国憲法
+     * 利用規約
      */
     "termsOfService": string;
     /**
@@ -1267,7 +1267,7 @@ export interface Locale extends ILocale {
      */
     "home": string;
     /**
-     * 他ユーザーの情報のため、我が国では完全な情報を確認できない場合があります。
+     * リモートユーザーのため、情報が不完全です。
      */
     "remoteUserCaution": string;
     /**
@@ -1443,15 +1443,15 @@ export interface Locale extends ILocale {
      */
     "banner": string;
     /**
-     * 検閲されたメディアの表示
+     * センシティブなメディアの表示
      */
     "displayOfSensitiveMedia": string;
     /**
-     * 帝国との接続が失われたとき
+     * サーバーとの接続が失われたとき
      */
     "whenServerDisconnected": string;
     /**
-     * 通信エラーのため、帝国から切断されました。
+     * サーバーから切断されました
      */
     "disconnectedFromServer": string;
     /**
@@ -1487,23 +1487,23 @@ export interface Locale extends ILocale {
      */
     "normal": string;
     /**
-     * 国名
+     * サーバー名
      */
     "instanceName": string;
     /**
-     * 国の紹介
+     * サーバーの紹介
      */
     "instanceDescription": string;
     /**
-     * 皇帝の名前
+     * 管理者の名前
      */
     "maintainerName": string;
     /**
-     * 皇帝のメールアドレス
+     * 管理者のメールアドレス
      */
     "maintainerEmail": string;
     /**
-     * 帝国憲法URL
+     * 利用規約URL
      */
     "tosUrl": string;
     /**
@@ -1555,7 +1555,7 @@ export interface Locale extends ILocale {
      */
     "enableGlobalTimeline": string;
     /**
-     * これらのタイムラインを無効化しても、利便性のため皇帝および官僚は引き続き利用することができます。
+     * これらのタイムラインを無効化しても、利便性のため管理者およびモデレーターは引き続き利用することができます。
      */
     "disablingTimelinesInfo": string;
     /**
@@ -1567,11 +1567,11 @@ export interface Locale extends ILocale {
      */
     "invite": string;
     /**
-     * 我が国にお住まいの方ひとりあたりのドライブ容量
+     * ローカルユーザーひとりあたりのドライブ容量
      */
     "driveCapacityPerLocalAccount": string;
     /**
-     * 他国にお住まいの方ひとりあたりのドライブ容量
+     * リモートユーザーひとりあたりのドライブ容量
      */
     "driveCapacityPerRemoteAccount": string;
     /**
@@ -1591,7 +1591,7 @@ export interface Locale extends ILocale {
      */
     "basicInfo": string;
     /**
-     * 晒し上げられたユーザー
+     * ピン留めユーザー
      */
     "pinnedUsers": string;
     /**
@@ -1599,11 +1599,11 @@ export interface Locale extends ILocale {
      */
     "pinnedUsersDescription": string;
     /**
-     * 晒し上げられたページ
+     * ピン留めページ
      */
     "pinnedPages": string;
     /**
-     * 帝国のトップページにピン留めしたいページのパスを改行で区切って記述します。
+     * サーバーのトップページにピン留めしたいページのパスを改行で区切って記述します。
      */
     "pinnedPagesDescription": string;
     /**
@@ -1783,7 +1783,7 @@ export interface Locale extends ILocale {
      */
     "recentlyUpdatedUsers": string;
     /**
-     * 最近入国したユーザー
+     * 最近登録したユーザー
      */
     "recentlyRegisteredUsers": string;
     /**
@@ -1815,7 +1815,7 @@ export interface Locale extends ILocale {
      */
     "aboutMisskey": string;
     /**
-     * 皇帝
+     * 管理者
      */
     "administrator": string;
     /**
@@ -1839,7 +1839,7 @@ export interface Locale extends ILocale {
      */
     "totpDescription": string;
     /**
-     * 官僚
+     * モデレーター
      */
     "moderator": string;
     /**
@@ -1863,7 +1863,7 @@ export interface Locale extends ILocale {
      */
     "moderationLogs": string;
     /**
-     * {n}尾が投稿
+     * {n}人が投稿
      */
     "nUsersMentioned": ParameterizedString<"n">;
     /**
@@ -1887,11 +1887,11 @@ export interface Locale extends ILocale {
      */
     "unregister": string;
     /**
-     * パスワードレス帰国
+     * パスワードレスログイン
      */
     "passwordLessLogin": string;
     /**
-     * パスワードを使用せず、セキュリティキーやパスキーなどのみで帰国します
+     * パスワードを使用せず、セキュリティキーやパスキーなどのみでログインします
      */
     "passwordLessLoginDescription": string;
     /**
@@ -1931,7 +1931,7 @@ export interface Locale extends ILocale {
      */
     "markAsReadAllUnreadNotes": string;
     /**
-     * すべてのチャットを既読にする
+     * すべてのダイレクトメッセージを既読にする
      */
     "markAsReadAllTalkMessages": string;
     /**
@@ -1999,11 +1999,11 @@ export interface Locale extends ILocale {
      */
     "onlyOneFileCanBeAttached": string;
     /**
-     * 続行する場合、入国手続きが必要です
+     * 続行する前に、登録またはログインが必要です
      */
     "signinRequired": string;
     /**
-     * 続行するには、お使いのサーバーに移動するか、シュリンピアに入国する必要があります。
+     * 続行するには、お使いのサーバーに移動するか、このサーバーに登録・ログインする必要があります
      */
     "signinOrContinueOnRemote": string;
     /**
@@ -2011,7 +2011,7 @@ export interface Locale extends ILocale {
      */
     "invitations": string;
     /**
-     * ビザ
+     * 招待コード
      */
     "invitationCode": string;
     /**
@@ -2047,7 +2047,7 @@ export interface Locale extends ILocale {
      */
     "normalPassword": string;
     /**
-     * 皇帝の次には強いパスワード
+     * エビの殻くらい強いパスワード
      */
     "strongPassword": string;
     /**
@@ -2059,11 +2059,11 @@ export interface Locale extends ILocale {
      */
     "passwordNotMatched": string;
     /**
-     * {x}で入国手続き
+     * {x}でログイン
      */
     "signinWith": ParameterizedString<"x">;
     /**
-     * 入国できませんでした。ユーザー名とパスワードを確認してください。
+     * ログインできませんでした。ユーザー名とパスワードを確認してください。
      */
     "signinFailed": string;
     /**
@@ -2119,7 +2119,7 @@ export interface Locale extends ILocale {
      */
     "noHistory": string;
     /**
-     * 入国履歴
+     * ログイン履歴
      */
     "signinHistory": string;
     /**
@@ -2147,7 +2147,7 @@ export interface Locale extends ILocale {
      */
     "docSource": string;
     /**
-     * 新たに入国手続きを開始
+     * アカウントを作成
      */
     "createAccount": string;
     /**
@@ -2279,7 +2279,7 @@ export interface Locale extends ILocale {
      */
     "objectStorageRegion": string;
     /**
-     * 'xx-east-1'のようなregionを指定してください。使用サービスにregionの概念がない場合は、空または'us-east-1'にしてください。
+     * 'xx-east-1'のようなregionを指定してください。使用サービスにregionの概念がない場合は'us-east-1'にしてください。AWS設定ファイルまたは環境変数を参照する場合は空にしてください。
      */
     "objectStorageRegionDesc": string;
     /**
@@ -2307,7 +2307,7 @@ export interface Locale extends ILocale {
      */
     "s3ForcePathStyleDesc": string;
     /**
-     * 帝国ログ
+     * サーバーログ
      */
     "serverLogs": string;
     /**
@@ -2499,7 +2499,7 @@ export interface Locale extends ILocale {
      */
     "removeAllFollowing": string;
     /**
-     * {host}からのフォローをすべて解除します。その国がもう陥落した場合などに実行してください。
+     * {host}からのフォローをすべて解除します。そのサーバーがもう存在しなくなった場合などに実行してください。
      */
     "removeAllFollowingDescription": ParameterizedString<"host">;
     /**
@@ -2511,13 +2511,29 @@ export interface Locale extends ILocale {
      */
     "userSilenced": string;
     /**
-     * あなたは凍結されています
+     * アカウントが凍結されています
      */
     "yourAccountSuspendedTitle": string;
     /**
-     * このアカウントは、シュリンピア帝国憲法違反により凍結されています。詳細については皇帝までお問い合わせください。新たに入国手続きを始めないでください。
+     * このアカウントは、サーバーの利用規約に違反したなどの理由により、凍結されています。詳細については管理者までお問い合わせください。新しいアカウントを作らないでください。
      */
     "yourAccountSuspendedDescription": string;
+    /**
+     * トークンが無効です
+     */
+    "tokenRevoked": string;
+    /**
+     * ログイントークンが失効しています。ログインし直してください。
+     */
+    "tokenRevokedDescription": string;
+    /**
+     * アカウントは削除されています
+     */
+    "accountDeleted": string;
+    /**
+     * このアカウントは削除されています。
+     */
+    "accountDeletedDescription": string;
     /**
      * メニュー
      */
@@ -2699,10 +2715,6 @@ export interface Locale extends ILocale {
      */
     "edit": string;
     /**
-     * リアクション絵文字が不明な場合、代わりに★を使う
-     */
-    "useStarForReactionFallback": string;
-    /**
      * メールサーバー
      */
     "emailServer": string;
@@ -2787,7 +2799,7 @@ export interface Locale extends ILocale {
      */
     "regexpErrorDescription": ParameterizedString<"tab" | "line">;
     /**
-     * 国家ミュート
+     * サーバーミュート
      */
     "instanceMute": string;
     /**
@@ -2863,11 +2875,11 @@ export interface Locale extends ILocale {
      */
     "other": string;
     /**
-     * ユーザートークンを再生成
+     * ログイントークンを再生成
      */
     "regenerateLoginToken": string;
     /**
-     * 入国時に使用される内部トークンを再生成します。通常この操作を行う必要はありません。再生成すると、全てのデバイスで一度国外追放されます。
+     * ログインに使用される内部トークンを再生成します。通常この操作を行う必要はありません。再生成すると、全てのデバイスでログアウトされます。
      */
     "regenerateLoginTokenDescription": string;
     /**
@@ -2947,7 +2959,7 @@ export interface Locale extends ILocale {
      */
     "editTheseSettingsMayBreakAccount": string;
     /**
-     * ノートの国家情報
+     * ノートのサーバー情報
      */
     "instanceTicker": string;
     /**
@@ -3203,7 +3215,7 @@ export interface Locale extends ILocale {
      */
     "clearCache": string;
     /**
-     * {n}尾がオンライン
+     * {n}人がオンライン
      */
     "onlineUsersCount": ParameterizedString<"n">;
     /**
@@ -3319,7 +3331,7 @@ export interface Locale extends ILocale {
      */
     "apply": string;
     /**
-     * お知らせを受け取る
+     * サーバーからのお知らせを受け取る
      */
     "receiveAnnouncementFromInstance": string;
     /**
@@ -3431,7 +3443,7 @@ export interface Locale extends ILocale {
      */
     "botProtection": string;
     /**
-     * 国交断絶およびサイレンス
+     * サーバーブロック・サイレンス
      */
     "instanceBlocking": string;
     /**
@@ -3471,7 +3483,7 @@ export interface Locale extends ILocale {
      */
     "switch": string;
     /**
-     * 皇帝情報が設定されていません。
+     * 管理者情報が設定されていません。
      */
     "noMaintainerInformationWarning": string;
     /**
@@ -3615,11 +3627,11 @@ export interface Locale extends ILocale {
      */
     "translatedFrom": ParameterizedString<"x">;
     /**
-     * 国籍の削除が進行中です
+     * アカウントの削除が進行中です
      */
     "accountDeletionInProgress": string;
     /**
-     * 帝国上であなたのアカウントを一意に識別するための名前。アルファベット(a~z, A~Z)、数字(0~9)、およびアンダーバー(_)が使用できます。ユーザー名は後から変更することは出来ません。
+     * サーバー上であなたのアカウントを一意に識別するための名前。アルファベット(a~z, A~Z)、数字(0~9)、およびアンダーバー(_)が使用できます。ユーザー名は後から変更することは出来ません。
      */
     "usernameInfo": string;
     /**
@@ -3675,7 +3687,7 @@ export interface Locale extends ILocale {
      */
     "off": string;
     /**
-     * 帰国にメールアドレスを必須にする
+     * アカウント登録にメールアドレスを必須にする
      */
     "emailRequiredForSignup": string;
     /**
@@ -3791,11 +3803,11 @@ export interface Locale extends ILocale {
      */
     "searchByGoogle": string;
     /**
-     * 帝国のお墨付きライトテーマ
+     * サーバーデフォルトのライトテーマ
      */
     "instanceDefaultLightTheme": string;
     /**
-     * 帝国のお墨付きダークテーマ
+     * サーバーデフォルトのダークテーマ
      */
     "instanceDefaultDarkTheme": string;
     /**
@@ -3911,7 +3923,7 @@ export interface Locale extends ILocale {
      */
     "driveCapOverrideCaption": string;
     /**
-     * 閲覧するには皇帝アカウントで入国している必要があります。
+     * 閲覧するには管理者アカウントでログインしている必要があります。
      */
     "requireAdminForView": string;
     /**
@@ -4027,11 +4039,11 @@ export interface Locale extends ILocale {
      */
     "beta": string;
     /**
-     * 国家による検閲を受ける
+     * 自動センシティブ判定
      */
     "enableAutoSensitive": string;
     /**
-     * 利用可能な場合は、帝国仕込みの機械学習によって、自動でメディアを検閲し、センシティブフラグを設定します。この機能をオフにしても、帝国法に基づき、強制的に検閲される可能性があります。
+     * 利用可能な場合は、機械学習を利用して自動でメディアにセンシティブフラグを設定します。この機能をオフにしても、サーバーによっては自動で設定されることがあります。
      */
     "enableAutoSensitiveDescription": string;
     /**
@@ -4071,7 +4083,7 @@ export interface Locale extends ILocale {
      */
     "pushNotificationAlreadySubscribed": string;
     /**
-     * ブラウザか帝国がプッシュ通知に非対応
+     * ブラウザかサーバーがプッシュ通知に非対応
      */
     "pushNotificationNotSupported": string;
     /**
@@ -4099,7 +4111,7 @@ export interface Locale extends ILocale {
      */
     "caption": string;
     /**
-     * Botアカウントで入国中
+     * Botアカウントでログイン中
      */
     "loggedInAsBot": string;
     /**
@@ -4235,11 +4247,11 @@ export interface Locale extends ILocale {
      */
     "achievements": string;
     /**
-     * 帝国の応答が無効です
+     * サーバーの応答が無効です
      */
     "gotInvalidResponseError": string;
     /**
-     * 帝国が国家非常事態宣言を発動している可能性があります。しばらくしてから再度お試しください。
+     * サーバーがダウンまたはメンテナンスしている可能性があります。しばらくしてから再度お試しください。
      */
     "gotInvalidResponseErrorDescription": string;
     /**
@@ -4271,11 +4283,11 @@ export interface Locale extends ILocale {
      */
     "collapseRenotesDescription": string;
     /**
-     * 帝国非常事態
+     * サーバー内部エラー
      */
     "internalServerError": string;
     /**
-     * 帝国政府内で予期しない非常事態が報告されました。
+     * サーバー内部で予期しないエラーが発生しました。
      */
     "internalServerErrorDescription": string;
     /**
@@ -4287,7 +4299,7 @@ export interface Locale extends ILocale {
      */
     "joinThisServer": string;
     /**
-     * 他国を見てみる
+     * 他のサーバーを探す
      */
     "exploreOtherServers": string;
     /**
@@ -4307,11 +4319,11 @@ export interface Locale extends ILocale {
      */
     "disableFederationOk": string;
     /**
-     * 現在シュリンピアは入国を制限しています。ビザをお持ちの方のみ登録できます。
+     * 現在このサーバーは招待制です。招待コードをお持ちの方のみ登録できます。
      */
     "invitationRequiredToRegister": string;
     /**
-     * 我が国ではメール配信はサポートされていません
+     * このサーバーではメール配信はサポートされていません
      */
     "emailNotSupported": string;
     /**
@@ -4415,19 +4427,19 @@ export interface Locale extends ILocale {
      */
     "retryAllQueuesConfirmTitle": string;
     /**
-     * 一時的に帝国の負荷が増大することがあります。
+     * 一時的にサーバーの負荷が増大することがあります。
      */
     "retryAllQueuesConfirmText": string;
     /**
-     * 他ユーザーのチャートを生成
+     * リモートユーザーのチャートを生成
      */
     "enableChartsForRemoteUser": string;
     /**
-     * 他国のチャートを生成
+     * リモートサーバーのチャートを生成
      */
     "enableChartsForFederatedInstances": string;
     /**
-     * 他国の情報を取得
+     * リモートサーバーの情報を取得
      */
     "enableStatsForFederatedInstances": string;
     /**
@@ -4471,11 +4483,11 @@ export interface Locale extends ILocale {
      */
     "accountMigration": string;
     /**
-     * このユーザーは新居にお引越ししました：
+     * このユーザーは新しいアカウントに移行しました：
      */
     "accountMoved": string;
     /**
-     * このアカウントは引っ越し済みです
+     * このアカウントは移行されています
      */
     "accountMovedShort": string;
     /**
@@ -4539,15 +4551,15 @@ export interface Locale extends ILocale {
      */
     "position": string;
     /**
-     * 入国審査
+     * ルールの抜粋
      */
     "serverRules": string;
     /**
-     * 入国する前に、以下を確認してください。
+     * このサーバーに登録するには、以下の内容を確認し同意する必要があります。
      */
     "pleaseConfirmBelowBeforeSignup": string;
     /**
-     * 以上、帝国の掟のすべてにチェックを入れたら次に進みましょう。
+     * 続けるには、全ての「同意する」にチェックが入っている必要があります。
      */
     "pleaseAgreeAllToContinue": string;
     /**
@@ -4559,7 +4571,7 @@ export interface Locale extends ILocale {
      */
     "preservedUsernames": string;
     /**
-     * 予約するユーザー名を改行で列挙します。ここで指定されたユーザー名はアカウント作成時に使えなくなりますが、皇帝によるアカウント作成時はこの制限を受けません。また、既に存在するアカウントも影響を受けません。
+     * 予約するユーザー名を改行で列挙します。ここで指定されたユーザー名はアカウント作成時に使えなくなりますが、管理者によるアカウント作成時はこの制限を受けません。また、既に存在するアカウントも影響を受けません。
      */
     "preservedUsernamesDescription": string;
     /**
@@ -4679,7 +4691,7 @@ export interface Locale extends ILocale {
      */
     "branding": string;
     /**
-     * 帝国のマシン情報を公開する
+     * サーバーのマシン情報を公開する
      */
     "enableServerMachineStats": string;
     /**
@@ -4691,7 +4703,7 @@ export interface Locale extends ILocale {
      */
     "turnOffToImprovePerformance": string;
     /**
-     * ビザを作成
+     * 招待コードを作成
      */
     "createInviteCode": string;
     /**
@@ -4703,19 +4715,19 @@ export interface Locale extends ILocale {
      */
     "createCount": string;
     /**
-     * ビザを作成しました
+     * 招待コードを作成しました
      */
     "inviteCodeCreated": string;
     /**
-     * 作成できるビザの数が上限に達しています。
+     * 作成できる招待コードの数が上限に達しています。
      */
     "inviteLimitExceeded": string;
     /**
-     * 作成できるビザ: 残り {limit} 個
+     * 作成できる招待コード: 残り {limit} 個
      */
     "createLimitRemaining": ParameterizedString<"limit">;
     /**
-     * {time}で最大 {limit} 個のビザを作成できます。
+     * {time}で最大 {limit} 個の招待コードを作成できます。
      */
     "inviteLimitResetCycle": ParameterizedString<"time" | "limit">;
     /**
@@ -4727,11 +4739,11 @@ export interface Locale extends ILocale {
      */
     "noExpirationDate": string;
     /**
-     * ビザが使用された日時
+     * 招待コードが使用された日時
      */
     "inviteCodeUsedAt": string;
     /**
-     * ビザを使用したユーザー
+     * 招待コードを使用したユーザー
      */
     "registeredUserUsingInviteCode": string;
     /**
@@ -4739,7 +4751,7 @@ export interface Locale extends ILocale {
      */
     "waitingForMailAuth": string;
     /**
-     * ビザを作成したユーザー
+     * 招待コードを作成したユーザー
      */
     "inviteCodeCreator": string;
     /**
@@ -4871,27 +4883,27 @@ export interface Locale extends ILocale {
      */
     "fileAttachedOnly": string;
     /**
-     * TLに他のユーザーへの返信を含める
+     * TLに他の人への返信を含める
      */
     "showRepliesToOthersInTimeline": string;
     /**
-     * TLに他のユーザーへの返信を含めない
+     * TLに他の人への返信を含めない
      */
     "hideRepliesToOthersInTimeline": string;
     /**
-     * TLに現在フォロー中のユーザー全員の返信を含めるようにする
+     * TLに現在フォロー中の人全員の返信を含めるようにする
      */
     "showRepliesToOthersInTimelineAll": string;
     /**
-     * TLに現在フォロー中のユーザー全員の返信を含めないようにする
+     * TLに現在フォロー中の人全員の返信を含めないようにする
      */
     "hideRepliesToOthersInTimelineAll": string;
     /**
-     * この操作は元に戻せません。本当にTLに現在フォロー中のユーザー全員の返信を含めるようにしますか？
+     * この操作は元に戻せません。本当にTLに現在フォロー中の人全員の返信を含めるようにしますか？
      */
     "confirmShowRepliesAll": string;
     /**
-     * この操作は元に戻せません。本当にTLに現在フォロー中のユーザー全員の返信を含めないようにしますか？
+     * この操作は元に戻せません。本当にTLに現在フォロー中の人全員の返信を含めないようにしますか？
      */
     "confirmHideRepliesAll": string;
     /**
@@ -5179,7 +5191,7 @@ export interface Locale extends ILocale {
      */
     "genEmbedCode": string;
     /**
-     * この国民のノート一覧
+     * このユーザーのノート一覧
      */
     "noteOfThisUser": string;
     /**
@@ -5215,7 +5227,7 @@ export interface Locale extends ILocale {
      */
     "passkeyVerificationFailed": string;
     /**
-     * パスキーの検証に成功しましたが、パスワードレス帰国が無効になっています。
+     * パスキーの検証に成功しましたが、パスワードレスログインが無効になっています。
      */
     "passkeyVerificationSucceededButPasswordlessLoginDisabled": string;
     /**
@@ -5247,7 +5259,7 @@ export interface Locale extends ILocale {
      */
     "yourNameContainsProhibitedWordsDescription": string;
     /**
-     * 投稿者により、表示には入国が必要と設定されています
+     * 投稿者により、表示にはログインが必要と設定されています
      */
     "thisContentsAreMarkedAsSigninRequiredByAuthor": string;
     /**
@@ -5386,6 +5398,14 @@ export interface Locale extends ILocale {
      * チャット
      */
     "chat": string;
+    /**
+     * ダイレクトメッセージ
+     */
+    "directMessage": string;
+    /**
+     * メッセージ
+     */
+    "directMessage_short": string;
     /**
      * 旧設定情報を移行
      */
@@ -5529,6 +5549,10 @@ export interface Locale extends ILocale {
      * ベータ版の検証にご協力いただきありがとうございます！
      */
     "thankYouForTestingBeta": string;
+    /**
+     * ユーザー指定ノートを作成
+     */
+    "createUserSpecifiedNote": string;
     "_order": {
         /**
          * 新しい順
@@ -5541,6 +5565,10 @@ export interface Locale extends ILocale {
     };
     "_chat": {
         /**
+         * メッセージ
+         */
+        "messages": string;
+        /**
          * まだメッセージはありません
          */
         "noMessagesYet": string;
@@ -5549,36 +5577,36 @@ export interface Locale extends ILocale {
          */
         "newMessage": string;
         /**
-         * 個人チャット
+         * 個別
          */
         "individualChat": string;
         /**
-         * 特定ユーザーとの一対一のチャットができます。
+         * 特定ユーザーと個別にメッセージのやりとりができます。
          */
         "individualChat_description": string;
         /**
-         * ルームチャット
+         * グループ
          */
         "roomChat": string;
         /**
-         * 複数人でのチャットができます。
-         * また、個人チャットを許可していないユーザーとでも、相手が受け入れればチャットができます。
+         * 複数人でメッセージのやりとりができます。
+         * また、個別のメッセージを許可していないユーザーとでも、相手が受け入れればやりとりできます。
          */
         "roomChat_description": string;
         /**
-         * ルームを作成
+         * グループを作成
          */
         "createRoom": string;
         /**
-         * ユーザーを招待してチャットを始めましょう
+         * ユーザーを招待してメッセージを送信しましょう
          */
         "inviteUserToChat": string;
         /**
-         * 作成したルーム
+         * 作成したグループ
          */
         "yourRooms": string;
         /**
-         * 参加中のルーム
+         * 参加中のグループ
          */
         "joiningRooms": string;
         /**
@@ -5598,7 +5626,7 @@ export interface Locale extends ILocale {
          */
         "noHistory": string;
         /**
-         * ルームはありません
+         * グループはありません
          */
         "noRooms": string;
         /**
@@ -5618,7 +5646,7 @@ export interface Locale extends ILocale {
          */
         "ignore": string;
         /**
-         * ルームから退出
+         * グループから退出
          */
         "leave": string;
         /**
@@ -5642,35 +5670,35 @@ export interface Locale extends ILocale {
          */
         "newline": string;
         /**
-         * このルームをミュート
+         * このグループをミュート
          */
         "muteThisRoom": string;
         /**
-         * ルームを削除
+         * グループを削除
          */
         "deleteRoom": string;
         /**
-         * このサーバー、またはこのアカウントでチャットは有効化されていません。
+         * このサーバー、またはこのアカウントでダイレクトメッセージは有効化されていません。
          */
         "chatNotAvailableForThisAccountOrServer": string;
         /**
-         * このサーバー、またはこのアカウントでチャットは読み取り専用となっています。新たに書き込んだり、チャットルームを作成・参加したりすることはできません。
+         * このサーバー、またはこのアカウントでダイレクトメッセージは読み取り専用となっています。新たに書き込んだり、グループを作成・参加したりすることはできません。
          */
         "chatIsReadOnlyForThisAccountOrServer": string;
         /**
-         * 相手のアカウントでチャット機能が使えない状態になっています。
+         * 相手のアカウントでダイレクトメッセージが使えない状態になっています。
          */
         "chatNotAvailableInOtherAccount": string;
         /**
-         * このユーザーとのチャットを開始できません
+         * このユーザーとのダイレクトメッセージを開始できません
          */
         "cannotChatWithTheUser": string;
         /**
-         * チャットが使えない状態になっているか、相手がチャットを開放していません。
+         * ダイレクトメッセージが使えない状態になっているか、相手がダイレクトメッセージを開放していません。
          */
         "cannotChatWithTheUser_description": string;
         /**
-         * あなたはこのルームの参加者ではありませんが、招待が届いています。参加するには、招待を承認してください。
+         * あなたはこのグループの参加者ではありませんが、招待が届いています。参加するには、招待を承認してください。
          */
         "youAreNotAMemberOfThisRoomButInvited": string;
         /**
@@ -5678,31 +5706,31 @@ export interface Locale extends ILocale {
          */
         "doYouAcceptInvitation": string;
         /**
-         * チャットする
+         * ダイレクトメッセージ
          */
         "chatWithThisUser": string;
         /**
-         * このユーザーはフォロワーからのみチャットを受け付けています。
+         * このユーザーはフォロワーからのみメッセージを受け付けています。
          */
         "thisUserAllowsChatOnlyFromFollowers": string;
         /**
-         * このユーザーは、このユーザーがフォローしているユーザーからのみチャットを受け付けています。
+         * このユーザーは、このユーザーがフォローしているユーザーからのみメッセージを受け付けています。
          */
         "thisUserAllowsChatOnlyFromFollowing": string;
         /**
-         * このユーザーは相互フォローのユーザーからのみチャットを受け付けています。
+         * このユーザーは相互フォローのユーザーからのみメッセージを受け付けています。
          */
         "thisUserAllowsChatOnlyFromMutualFollowing": string;
         /**
-         * このユーザーは誰からもチャットを受け付けていません。
+         * このユーザーは誰からもメッセージを受け付けていません。
          */
         "thisUserNotAllowedChatAnyone": string;
         /**
-         * チャットを許可する相手
+         * メッセージを許可する相手
          */
         "chatAllowedUsers": string;
         /**
-         * 自分からチャットメッセージを送った相手とはこの設定に関わらずチャットが可能です。
+         * 自分からメッセージを送った相手とはこの設定に関わらずメッセージの送受信が可能です。
          */
         "chatAllowedUsers_note": string;
         "_chatAllowedUsers": {
@@ -5952,11 +5980,11 @@ export interface Locale extends ILocale {
     };
     "_accountSettings": {
         /**
-         * コンテンツの表示に入国を必須にする
+         * コンテンツの表示にログインを必須にする
          */
         "requireSigninToViewContents": string;
         /**
-         * あなたが作成した全てのノートなどのコンテンツを表示するのに入国を必須にします。クローラーに情報が収集されるのを防ぐ効果が期待できます。
+         * あなたが作成した全てのノートなどのコンテンツを表示するのにログインを必須にします。クローラーに情報が収集されるのを防ぐ効果が期待できます。
          */
         "requireSigninToViewContentsDescription1": string;
         /**
@@ -6322,7 +6350,7 @@ export interface Locale extends ILocale {
              */
             "home": string;
             /**
-             * この帝国にいるユーザー全員の投稿を見られます。
+             * このサーバーにいるユーザー全員の投稿を見られます。
              */
             "local": string;
             /**
@@ -6405,7 +6433,7 @@ export interface Locale extends ILocale {
                     "note": string;
                 };
                 /**
-                 * 帝国のガイドラインにより必要とされるノートに指定したり、ネタバレ投稿やセンシティブな文章を自主規制したりするときに使います。
+                 * サーバーのガイドラインにより必要とされるノートに指定したり、ネタバレ投稿やセンシティブな文章を自主規制したりするときに使います。
                  */
                 "useCases": string;
             };
@@ -6416,7 +6444,7 @@ export interface Locale extends ILocale {
              */
             "title": string;
             /**
-             * 帝国のガイドラインにより必要とされる際や、そのまま見れる状態にしておくべきではない添付ファイルには、「センシティブ」設定を付けます。
+             * サーバーのガイドラインにより必要とされる際や、そのまま見れる状態にしておくべきではない添付ファイルには、「センシティブ」設定を付けます。
              */
             "description": string;
             /**
@@ -6434,7 +6462,7 @@ export interface Locale extends ILocale {
              */
             "method": string;
             /**
-             * ファイルを添付する際は、帝国のガイドラインに従ってセンシティブを適切に設定してください。
+             * ファイルを添付する際は、サーバーのガイドラインに従ってセンシティブを適切に設定してください。
              */
             "sensitiveSucceeded": string;
             /**
@@ -6459,7 +6487,7 @@ export interface Locale extends ILocale {
          */
         "home": string;
         /**
-         * ローカルタイムラインでは、この帝国のユーザー全員の投稿を見られます。
+         * ローカルタイムラインでは、このサーバーにいるユーザー全員の投稿を見られます。
          */
         "local": string;
         /**
@@ -6473,7 +6501,7 @@ export interface Locale extends ILocale {
     };
     "_serverRules": {
         /**
-         * 新規登録前に表示する、帝国の簡潔なルールを設定します。内容は利用規約の要約とすることを推奨します。
+         * 新規登録前に表示する、サーバーの簡潔なルールを設定します。内容は利用規約の要約とすることを推奨します。
          */
         "description": string;
     };
@@ -6651,7 +6679,7 @@ export interface Locale extends ILocale {
     };
     "_accountMigration": {
         /**
-         * 別のアカウントからこのアカウントにお引越し
+         * 別のアカウントからこのアカウントに移行
          */
         "moveFrom": string;
         /**
@@ -6689,7 +6717,7 @@ export interface Locale extends ILocale {
          * フォロワーの移行は自動ですが、フォローの移行は手動で行う必要があります。移行前にこのアカウントでフォローエクスポートし、移行後すぐに移行先アカウントでインポートを行なってください。
          * リスト・ミュート・ブロックについても同様ですので、手動で移行する必要があります。
          *
-         * （この説明は我が国（Misskey v13.12.0以降）の仕様です。Mastodonなどの他のActivityPubソフトウェアでは挙動が異なる場合があります。）
+         * （この説明はこのサーバー（Misskey v13.12.0以降）の仕様です。Mastodonなどの他のActivityPubソフトウェアでは挙動が異なる場合があります。）
          */
         "moveAccountDescription": string;
         /**
@@ -7091,7 +7119,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * 自分のノートが他のユーザーからお気に入りに登録された
+                 * 自分のノートが他の人からお気に入りに登録された
                  */
                 "description": string;
             };
@@ -7135,7 +7163,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * フォローが10尾を超した
+                 * フォローが10人を超した
                  */
                 "description": string;
             };
@@ -7145,17 +7173,17 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * フォローが50尾を超した
+                 * フォローが50人を超した
                  */
                 "description": string;
             };
             "_following100": {
                 /**
-                 * 友達100尾
+                 * 友達100人
                  */
                 "title": string;
                 /**
-                 * フォローが100尾を超した
+                 * フォローが100人を超した
                  */
                 "description": string;
             };
@@ -7165,7 +7193,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * フォローが300尾を超した
+                 * フォローが300人を超した
                  */
                 "description": string;
             };
@@ -7185,7 +7213,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * フォロワーが10尾を超した
+                 * フォロワーが10人を超した
                  */
                 "description": string;
             };
@@ -7195,7 +7223,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * フォロワーが50尾を超した
+                 * フォロワーが50人を超した
                  */
                 "description": string;
             };
@@ -7205,7 +7233,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * フォロワーが100尾を超した
+                 * フォロワーが100人を超した
                  */
                 "description": string;
             };
@@ -7215,7 +7243,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * フォロワーが300尾を超した
+                 * フォロワーが300人を超した
                  */
                 "description": string;
             };
@@ -7225,7 +7253,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * フォロワーが500尾を超した
+                 * フォロワーが500人を超した
                  */
                 "description": string;
             };
@@ -7235,7 +7263,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * フォロワーが1,000尾を超した
+                 * フォロワーが1,000人を超した
                  */
                 "description": string;
             };
@@ -7381,7 +7409,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * 帝国のチャートを表示した
+                 * サーバーのチャートを表示した
                  */
                 "description": string;
             };
@@ -7501,7 +7529,7 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * 誕生日に帰国した
+                 * 誕生日にログインした
                  */
                 "description": string;
             };
@@ -7511,11 +7539,11 @@ export interface Locale extends ILocale {
                  */
                 "title": string;
                 /**
-                 * 元日に帰国した
+                 * 元日にログインした
                  */
                 "description": string;
                 /**
-                 * 今年も帝国をよろしくお願いします
+                 * 今年も弊サーバーをよろしくお願いします
                  */
                 "flavor": string;
             };
@@ -7629,8 +7657,8 @@ export interface Locale extends ILocale {
          */
         "permission": string;
         /**
-         * <b>官僚</b>は基本的なモデレーションに関する操作を行えます。
-         * <b>皇帝</b>は我が国の政治の全てに干渉できます。
+         * <b>モデレーター</b>は基本的なモデレーションに関する操作を行えます。
+         * <b>管理者</b>はサーバーの全ての設定を変更できます。
          */
         "descriptionOfPermission": string;
         /**
@@ -7731,11 +7759,11 @@ export interface Locale extends ILocale {
          */
         "preserveAssignmentOnMoveAccount_description": string;
         /**
-         * 官僚のメンバー編集を許可
+         * モデレーターのメンバー編集を許可
          */
         "canEditMembersByModerator": string;
         /**
-         * オンにすると、皇帝に加えて官僚もこのロールへユーザーをアサイン/アサイン解除できるようになります。オフにすると皇帝のみが行えます。
+         * オンにすると、管理者に加えてモデレーターもこのロールへユーザーをアサイン/アサイン解除できるようになります。オフにすると管理者のみが行えます。
          */
         "descriptionOfCanEditMembersByModerator": string;
         /**
@@ -7774,19 +7802,19 @@ export interface Locale extends ILocale {
              */
             "mentionMax": string;
             /**
-             * 帝国ビザの発行
+             * サーバー招待コードの発行
              */
             "canInvite": string;
             /**
-             * ビザの作成可能数
+             * 招待コードの作成可能数
              */
             "inviteLimit": string;
             /**
-             * ビザの発行間隔
+             * 招待コードの発行間隔
              */
             "inviteLimitCycle": string;
             /**
-             * ビザの有効期限
+             * 招待コードの有効期限
              */
             "inviteExpirationTime": string;
             /**
@@ -7894,7 +7922,7 @@ export interface Locale extends ILocale {
              */
             "canImportUserLists": string;
             /**
-             * チャットを許可
+             * ダイレクトメッセージを許可
              */
             "chatAvailability": string;
             /**
@@ -7932,7 +7960,7 @@ export interface Locale extends ILocale {
              */
             "isRemote": string;
             /**
-             * 猫型ユーザー
+             * 猫ユーザー
              */
             "isCat": string;
             /**
@@ -7999,7 +8027,7 @@ export interface Locale extends ILocale {
     };
     "_sensitiveMediaDetection": {
         /**
-         * 機械学習を使って自動でセンシティブなメディアを検出し、モデレーションに役立てることができます。帝国の負荷が少し増えます。
+         * 機械学習を使って自動でセンシティブなメディアを検出し、モデレーションに役立てることができます。サーバーの負荷が少し増えます。
          */
         "description": string;
         /**
@@ -8023,7 +8051,7 @@ export interface Locale extends ILocale {
          */
         "analyzeVideos": string;
         /**
-         * 静止画に加えて動画も解析するようにします。帝国の負荷が少し増えます。
+         * 静止画に加えて動画も解析するようにします。サーバーの負荷が少し増えます。
          */
         "analyzeVideosDescription": string;
     };
@@ -8069,7 +8097,7 @@ export interface Locale extends ILocale {
     };
     "_signup": {
         /**
-         * 仮入国が終わりました
+         * ほとんど完了です
          */
         "almostThere": string;
         /**
@@ -8077,7 +8105,7 @@ export interface Locale extends ILocale {
          */
         "emailAddressInfo": string;
         /**
-         * 入力されたメールアドレス({email})宛に確認のメールが送信されました。メールに記載されたリンクにアクセスすると、入国手続きが完了します。メールに記載されているリンクの有効期限は30分です。
+         * 入力されたメールアドレス({email})宛に確認のメールが送信されました。メールに記載されたリンクにアクセスすると、アカウントの作成が完了します。メールに記載されているリンクの有効期限は30分です。
          */
         "emailSent": ParameterizedString<"email">;
     };
@@ -8121,9 +8149,13 @@ export interface Locale extends ILocale {
          */
         "hide": string;
         /**
-         * 曜日は帝国のタイムゾーンを元に指定されます。
+         * 曜日はサーバーのタイムゾーンを元に指定されます。
          */
         "timezoneinfo": string;
+        /**
+         * 広告配信設定
+         */
+        "adsSettings": string;
         /**
          * リアルタイム更新中に広告を配信する間隔（ノートの個数）
          */
@@ -8143,11 +8175,11 @@ export interface Locale extends ILocale {
          */
         "enterEmail": string;
         /**
-         * メールアドレスを登録していない場合は、皇帝までお問い合わせください。
+         * メールアドレスを登録していない場合は、管理者までお問い合わせください。
          */
         "ifNoEmail": string;
         /**
-         * この帝国ではメールがサポートされていないため、パスワードリセットを行う場合は皇帝までお問い合わせください。
+         * このサーバーではメールがサポートされていないため、パスワードリセットを行う場合は管理者までお問い合わせください。
          */
         "contactAdmin": string;
     };
@@ -8255,7 +8287,7 @@ export interface Locale extends ILocale {
          */
         "renameConfirm": ParameterizedString<"old" | "new">;
         /**
-         * バックアップはありません。「新規保存」で現在のクライアント設定を帝国に保存できます。
+         * バックアップはありません。「新規保存」で現在のクライアント設定をサーバーに保存できます。
          */
         "noBackups": string;
         /**
@@ -8415,7 +8447,7 @@ export interface Locale extends ILocale {
          */
         "following": string;
         /**
-         * {n}尾が参加中
+         * {n}人が参加中
          */
         "usersCount": ParameterizedString<"n">;
         /**
@@ -8469,7 +8501,7 @@ export interface Locale extends ILocale {
     };
     "_instanceMute": {
         /**
-         * ミュートした国家のユーザーへの返信を含めて、設定した国家の全てのノートとRenoteをミュートします。
+         * ミュートしたサーバーのユーザーへの返信を含めて、設定したサーバーの全てのノートとRenoteをミュートします。
          */
         "instanceMuteDescription": string;
         /**
@@ -8477,11 +8509,11 @@ export interface Locale extends ILocale {
          */
         "instanceMuteDescription2": string;
         /**
-         * 設定した国家のノートを隠します。
+         * 設定したサーバーのノートを隠します。
          */
         "title": string;
         /**
-         * ミュートする国家
+         * ミュートするサーバー
          */
         "heading": string;
     };
@@ -8740,7 +8772,7 @@ export interface Locale extends ILocale {
              */
             "badge": string;
             /**
-             * チャットの背景
+             * メッセージの背景
              */
             "messageBg": string;
             /**
@@ -8767,7 +8799,7 @@ export interface Locale extends ILocale {
          */
         "reaction": string;
         /**
-         * チャットのメッセージ
+         * ダイレクトメッセージ
          */
         "chatMessage": string;
     };
@@ -8929,7 +8961,7 @@ export interface Locale extends ILocale {
          */
         "setupCompleted": string;
         /**
-         * これから帰国するときも、同じようにコードを入力します。
+         * これからログインするときも、同じようにコードを入力します。
          */
         "step4": string;
         /**
@@ -9051,11 +9083,11 @@ export interface Locale extends ILocale {
          */
         "write:following": string;
         /**
-         * チャットを見る
+         * ダイレクトメッセージを見る
          */
         "read:messaging": string;
         /**
-         * チャットを操作する
+         * ダイレクトメッセージを操作する
          */
         "write:messaging": string;
         /**
@@ -9347,11 +9379,11 @@ export interface Locale extends ILocale {
          */
         "write:report-abuse": string;
         /**
-         * チャットを操作する
+         * ダイレクトメッセージを操作する
          */
         "write:chat": string;
         /**
-         * チャットを閲覧する
+         * ダイレクトメッセージを閲覧する
          */
         "read:chat": string;
     };
@@ -9393,11 +9425,11 @@ export interface Locale extends ILocale {
          */
         "denied": string;
         /**
-         * 以下の国民として操作しています
+         * 以下のユーザーとして操作しています
          */
         "scopeUser": string;
         /**
-         * アプリケーションにアクセス許可を与えるには、入国手続きが必要です。
+         * アプリケーションにアクセス許可を与えるには、ログインが必要です。
          */
         "pleaseLogin": string;
         /**
@@ -9415,7 +9447,7 @@ export interface Locale extends ILocale {
          */
         "homeTimeline": string;
         /**
-         * 指定した一尾または複数のユーザーのノート
+         * 指定した一人または複数のユーザーのノート
          */
         "users": string;
         /**
@@ -9423,7 +9455,7 @@ export interface Locale extends ILocale {
          */
         "userList": string;
         /**
-         * 指定した一尾または複数のユーザーを除いた全てのノート
+         * 指定した一人または複数のユーザーを除いた全てのノート
          */
         "userBlacklist": string;
     };
@@ -9463,7 +9495,7 @@ export interface Locale extends ILocale {
          */
         "profile": string;
         /**
-         * 我が国の情報
+         * サーバー情報
          */
         "instanceInfo": string;
         /**
@@ -9519,7 +9551,7 @@ export interface Locale extends ILocale {
          */
         "federation": string;
         /**
-         * 国交クラウド
+         * サーバークラウド
          */
         "instanceCloud": string;
         /**
@@ -9543,7 +9575,7 @@ export interface Locale extends ILocale {
          */
         "jobQueue": string;
         /**
-         * 帝国メトリクス
+         * サーバーメトリクス
          */
         "serverMetric": string;
         /**
@@ -9577,7 +9609,7 @@ export interface Locale extends ILocale {
          */
         "birthdayFollowings": string;
         /**
-         * チャット
+         * ダイレクトメッセージ
          */
         "chat": string;
     };
@@ -9723,7 +9755,7 @@ export interface Locale extends ILocale {
          */
         "disableFederation": string;
         /**
-         * 他国への配信を行いません
+         * 他サーバーへの配信を行いません
          */
         "disableFederationDescription": string;
     };
@@ -10317,7 +10349,7 @@ export interface Locale extends ILocale {
          */
         "roleAssigned": string;
         /**
-         * チャットルームへ招待されました
+         * ダイレクトメッセージのグループへ招待されました
          */
         "chatRoomInvitationReceived": string;
         /**
@@ -10345,19 +10377,19 @@ export interface Locale extends ILocale {
          */
         "notificationWillBeDisplayedLikeThis": string;
         /**
-         * {n}尾がリアクションしました
+         * {n}人がリアクションしました
          */
         "reactedBySomeUsers": ParameterizedString<"n">;
         /**
-         * {n}尾がいいねしました
+         * {n}人がいいねしました
          */
         "likedBySomeUsers": ParameterizedString<"n">;
         /**
-         * {n}尾がリノートしました
+         * {n}人がリノートしました
          */
         "renotedBySomeUsers": ParameterizedString<"n">;
         /**
-         * {n}尾にフォローされました
+         * {n}人にフォローされました
          */
         "followedBySomeUsers": ParameterizedString<"n">;
         /**
@@ -10369,7 +10401,7 @@ export interface Locale extends ILocale {
          */
         "exportOfXCompleted": ParameterizedString<"x">;
         /**
-         * 入国しました
+         * ログインがありました
          */
         "login": string;
         /**
@@ -10430,7 +10462,7 @@ export interface Locale extends ILocale {
              */
             "roleAssigned": string;
             /**
-             * チャットルームへ招待された
+             * ダイレクトメッセージのグループへ招待された
              */
             "chatRoomInvitationReceived": string;
             /**
@@ -10442,7 +10474,7 @@ export interface Locale extends ILocale {
              */
             "exportCompleted": string;
             /**
-             * 入国
+             * ログイン
              */
             "login": string;
             /**
@@ -10612,7 +10644,7 @@ export interface Locale extends ILocale {
              */
             "roleTimeline": string;
             /**
-             * チャット
+             * ダイレクトメッセージ
              */
             "chat": string;
         };
@@ -10979,7 +11011,7 @@ export interface Locale extends ILocale {
          */
         "deleteGalleryPost": string;
         /**
-         * チャットルームを削除
+         * ダイレクトメッセージのグループを削除
          */
         "deleteChatRoom": string;
         /**
