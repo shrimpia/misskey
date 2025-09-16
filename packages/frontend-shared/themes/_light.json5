@@ -71,7 +71,7 @@
 		codeBoolean: '#62b70c',
 		deckBg: ':darken<3<@bg',
 		htmlThemeColor: '@bg',
-		headlineBg: '#e4ebf2',
+		headlineBg: '#ffffff',
 		headlineFg: '#db2a31',
 	},
 
