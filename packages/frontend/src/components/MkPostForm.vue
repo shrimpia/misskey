@@ -637,13 +637,7 @@ function showOtherSettings() {
 		action: () => {
 			toggleReactionAcceptance();
 		},
-	}, ...($i.policies.scheduledNoteLimit > 0 ? [{
-		icon: 'ti ti-calendar-time',
-		text: i18n.ts.schedulePost + '...',
-		action: () => {
-			schedule();
-		},
-	}] : []), { type: 'divider' }, {
+	}, { type: 'divider' }, {
 		type: 'switch',
 		icon: 'ti ti-eye',
 		text: i18n.ts.preview,
@@ -1272,7 +1266,13 @@ function showDraftMenu(ev: MouseEvent) {
 		action: () => {
 			showDraftsDialog(false);
 		},
-	}, { type: 'divider' }, {
+	}, { type: 'divider' }, ...($i.policies.scheduledNoteLimit > 0 ? [{
+		icon: 'ti ti-calendar-time',
+		text: i18n.ts.schedulePost + '...',
+		action: () => {
+			schedule();
+		},
+	}] : []), {
 		type: 'button',
 		text: i18n.ts._drafts.listScheduledNotes,
 		icon: 'ti ti-clock-down',
