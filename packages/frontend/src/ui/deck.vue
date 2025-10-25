@@ -13,9 +13,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div :class="[$style.main, { [$style.withWallpaper]: withWallpaper, [$style.withSidebarAndTitlebar]: !isMobile && prefer.r['deck.navbarPosition'].value === 'left' && prefer.r.showTitlebar.value }]" :style="{ backgroundImage: prefer.s['deck.wallpaper'] != null ? `url(${ prefer.s['deck.wallpaper'] })` : '' }">
 			<XNavbarH v-if="!isMobile && prefer.r['deck.navbarPosition'].value === 'top'"/>
 			<ShrimpiaHeadline v-if="prefer.r['shrimpia.headlineEnabled'].value"/>
+			<XAnnouncements v-else-if="$i"/>
 			<XReloadSuggestion v-if="shouldSuggestReload"/>
 			<XPreferenceRestore v-if="shouldSuggestRestoreBackup"/>
-			<XAnnouncements v-else-if="$i"/>
 			<XStatusBars/>
 			<div :class="$style.columnsWrapper">
 				<!-- passive: https://bugs.webkit.org/show_bug.cgi?id=281300 -->
