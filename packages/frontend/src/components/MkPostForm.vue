@@ -1207,16 +1207,6 @@ function closePostGuidelineWarning() {
 	prefer.commit('shrimpia.postGuidelineWarningDisabled', true);
 }
 
-function showPerUploadItemMenu(item: UploaderItem, ev: MouseEvent) {
-	const menu = uploader.getMenu(item);
-	os.popupMenu(menu, ev.currentTarget ?? ev.target);
-}
-
-function showPerUploadItemMenuViaContextmenu(item: UploaderItem, ev: MouseEvent) {
-	const menu = uploader.getMenu(item);
-	os.contextMenu(menu, ev);
-}
-
 function showDraftMenu(ev: MouseEvent) {
 	function showDraftsDialog(scheduled: boolean) {
 		const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/MkNoteDraftsDialog.vue')), {
