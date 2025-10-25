@@ -8,7 +8,7 @@ const onInput = (arg: Event | HTMLTextAreaElement) => {
 	el.style.height = `${el.scrollHeight}px`;
 };
 
-export default {
+export const autosizeDirective = {
 	mounted(el: HTMLTextAreaElement) {
 		if (!prefer.s['ebisskey.useTextAreaAutoSize']) return;
 		onInput(el);
