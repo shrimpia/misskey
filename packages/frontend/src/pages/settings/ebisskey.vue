@@ -81,11 +81,8 @@
 								</MkSwitch>
 							</MkPreferenceContainer>
 							<MkPreferenceContainer k="ebisskey.airReplyButtonPlacement">
-								<MkSelect v-model="airReplyButtonPlacement">
+								<MkSelect v-model="airReplyButtonPlacement" :items="airReplyButtonPlacementItems">
 									<template #label>ボタンの位置</template>
-									<option value="noteMenu">ノートのメニュー</option>
-									<option value="renoteMenu">リノートボタンのメニュー</option>
-									<option value="noteFooter">ノートの下部</option>
 								</MkSelect>
 							</MkPreferenceContainer>
 						</div>
@@ -172,6 +169,11 @@ const infoButtonForNoteActionsEnabled = prefer.model('ebisskey.infoButtonForNote
 const featuredTimelineEnabled = prefer.model('ebisskey.featuredTimelineEnabled');
 const useAirReply = prefer.model('ebisskey.useAirReply');
 const airReplyButtonPlacement = prefer.model('ebisskey.airReplyButtonPlacement');
+const airReplyButtonPlacementItems = [
+	{ label: 'ノートのメニュー', value: 'noteMenu' },
+	{ label: 'リノートボタンのメニュー', value: 'renoteMenu' },
+	{ label: 'ノートの下部', value: 'noteFooter' },
+];
 const useNoteVisibilityColoring = prefer.model('ebisskey.useNoteVisibilityColoring');
 const useTextAreaAutoSize = prefer.model('ebisskey.useTextAreaAutoSize');
 
