@@ -43,6 +43,7 @@ import { MiClipNote } from '@/models/ClipNote.js';
 import { MiDriveFile } from '@/models/DriveFile.js';
 import { MiDriveFolder } from '@/models/DriveFolder.js';
 import { MiEmoji } from '@/models/Emoji.js';
+import { MiEmojiSound } from '@/models/EmojiSound.js';
 import { MiFlash } from '@/models/Flash.js';
 import { MiFlashLike } from '@/models/FlashLike.js';
 import { MiFollowing } from '@/models/Following.js';
@@ -178,6 +179,7 @@ export {
 	MiDriveFile,
 	MiDriveFolder,
 	MiEmoji,
+	MiEmojiSound,
 	MiFollowing,
 	MiFollowRequest,
 	MiGalleryLike,
@@ -313,3 +315,4 @@ export type ChatRoomInvitationsRepository = Repository<MiChatRoomInvitation> & M
 export type ChatApprovalsRepository = Repository<MiChatApproval> & MiRepository<MiChatApproval>;
 export type BubbleGameRecordsRepository = Repository<MiBubbleGameRecord> & MiRepository<MiBubbleGameRecord>;
 export type ReversiGamesRepository = Repository<MiReversiGame> & MiRepository<MiReversiGame>;
+export type EmojiSoundsRepository = Repository<MiEmojiSound> & MiRepository<MiEmojiSound>;

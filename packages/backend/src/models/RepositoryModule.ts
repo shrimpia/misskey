@@ -27,6 +27,7 @@ import {
 	MiDriveFile,
 	MiDriveFolder,
 	MiEmoji,
+	MiEmojiSound,
 	MiFlash,
 	MiFlashLike,
 	MiFollowing,
@@ -537,6 +538,12 @@ const $reversiGamesRepository: Provider = {
 	inject: [DI.db],
 };
 
+const $emojiSoundsRepository: Provider = {
+	provide: DI.emojiSoundsRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiEmojiSound).extend(miRepository as MiRepository<MiEmojiSound>),
+	inject: [DI.db],
+};
+
 @Module({
 	imports: [],
 	providers: [
@@ -615,6 +622,7 @@ const $reversiGamesRepository: Provider = {
 		$chatApprovalsRepository,
 		$bubbleGameRecordsRepository,
 		$reversiGamesRepository,
+		$emojiSoundsRepository,
 	],
 	exports: [
 		$usersRepository,
@@ -692,6 +700,7 @@ const $reversiGamesRepository: Provider = {
 		$chatApprovalsRepository,
 		$bubbleGameRecordsRepository,
 		$reversiGamesRepository,
+		$emojiSoundsRepository,
 	],
 })
 export class RepositoryModule {
