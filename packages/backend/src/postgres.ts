@@ -31,6 +31,7 @@ import { MiClipFavorite } from '@/models/ClipFavorite.js';
 import { MiDriveFile } from '@/models/DriveFile.js';
 import { MiDriveFolder } from '@/models/DriveFolder.js';
 import { MiEmoji } from '@/models/Emoji.js';
+import { MiEmojiSound } from '@/models/EmojiSound.js';
 import { MiFollowing } from '@/models/Following.js';
 import { MiFollowRequest } from '@/models/FollowRequest.js';
 import { MiGalleryLike } from '@/models/GalleryLike.js';
@@ -221,6 +222,7 @@ export const entities = [
 	MiPoll,
 	MiPollVote,
 	MiEmoji,
+	MiEmojiSound,
 	MiHashtag,
 	MiSwSubscription,
 	MiSystemAccount,
