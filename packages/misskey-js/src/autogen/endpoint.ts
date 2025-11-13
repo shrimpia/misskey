@@ -43,6 +43,10 @@ import type {
 	AdminDriveFilesResponse,
 	AdminDriveShowFileRequest,
 	AdminDriveShowFileResponse,
+	AdminEmojiSoundsDeleteRequest,
+	AdminEmojiSoundsListResponse,
+	AdminEmojiSoundsSetRequest,
+	AdminEmojiSoundsSetResponse,
 	AdminEmojiAddRequest,
 	AdminEmojiAddResponse,
 	AdminEmojiAddAliasesBulkRequest,
@@ -314,6 +318,7 @@ import type {
 	EmailAddressAvailableResponse,
 	EmojiRequest,
 	EmojiResponse,
+	EmojiSoundsResponse,
 	EmojisResponse,
 	EndpointRequest,
 	EndpointResponse,
@@ -635,8 +640,6 @@ import type {
 	UsersListsUpdateMembershipRequest,
 	UsersNotesRequest,
 	UsersNotesResponse,
-	UsersPagesRequest,
-	UsersPagesResponse,
 	UsersReactionsRequest,
 	UsersReactionsResponse,
 	UsersRecommendationRequest,
@@ -686,6 +689,9 @@ export type Endpoints = {
 	'admin/drive/cleanup': { req: EmptyRequest; res: EmptyResponse };
 	'admin/drive/files': { req: AdminDriveFilesRequest; res: AdminDriveFilesResponse };
 	'admin/drive/show-file': { req: AdminDriveShowFileRequest; res: AdminDriveShowFileResponse };
+	'admin/emoji-sounds/delete': { req: AdminEmojiSoundsDeleteRequest; res: EmptyResponse };
+	'admin/emoji-sounds/list': { req: EmptyRequest; res: AdminEmojiSoundsListResponse };
+	'admin/emoji-sounds/set': { req: AdminEmojiSoundsSetRequest; res: AdminEmojiSoundsSetResponse };
 	'admin/emoji/add': { req: AdminEmojiAddRequest; res: AdminEmojiAddResponse };
 	'admin/emoji/add-aliases-bulk': { req: AdminEmojiAddAliasesBulkRequest; res: EmptyResponse };
 	'admin/emoji/copy': { req: AdminEmojiCopyRequest; res: AdminEmojiCopyResponse };
@@ -860,6 +866,7 @@ export type Endpoints = {
 	'drive/stream': { req: DriveStreamRequest; res: DriveStreamResponse };
 	'email-address/available': { req: EmailAddressAvailableRequest; res: EmailAddressAvailableResponse };
 	'emoji': { req: EmojiRequest; res: EmojiResponse };
+	'emoji-sounds': { req: EmptyRequest; res: EmojiSoundsResponse };
 	'emojis': { req: EmptyRequest; res: EmojisResponse };
 	'endpoint': { req: EndpointRequest; res: EndpointResponse };
 	'endpoints': { req: EmptyRequest; res: EndpointsResponse };
@@ -1075,7 +1082,6 @@ export type Endpoints = {
 	'users/lists/update': { req: UsersListsUpdateRequest; res: UsersListsUpdateResponse };
 	'users/lists/update-membership': { req: UsersListsUpdateMembershipRequest; res: EmptyResponse };
 	'users/notes': { req: UsersNotesRequest; res: UsersNotesResponse };
-	'users/pages': { req: UsersPagesRequest; res: UsersPagesResponse };
 	'users/reactions': { req: UsersReactionsRequest; res: UsersReactionsResponse };
 	'users/recommendation': { req: UsersRecommendationRequest; res: UsersRecommendationResponse };
 	'users/relation': { req: UsersRelationRequest; res: UsersRelationResponse };
