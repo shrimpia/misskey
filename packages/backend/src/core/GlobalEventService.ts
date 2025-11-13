@@ -47,6 +47,12 @@ export interface BroadcastTypes {
 	announcementCreated: {
 		announcement: Packed<'Announcement'>;
 	};
+	emojiSoundUpdated: {
+		emojiSounds: Packed<'EmojiSound'>[];
+	};
+	emojiSoundDeleted: {
+		reaction: string;
+	};
 }
 
 export interface MainEventTypes {

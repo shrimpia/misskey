@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import * as Misskey from 'misskey-js';
 import type { SoundStore } from '@/preferences/def.js';
 import { prefer } from '@/preferences.js';
 import { PREF_DEF } from '@/preferences/def.js';
@@ -11,6 +12,12 @@ import { getInitialPrefValue } from '@/preferences/manager.js';
 let ctx: AudioContext;
 const cache = new Map<string, AudioBuffer>();
 let canPlay = true;
+
+// サウンドリアクションキャッシュ
+type EmojiSoundCache = Record<string, { url: string; volume: number }>;
+let emojiSoundCache: EmojiSoundCache | null = null;
+let emojiSoundCacheTimestamp = 0;
+const EMOJI_SOUND_CACHE_TTL = 1000 * 60 * 5; // 5分
 
 export const soundsTypes = [
 	// 音声なし
@@ -147,24 +154,50 @@ export function playMisskeySfx(operationType: OperationType) {
 }
 
 /**
+ * サウンドリアクションキャッシュをリフレッシュする
+ */
+export async function refreshEmojiSoundCache() {
+	try {
+		const data = await window.fetch('/api/emoji-sounds').then(res => res.json());
+		emojiSoundCache = data;
+		emojiSoundCacheTimestamp = Date.now();
+	} catch (err) {
+		console.error('Failed to fetch emoji sounds:', err);
+	}
+}
+
+/**
+ * サウンドリアクションキャッシュを取得する（必要に応じて更新）
+ */
+async function getEmojiSoundCache(): Promise<EmojiSoundCache> {
+	if (!emojiSoundCache || Date.now() - emojiSoundCacheTimestamp > EMOJI_SOUND_CACHE_TTL) {
+		await refreshEmojiSoundCache();
+	}
+	return emojiSoundCache || {};
+}
+
+/**
  * [シュリンピア拡張] リアクションの音を再生する
  * @param reaction リアクション
  */
-export function playReactionSfx(reaction: string) {
+export async function playReactionSfx(reaction: string) {
 	const sound = prefer.s['sound.on.reaction'];
-	// サウンドがない場合は4犬であれど再生しない
+	// サウンドがない場合は再生しない
 	if (sound.type === null) return;
 
-	// リアクション文字列が 4ttenakuinu である場合は特別な音を再生する
-	if (reaction.includes('4ttenakuinu')) {
-		playMisskeySfxFileInternal({
-			type: 'shrimpia/4',
-			volume: prefer.s['sound.on.reaction'].volume,
+	// サウンドリアクション設定を取得
+	const emojiSounds = await getEmojiSoundCache();
+
+	// 設定が存在する場合はカスタム音を再生
+	if (emojiSounds[reaction]) {
+		const { url, volume } = emojiSounds[reaction];
+		await playUrl(url, {
+			volume: volume * prefer.s['sound.masterVolume'],
 		});
 		return;
 	}
 
-	// 通常のリアクション効果音を再生する
+	// 設定が存在しない場合はデフォルトのリアクション効果音を再生
 	playMisskeySfx('reaction');
 }
 
