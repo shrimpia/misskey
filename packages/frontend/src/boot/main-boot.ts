@@ -344,6 +344,14 @@ export async function mainBoot() {
 				removeCustomEmojis(emojiData.emojis);
 			});
 
+			stream.on('emojiSoundUpdated', () => {
+				sound.refreshEmojiSoundCache();
+			});
+
+			stream.on('emojiSoundDeleted', () => {
+				sound.refreshEmojiSoundCache();
+			});
+
 			stream.on('announcementCreated', onAnnouncementCreated);
 
 			const main = markRaw(stream.useChannel('main', null, 'System'));

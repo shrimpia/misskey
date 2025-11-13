@@ -132,6 +132,9 @@ export const moderationLogTypes = [
 	'deleteGalleryPost',
 	'deleteChatRoom',
 	'updateProxyAccountDescription',
+	'emojiSoundCreated',
+	'emojiSoundUpdated',
+	'emojiSoundDeleted',
 ] as const;
 
 export type ModerationLogPayloads = {
@@ -391,6 +394,22 @@ export type ModerationLogPayloads = {
 	updateProxyAccountDescription: {
 		before: string | null;
 		after: string | null;
+	};
+	emojiSoundCreated: {
+		emojiSoundId: string;
+		reaction: string;
+		fileId: string;
+		volume: number;
+	};
+	emojiSoundUpdated: {
+		emojiSoundId: string;
+		reaction: string;
+		fileId: string;
+		volume: number;
+	};
+	emojiSoundDeleted: {
+		emojiSoundId: string;
+		reaction: string;
 	};
 };
 

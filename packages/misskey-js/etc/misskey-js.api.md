@@ -216,6 +216,18 @@ type AdminEmojiSetCategoryBulkRequest = operations['admin___emoji___set-category
 type AdminEmojiSetLicenseBulkRequest = operations['admin___emoji___set-license-bulk']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
+type AdminEmojiSoundsDeleteRequest = operations['admin___emoji-sounds___delete']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type AdminEmojiSoundsListResponse = operations['admin___emoji-sounds___list']['responses']['200']['content']['application/json'];
+
+// @public (undocumented)
+type AdminEmojiSoundsSetRequest = operations['admin___emoji-sounds___set']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type AdminEmojiSoundsSetResponse = operations['admin___emoji-sounds___set']['responses']['200']['content']['application/json'];
+
+// @public (undocumented)
 type AdminEmojiUpdateRequest = operations['admin___emoji___update']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
@@ -683,6 +695,8 @@ export type Channels = {
         params: {
             withRenotes?: boolean;
             withFiles?: boolean;
+            withBots?: boolean;
+            localOnly?: boolean;
         };
         events: {
             note: (payload: Note) => void;
@@ -694,6 +708,7 @@ export type Channels = {
             withRenotes?: boolean;
             withReplies?: boolean;
             withFiles?: boolean;
+            withBots?: boolean;
         };
         events: {
             note: (payload: Note) => void;
@@ -705,6 +720,7 @@ export type Channels = {
             withRenotes?: boolean;
             withReplies?: boolean;
             withFiles?: boolean;
+            withBots?: boolean;
         };
         events: {
             note: (payload: Note) => void;
@@ -715,6 +731,7 @@ export type Channels = {
         params: {
             withRenotes?: boolean;
             withFiles?: boolean;
+            withBots?: boolean;
         };
         events: {
             note: (payload: Note) => void;
@@ -1387,6 +1404,12 @@ type EmojiResponse = operations['emoji']['responses']['200']['content']['applica
 type EmojiSimple = components['schemas']['EmojiSimple'];
 
 // @public (undocumented)
+type EmojiSound = components['schemas']['EmojiSound'];
+
+// @public (undocumented)
+type EmojiSoundsResponse = operations['emoji-sounds']['responses']['200']['content']['application/json'];
+
+// @public (undocumented)
 type EmojisResponse = operations['emojis']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
@@ -1539,6 +1562,10 @@ declare namespace entities {
         AdminDriveFilesResponse,
         AdminDriveShowFileRequest,
         AdminDriveShowFileResponse,
+        AdminEmojiSoundsDeleteRequest,
+        AdminEmojiSoundsListResponse,
+        AdminEmojiSoundsSetRequest,
+        AdminEmojiSoundsSetResponse,
         AdminEmojiAddRequest,
         AdminEmojiAddResponse,
         AdminEmojiAddAliasesBulkRequest,
@@ -1810,6 +1837,7 @@ declare namespace entities {
         EmailAddressAvailableResponse,
         EmojiRequest,
         EmojiResponse,
+        EmojiSoundsResponse,
         EmojisResponse,
         EndpointRequest,
         EndpointResponse,
@@ -2131,8 +2159,6 @@ declare namespace entities {
         UsersListsUpdateMembershipRequest,
         UsersNotesRequest,
         UsersNotesResponse,
-        UsersPagesRequest,
-        UsersPagesResponse,
         UsersReactionsRequest,
         UsersReactionsResponse,
         UsersRecommendationRequest,
@@ -2218,7 +2244,8 @@ declare namespace entities {
         ChatMessageLiteForRoom,
         ChatRoom,
         ChatRoomInvitation,
-        ChatRoomMembership
+        ChatRoomMembership,
+        EmojiSound
     }
 }
 export { entities }
@@ -3781,12 +3808,6 @@ type UsersNotesRequest = operations['users___notes']['requestBody']['content']['
 type UsersNotesResponse = operations['users___notes']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
-type UsersPagesRequest = operations['users___pages']['requestBody']['content']['application/json'];
-
-// @public (undocumented)
-type UsersPagesResponse = operations['users___pages']['responses']['200']['content']['application/json'];
-
-// @public (undocumented)
 type UsersReactionsRequest = operations['users___reactions']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
@@ -3850,8 +3871,8 @@ type VerifyEmailRequest = operations['verify-email']['requestBody']['content']['
 //
 // src/entities.ts:55:2 - (ae-forgotten-export) The symbol "ModerationLogPayloads" needs to be exported by the entry point index.d.ts
 // src/streaming.ts:57:3 - (ae-forgotten-export) The symbol "ReconnectingWebSocket" needs to be exported by the entry point index.d.ts
-// src/streaming.types.ts:226:4 - (ae-forgotten-export) The symbol "ReversiUpdateKey" needs to be exported by the entry point index.d.ts
-// src/streaming.types.ts:236:4 - (ae-forgotten-export) The symbol "ReversiUpdateSettings" needs to be exported by the entry point index.d.ts
+// src/streaming.types.ts:231:4 - (ae-forgotten-export) The symbol "ReversiUpdateKey" needs to be exported by the entry point index.d.ts
+// src/streaming.types.ts:241:4 - (ae-forgotten-export) The symbol "ReversiUpdateSettings" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
