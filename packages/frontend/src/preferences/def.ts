@@ -590,6 +590,9 @@ export const PREF_DEF = definePreferences({
 	'ebisskey.nicknameMap': {
 		default: {} as Record<string, string>,
 	},
+	'ebisskey.soundReactionMode': {
+		default: 'never' as 'never' | 'onlyMyReaction' | 'always',
+	},
 	'shrimpia.headlineEnabled': {
 		default: true,
 	},

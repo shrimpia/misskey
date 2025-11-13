@@ -30,6 +30,37 @@
 						</MkSwitch>
 					</MkPreferenceContainer>
 				</SearchMarker>
+				<SearchMarker :keywords="['sound', 'reaction']">
+					<MkPreferenceContainer k="ebisskey.soundReactionMode">
+						<MkSelect v-model="soundReactionMode" :items="soundReactionModeItems">
+							<template #label>サウンドリアクション (Beta)</template>
+							<template #caption>
+								一部の絵文字リアクションで、特別なサウンドが再生されます。
+							</template>
+						</MkSelect>
+					</MkPreferenceContainer>
+				</SearchMarker>
+				<MkFolder :defaultOpen="true">
+					<template #icon><i class="ti ti-info-circle"></i></template>
+					<template #label><SearchLabel>サウンドリアクションに対応した絵文字の一覧（クリックで音が鳴ります）</SearchLabel></template>
+					<div class="_gaps_m">
+						<div :class="$style.emojiSoundList">
+							<button v-for="(item, key) in emojiSounds" :key="key" type="button" class="_button" :class="$style.emojiSoundItem" @click="previewSoundReaction(key)">
+								<MkCustomEmoji
+									v-if="key.startsWith(':')"
+									:name="key"
+									:size="24"
+									:disableLink="true"
+								/>
+								<MkEmoji
+									v-else
+									:emoji="key"
+									:size="24"
+								/>
+							</button>
+						</div>
+					</div>
+				</MkFolder>
 			</div>
 		</FormSection>
 		<FormSection>
@@ -172,9 +203,17 @@ import MkPreferenceContainer from '@/components/MkPreferenceContainer.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import { PREF_DEF } from '@/preferences/def';
 import { suggestReload } from '@/utility/reload-suggest';
+import { getEmojiSoundCache } from '@/utility/sound';
+import * as sound from '@/utility/sound.js';
 
 const nicknameEnabled = prefer.model('ebisskey.nicknameEnabled');
 const stealEnabled = prefer.model('ebisskey.stealEnabled');
+const soundReactionMode = prefer.model('ebisskey.soundReactionMode');
+const soundReactionModeItems = [
+	{ label: '再生しない', value: 'never' },
+	{ label: '自分がリアクションした時に再生する', value: 'onlyMyReaction' },
+	{ label: '常に再生する', value: 'always' },
+];
 const infoButtonForNoteActionsEnabled = prefer.model('ebisskey.infoButtonForNoteActionsEnabled');
 const featuredTimelineEnabled = prefer.model('ebisskey.featuredTimelineEnabled');
 const useAirReply = prefer.model('ebisskey.useAirReply');
@@ -196,6 +235,8 @@ const noteVisibilityColorFollowers = ref(prefer.s['ebisskey.noteVisibilityColorF
 const noteVisibilityColorSpecified = ref(prefer.s['ebisskey.noteVisibilityColorSpecified']);
 const noteVisibilityColorLocalOnly = ref(prefer.s['ebisskey.noteVisibilityColorLocalOnly']);
 const noteVisibilityColorChanged = ref(false);
+
+const emojiSounds = await getEmojiSoundCache();
 
 watch([
 	noteVisibilityColorHome,
@@ -235,6 +276,15 @@ function resetColors() {
 	noteVisibilityColorLocalOnly.value = PREF_DEF['ebisskey.noteVisibilityColorLocalOnly'].default;
 }
 
+const previewSoundReaction = async (reaction: string) => {
+	const s = emojiSounds[reaction];
+	if (!s) return;
+
+	await sound.playUrl(s.url, {
+		volume: s.volume,
+	});
+};
+
 const headerActions = computed(() => []);
 
 const headerTabs = computed(() => []);
@@ -244,3 +294,14 @@ definePage({
 	icon: 'ti ti-bulb-filled',
 });
 </script>
+
+<style module>
+.emojiSoundList {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+.emojiSoundItem {
+	padding: 4px 8px;
+}
+</style>

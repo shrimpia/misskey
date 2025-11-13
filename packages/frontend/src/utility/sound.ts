@@ -170,7 +170,7 @@ export async function refreshEmojiSoundCache() {
 /**
  * サウンドリアクションキャッシュを取得する（必要に応じて更新）
  */
-async function getEmojiSoundCache(): Promise<EmojiSoundCache> {
+export async function getEmojiSoundCache(): Promise<EmojiSoundCache> {
 	if (!emojiSoundCache || Date.now() - emojiSoundCacheTimestamp > EMOJI_SOUND_CACHE_TTL) {
 		await refreshEmojiSoundCache();
 	}
@@ -182,6 +182,14 @@ async function getEmojiSoundCache(): Promise<EmojiSoundCache> {
  * @param reaction リアクション
  */
 export async function playReactionSfx(reaction: string) {
+	// サウンドリアクションモードを確認
+	const soundReactionMode = prefer.s['ebisskey.soundReactionMode'];
+	// 再生しない設定の場合は、デフォルトの効果音を再生して終了
+	if (soundReactionMode === 'never') {
+		playMisskeySfx('reaction');
+		return;
+	};
+
 	const sound = prefer.s['sound.on.reaction'];
 	// サウンドがない場合は再生しない
 	if (sound.type === null) return;

@@ -13,6 +13,7 @@ import { store } from '@/store.js';
 import { misskeyApi } from '@/utility/misskey-api.js';
 import { prefer } from '@/preferences.js';
 import { globalEvents } from '@/events.js';
+import * as sound from '@/utility/sound.js';
 
 export const noteEvents = new EventEmitter<{
 	[ev: `reacted:${string}`]: (ctx: { userId: Misskey.entities.User['id']; reaction: string; emoji?: { name: string; url: string; }; }) => void;
@@ -241,6 +242,12 @@ export function useNoteCapture(props: {
 
 		if ($i && (ctx.userId === $i.id)) {
 			$note.myReaction = normalizedName;
+		}
+
+		// サウンドリアクションの再生（常に再生モードで、かつ自分以外のリアクションの場合）
+		const soundReactionMode = prefer.s['ebisskey.soundReactionMode'];
+		if (soundReactionMode === 'always' && $i && ctx.userId !== $i.id) {
+			sound.playReactionSfx(ctx.reaction);
 		}
 	}
 
