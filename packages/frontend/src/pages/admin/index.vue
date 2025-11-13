@@ -132,6 +132,11 @@ const menuDef = computed<SuperMenuDef[]>(() => [{
 		to: '/admin/emojis2',
 		active: currentPage.value?.route.name === 'emojis2',
 	}, {
+		icon: 'ti ti-music',
+		text: 'サウンドリアクション',
+		to: '/admin/emoji-sounds',
+		active: currentPage.value?.route.name === 'emoji-sounds',
+	}, {
 		icon: 'ti ti-sparkles',
 		text: i18n.ts.avatarDecorations,
 		to: '/admin/avatar-decorations',

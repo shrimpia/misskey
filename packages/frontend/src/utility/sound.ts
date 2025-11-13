@@ -4,6 +4,7 @@
  */
 
 import * as Misskey from 'misskey-js';
+import { misskeyApi } from './misskey-api';
 import type { SoundStore } from '@/preferences/def.js';
 import { prefer } from '@/preferences.js';
 import { PREF_DEF } from '@/preferences/def.js';
@@ -158,7 +159,7 @@ export function playMisskeySfx(operationType: OperationType) {
  */
 export async function refreshEmojiSoundCache() {
 	try {
-		const data = await window.fetch('/api/emoji-sounds').then(res => res.json());
+		const data = await misskeyApi('emoji-sounds');
 		emojiSoundCache = data;
 		emojiSoundCacheTimestamp = Date.now();
 	} catch (err) {
@@ -173,7 +174,7 @@ async function getEmojiSoundCache(): Promise<EmojiSoundCache> {
 	if (!emojiSoundCache || Date.now() - emojiSoundCacheTimestamp > EMOJI_SOUND_CACHE_TTL) {
 		await refreshEmojiSoundCache();
 	}
-	return emojiSoundCache || {};
+	return emojiSoundCache ?? {};
 }
 
 /**
@@ -187,10 +188,11 @@ export async function playReactionSfx(reaction: string) {
 
 	// サウンドリアクション設定を取得
 	const emojiSounds = await getEmojiSoundCache();
+	const reactionName = reaction.replace('@.', '');
 
 	// 設定が存在する場合はカスタム音を再生
-	if (emojiSounds[reaction]) {
-		const { url, volume } = emojiSounds[reaction];
+	if (emojiSounds[reactionName]) {
+		const { url, volume } = emojiSounds[reactionName];
 		await playUrl(url, {
 			volume: volume * prefer.s['sound.masterVolume'],
 		});
