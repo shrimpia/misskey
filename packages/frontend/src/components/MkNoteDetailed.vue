@@ -156,6 +156,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<i class="ti ti-repeat"></i>
 				<p v-if="appearNote.renoteCount > 0" :class="$style.noteFooterButtonCount">{{ number(appearNote.renoteCount) }}</p>
 			</button>
+			<button v-else-if="prefer.s['ebisskey.useAirReply'] && prefer.s['ebisskey.airReplyButtonPlacement'] === 'renoteMenu'" class="_button" :class="$style.noteFooterButton" @click.prevent="airReply()">
+				<i class="ti ti-bubble-text"></i>
+			</button>
 			<button v-else class="_button" :class="$style.noteFooterButton" disabled>
 				<i class="ti ti-ban"></i>
 			</button>
@@ -463,6 +466,14 @@ function reply(): void {
 		channel: appearNote.channel,
 	}).then(() => {
 		focus();
+	});
+}
+
+function airReply(): void {
+	os.post({
+		reply: appearNote,
+		channel: appearNote.channel,
+		isAirReply: true,
 	});
 }
 
