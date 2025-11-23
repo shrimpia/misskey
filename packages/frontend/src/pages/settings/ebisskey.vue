@@ -47,12 +47,6 @@
 						</MkSwitch>
 					</MkPreferenceContainer>
 				</SearchMarker>
-				<MkSwitch :modelValue="true" disabled>
-					<SearchLabel>投稿フォームにて、プレビューのオン・オフを記憶する</SearchLabel>
-					<template #caption>
-						この機能は本家に正式実装されたため、独自機能としては廃止しました。
-					</template>
-				</MkSwitch>
 				<MkPreferenceContainer k="ebisskey.featuredTimelineEnabled">
 					<MkSwitch v-model="featuredTimelineEnabled">
 						<SearchLabel>ハイライトタイムラインをホームに表示する</SearchLabel>
