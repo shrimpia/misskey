@@ -139,6 +139,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<i class="ti ti-repeat"></i>
 					<p v-if="appearNote.renoteCount > 0" :class="$style.footerButtonCount">{{ number(appearNote.renoteCount) }}</p>
 				</button>
+				<button v-else-if="prefer.s['ebisskey.useAirReply'] && prefer.s['ebisskey.airReplyButtonPlacement'] === 'renoteMenu'" :class="$style.footerButton" class="_button" @click.prevent="airReply()">
+					<i class="ti ti-bubble-text"></i>
+				</button>
 				<button v-else :class="$style.footerButton" class="_button" disabled>
 					<i class="ti ti-ban"></i>
 				</button>
