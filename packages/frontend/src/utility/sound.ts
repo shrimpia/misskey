@@ -190,6 +190,12 @@ export async function playReactionSfx(reaction: string, playFallbackSound = true
 		return;
 	};
 
+	// ミュート判定を実施
+	const masterVolume = prefer.s['sound.masterVolume'];
+	if (isMute() || masterVolume === 0) {
+		return;
+	}
+
 	const sound = prefer.s['sound.on.reaction'];
 	// サウンドがない場合は再生しない
 	if (sound.type === null) return;
@@ -269,10 +275,10 @@ export function createSourceNode(buffer: AudioBuffer, opts: {
 	pan?: number;
 	playbackRate?: number;
 }): {
-		soundSource: AudioBufferSourceNode;
-		panNode: StereoPannerNode;
-		gainNode: GainNode;
-	} {
+	soundSource: AudioBufferSourceNode;
+	panNode: StereoPannerNode;
+	gainNode: GainNode;
+} {
 	const panNode = ctx.createStereoPanner();
 	panNode.pan.value = opts.pan ?? 0;
 
