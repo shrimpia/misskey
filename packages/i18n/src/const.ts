@@ -15,6 +15,7 @@ export const languages = [
 	'id-ID',
 	'it-IT',
 	'ja-JP',
+	'ja-EM',
 	'ja-KS',
 	'kab-KAB',
 	'kn-IN',
