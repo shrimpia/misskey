@@ -35,6 +35,7 @@ export class EmojiSoundEntityService {
 			reaction: emojiSound.reaction,
 			file: this.driveFileEntityService.pack(emojiSound.fileId),
 			volume: emojiSound.volume,
+			license: emojiSound.license,
 		});
 	}
 

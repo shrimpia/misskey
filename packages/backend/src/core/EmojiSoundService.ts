@@ -55,8 +55,10 @@ export class EmojiSoundService {
 		reaction: string;
 		fileId: string;
 		volume?: number;
+		license?: string | null;
 	}, moderator: MiUser): Promise<MiEmojiSound> {
 		const volume = params.volume ?? 1.0;
+		const license = params.license ?? null;
 
 		// 既存のものがあるか確認
 		const existing = await this.emojiSoundsRepository.findOneBy({ reaction: params.reaction });
@@ -67,6 +69,7 @@ export class EmojiSoundService {
 			await this.emojiSoundsRepository.update(existing.id, {
 				fileId: params.fileId,
 				volume: volume,
+				license: license,
 				updatedAt: new Date(),
 			});
 			emojiSound = await this.emojiSoundsRepository.findOneByOrFail({ id: existing.id });
@@ -77,6 +80,7 @@ export class EmojiSoundService {
 				reaction: params.reaction,
 				fileId: params.fileId,
 				volume: volume,
+				license: license,
 				createdAt: new Date(),
 				updatedAt: null,
 			});
@@ -136,17 +140,18 @@ export class EmojiSoundService {
 	}
 
 	@bindThis
-	public async packForPublic(): Promise<Record<string, { url: string; volume: number }>> {
+	public async packForPublic(): Promise<Record<string, { url: string; volume: number; license: string | null }>> {
 		const emojiSounds = await this.emojiSoundsRepository.find({
 			relations: ['file'],
 		});
-		const result: Record<string, { url: string; volume: number }> = {};
+		const result: Record<string, { url: string; volume: number; license: string | null }> = {};
 
 		for (const emojiSound of emojiSounds) {
 			if (emojiSound.file) {
 				result[emojiSound.reaction] = {
 					url: emojiSound.file.url,
 					volume: emojiSound.volume,
+					license: emojiSound.license,
 				};
 			}
 		}

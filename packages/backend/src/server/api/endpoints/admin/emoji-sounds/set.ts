@@ -44,6 +44,7 @@ export const paramDef = {
 		reaction: { type: 'string', minLength: 1, maxLength: 256 },
 		fileId: { type: 'string', format: 'misskey:id' },
 		volume: { type: 'number', minimum: 0, maximum: 1, default: 1.0 },
+		license: { type: 'string', maxLength: 1024, nullable: true },
 	},
 	required: ['reaction', 'fileId'],
 } as const;
@@ -73,6 +74,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				reaction: ps.reaction,
 				fileId: ps.fileId,
 				volume: ps.volume,
+				license: ps.license,
 			}, me);
 
 			return await this.emojiSoundEntityService.pack(emojiSound);

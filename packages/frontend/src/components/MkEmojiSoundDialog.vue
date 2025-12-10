@@ -81,6 +81,20 @@ SPDX-License-Identifier: AGPL-3.0-only
 				continuousUpdate
 			/>
 		</div>
+
+		<!-- ライセンス -->
+		<div :class="$style.formItem">
+			<div :class="$style.formLabel">
+				<i class="ti ti-license"></i>
+				ライセンス（任意）
+			</div>
+			<input
+				v-model="license"
+				type="text"
+				:class="$style.licenseInput"
+				placeholder="例: CC BY 4.0"
+			/>
+		</div>
 		<div :class="$style.footer">
 			<MkButton primary rounded style="margin: 0 auto;" @click="save">
 				<i class="ti ti-check"></i> {{ props.item ? i18n.ts.update : i18n.ts.create }}
@@ -110,13 +124,14 @@ type Props = {
 			url: string;
 		};
 		volume: number;
+		license: string | null;
 	} | null;
 };
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-	(ev: 'done', result: { reaction: string; fileId: string; volume: number }): void;
+	(ev: 'done', result: { reaction: string; fileId: string; volume: number; license: string | null }): void;
 	(ev: 'closed'): void;
 }>();
 
@@ -126,6 +141,7 @@ const fileId = ref(props.item?.file.id || '');
 const fileName = ref(props.item?.file.name || '');
 const fileUrl = ref(props.item?.file.url || '');
 const volume = ref(props.item?.volume ?? 1);
+const license = ref(props.item?.license || '');
 
 const canSave = computed(() => {
 	return reaction.value && fileId.value;
@@ -167,6 +183,7 @@ function save() {
 		reaction: reaction.value,
 		fileId: fileId.value,
 		volume: volume.value,
+		license: license.value.trim() === '' ? null : license.value,
 	});
 
 	windowEl.value?.close();
@@ -271,5 +288,24 @@ function cancel() {
 
 .previewButton {
 	width: 100%;
+}
+
+.licenseInput {
+	padding: 12px 16px;
+	background: var(--MI_THEME-inputBg);
+	border: 1px solid var(--MI_THEME-inputBorder);
+	border-radius: 6px;
+	color: var(--MI_THEME-fg);
+	font-size: 1em;
+	transition: border-color 0.2s ease;
+
+	&:focus {
+		outline: none;
+		border-color: var(--MI_THEME-accent);
+	}
+
+	&::placeholder {
+		color: color(from var(--MI_THEME-fg) srgb r g b / 0.5);
+	}
 }
 </style>

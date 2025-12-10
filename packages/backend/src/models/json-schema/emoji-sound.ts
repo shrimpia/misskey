@@ -34,5 +34,9 @@ export const packedEmojiSoundSchema = {
 			type: 'number',
 			optional: false, nullable: false,
 		},
+		license: {
+			type: 'string',
+			optional: false, nullable: true,
+		},
 	},
 } as const;

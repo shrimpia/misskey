@@ -19,8 +19,9 @@ export const meta = {
 			properties: {
 				url: { type: 'string' },
 				volume: { type: 'number' },
+				license: { type: 'string', nullable: true },
 			},
-			required: ['url', 'volume'],
+			required: ['url', 'volume', 'license'],
 		},
 	},
 } as const;

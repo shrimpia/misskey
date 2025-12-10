@@ -197,6 +197,10 @@ export const ROUTE_DEF = [{
 		name: 'ebisskey',
 		component: page(() => import('@/pages/settings/ebisskey.vue')),
 	}, {
+		path: '/emoji-sound-list',
+		name: 'emoji-sound-list',
+		component: page(() => import('@/pages/settings/emoji-sound-list.vue')),
+	}, {
 		path: '/',
 		component: page(() => import('@/pages/_empty_.vue')),
 	}],

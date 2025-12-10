@@ -42,4 +42,10 @@ export class MiEmojiSound {
 		default: 1.0,
 	})
 	public volume: number;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public license: string | null;
 }

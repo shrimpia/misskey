@@ -48,6 +48,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<i class="ti ti-volume"></i>
 							<span>{{ Math.round(item.volume * 100) }}%</span>
 						</div>
+						<div v-if="item.license" :class="$style.infoItem">
+							<i class="ti ti-license"></i>
+							<span>{{ item.license }}</span>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -74,6 +78,7 @@ type EmojiSound = {
 		url: string;
 	};
 	volume: number;
+	license: string | null;
 	createdAt: string;
 	updatedAt: string | null;
 };
@@ -94,6 +99,7 @@ function add() {
 				reaction: result.reaction,
 				fileId: result.fileId,
 				volume: result.volume,
+				license: result.license,
 			});
 			fetchEmojiSounds();
 		},
@@ -110,6 +116,7 @@ function edit(item: EmojiSound) {
 				reaction: result.reaction,
 				fileId: result.fileId,
 				volume: result.volume,
+				license: result.license,
 			});
 			fetchEmojiSounds();
 		},
