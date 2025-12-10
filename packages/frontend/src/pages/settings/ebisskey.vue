@@ -40,27 +40,12 @@
 						</MkSelect>
 					</MkPreferenceContainer>
 				</SearchMarker>
-				<MkFolder :defaultOpen="true">
-					<template #icon><i class="ti ti-info-circle"></i></template>
-					<template #label><SearchLabel>サウンドリアクションに対応した絵文字の一覧（クリックで音が鳴ります）</SearchLabel></template>
-					<div class="_gaps_m">
-						<div :class="$style.emojiSoundList">
-							<button v-for="(item, key) in emojiSounds" :key="key" type="button" class="_button" :class="$style.emojiSoundItem" @click="previewSoundReaction(key)">
-								<MkCustomEmoji
-									v-if="key.startsWith(':')"
-									:name="key"
-									:size="24"
-									:disableLink="true"
-								/>
-								<MkEmoji
-									v-else
-									:emoji="key"
-									:size="24"
-								/>
-							</button>
-						</div>
-					</div>
-				</MkFolder>
+				<div class="_gaps_m">
+					<FormLink to="/settings/emoji-sound-list">
+						<template #icon><i class="ti ti-list"></i></template>
+						サウンドリアクション一覧を見る
+					</FormLink>
+				</div>
 			</div>
 		</FormSection>
 		<FormSection>
@@ -197,8 +182,7 @@ import MkPreferenceContainer from '@/components/MkPreferenceContainer.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import { PREF_DEF } from '@/preferences/def';
 import { suggestReload } from '@/utility/reload-suggest';
-import { getEmojiSoundCache } from '@/utility/sound';
-import * as sound from '@/utility/sound.js';
+import FormLink from '@/components/form/link.vue';
 
 const nicknameEnabled = prefer.model('ebisskey.nicknameEnabled');
 const stealEnabled = prefer.model('ebisskey.stealEnabled');
@@ -229,8 +213,6 @@ const noteVisibilityColorFollowers = ref(prefer.s['ebisskey.noteVisibilityColorF
 const noteVisibilityColorSpecified = ref(prefer.s['ebisskey.noteVisibilityColorSpecified']);
 const noteVisibilityColorLocalOnly = ref(prefer.s['ebisskey.noteVisibilityColorLocalOnly']);
 const noteVisibilityColorChanged = ref(false);
-
-const emojiSounds = await getEmojiSoundCache();
 
 watch([
 	noteVisibilityColorHome,
@@ -269,15 +251,6 @@ function resetColors() {
 	noteVisibilityColorSpecified.value = PREF_DEF['ebisskey.noteVisibilityColorSpecified'].default;
 	noteVisibilityColorLocalOnly.value = PREF_DEF['ebisskey.noteVisibilityColorLocalOnly'].default;
 }
-
-const previewSoundReaction = async (reaction: string) => {
-	const s = emojiSounds[reaction];
-	if (!s) return;
-
-	await sound.playUrl(s.url, {
-		volume: s.volume,
-	});
-};
 
 const headerActions = computed(() => []);
 
