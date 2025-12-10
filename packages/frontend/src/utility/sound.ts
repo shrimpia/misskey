@@ -181,7 +181,7 @@ export async function getEmojiSoundCache(): Promise<EmojiSoundCache> {
  * [シュリンピア拡張] リアクションの音を再生する
  * @param reaction リアクション
  */
-export async function playReactionSfx(reaction: string) {
+export async function playReactionSfx(reaction: string, playFallbackSound = true) {
 	// サウンドリアクションモードを確認
 	const soundReactionMode = prefer.s['ebisskey.soundReactionMode'];
 	// 再生しない設定の場合は、デフォルトの効果音を再生して終了
@@ -208,6 +208,7 @@ export async function playReactionSfx(reaction: string) {
 	}
 
 	// 設定が存在しない場合はデフォルトのリアクション効果音を再生
+	if (!playFallbackSound) return;
 	playMisskeySfx('reaction');
 }
 

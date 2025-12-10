@@ -247,7 +247,7 @@ export function useNoteCapture(props: {
 		// サウンドリアクションの再生（常に再生モードで、かつ自分以外のリアクションの場合）
 		const soundReactionMode = prefer.s['ebisskey.soundReactionMode'];
 		if (soundReactionMode === 'always' && $i && ctx.userId !== $i.id) {
-			sound.playReactionSfx(ctx.reaction);
+			sound.playReactionSfx(ctx.reaction, false);
 		}
 	}
 
