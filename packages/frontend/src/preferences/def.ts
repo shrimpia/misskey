@@ -621,6 +621,9 @@ export const PREF_DEF = definePreferences({
 	'shrimpia.headlineEnabled': {
 		default: true,
 	},
+	'shrimpia.headlineViewMode': {
+		default: 'followAnimatedSettings' as 'alwaysAnimated' | 'followAnimatedSettings' | 'neverAnimated',
+	},
 	'shrimpia.postGuidelineWarningDisabled': {
 		default: false,
 	},

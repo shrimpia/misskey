@@ -34,16 +34,28 @@
 				</SearchMarker>
 
 				<!-- シュリンピアヘッドライン -->
-				<SearchMarker :keywords="['shrimpia', 'headline']">
-					<MkPreferenceContainer k="shrimpia.headlineEnabled">
-						<MkSwitch v-model="headlineEnabled">
-							<SearchLabel>シュリンピアヘッドライン</SearchLabel>
-							<template #caption>
+				<SearchMarker :keywords="['shrimpia', 'headline']" icon="ti ti-broadcast">
+					<MkFolder :defaultOpen="headlineEnabled">
+						<template #icon><i class="ti ti-broadcast"></i></template>
+						<template #label><SearchLabel>シュリンピアヘッドライン</SearchLabel></template>
+						<div class="_gaps_m">
+							<span>
 								画面上部に電光掲示板を表示します。<br/>
 								シュリンピアのお知らせやヒント、イベント情報などをお知らせします。
-							</template>
-						</MkSwitch>
-					</MkPreferenceContainer>
+							</span>
+
+							<MkPreferenceContainer k="shrimpia.headlineEnabled">
+								<MkSwitch v-model="headlineEnabled">
+									オンにする
+								</MkSwitch>
+							</MkPreferenceContainer>
+							<MkPreferenceContainer k="shrimpia.headlineViewMode">
+								<MkSelect v-model="headlineViewMode" :items="headlineViewModeItems">
+									<template #label>表示モード</template>
+								</MkSelect>
+							</MkPreferenceContainer>
+						</div>
+					</MkFolder>
 				</SearchMarker>
 
 				<!-- サウンドリアクション -->
@@ -217,6 +229,12 @@ const useTextAreaAutoSize = prefer.model('ebisskey.useTextAreaAutoSize');
 
 // #region Shrimpia
 const headlineEnabled = prefer.model('shrimpia.headlineEnabled');
+const headlineViewMode = prefer.model('shrimpia.headlineViewMode');
+const headlineViewModeItems = [
+	{ label: `「${i18n.ts.reduceUiAnimation}」設定に準じる`, value: 'followAnimatedSettings' },
+	{ label: 'スクロールする', value: 'alwaysAnimated' },
+	{ label: 'スクロールしない', value: 'neverAnimated' },
+];
 // #endregion
 
 const noteVisibilityColorHome = ref(prefer.s['ebisskey.noteVisibilityColorHome']);

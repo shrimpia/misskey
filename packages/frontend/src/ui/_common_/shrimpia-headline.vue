@@ -7,7 +7,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div :class="$style.root">
 	<MkA :to="currentArticle?.link || ''" :class="$style.inner">
 		<i :class="[$style.icon, currentArticle?.iconClass ?? '']"/>
-		<div ref="textEl" :class="$style.text"/>
+		<div
+			ref="textEl"
+			:class="[
+				$style.text,
+				!animated && displayState === 'fadingIn' && $style.fadeIn,
+				!animated && displayState === 'fadingOut' && $style.fadeOut
+			]"
+		/>
 	</MkA>
 </div>
 </template>
@@ -21,6 +28,7 @@ import { fetchEvents } from '@/scripts/portal-api/events';
 import MkA from '@/components/global/MkA.vue';
 import { fetchHints } from '@/scripts/portal-api/hints';
 import { $i } from '@/i.js';
+import { prefer } from '@/preferences';
 
 const articleQueue = ref<Article[]>([]);
 const currentIndex = ref(0);
@@ -36,12 +44,23 @@ type Article = {
 	link?: string;
 };
 
+// フェードモード用の状態管理
+type DisplayState = 'fadingIn' | 'showing' | 'fadingOut';
+const displayState = ref<DisplayState>('showing');
+
+// フェードモードのタイミング定数
+const FADE_DURATION = 500; // 0.5秒
+const FADE_SHOW_DURATION = 10000; // 10秒
+
 const iconClasses = {
 	'info': 'ti ti-info-circle',
 	'warning': 'ti ti-alert-triangle',
 	'error': 'ti ti-circle-x',
 	'success': 'ti ti-check',
 };
+
+const animated = prefer.s['shrimpia.headlineViewMode'] === 'alwaysAnimated'
+	|| (prefer.s['shrimpia.headlineViewMode'] === 'followAnimatedSettings' && prefer.s.animation);
 
 const fillQueue = () => {
 	// イベントデータをつっこむ
@@ -82,24 +101,114 @@ const escapeHtml = (unsafe: string) => {
 		.replaceAll('\'', '&#039;');
 };
 
-const changeText = async () => {
+// 共通: テキスト設定処理
+const setArticleText = (article: Article) => {
 	if (!textEl.value) return;
+
+	// marqueeクラスを削除
+	textEl.value.classList.remove('marquee');
+
+	// テキストの設定
+	const escapedTitle = escapeHtml(article.title);
+	const escapedText = escapeHtml(article.text);
+	textEl.value.innerHTML = escapedTitle ? `<b>${escapedTitle}</b> ${escapedText}` : escapedText;
+
+	currentArticle.value = article;
+
+	// パディングのリセット
+	if (!animated) {
+		textEl.value.style.setProperty('padding-left', '8px');
+	}
+};
+
+// フェードイン実行
+const fadeIn = async () => {
+	if (!textEl.value) return;
+
+	displayState.value = 'fadingIn';
+	textEl.value.style.opacity = '0';
+
+	await new Promise<void>(resolve => {
+		window.setTimeout(() => {
+			if (textEl.value) {
+				textEl.value.style.opacity = '1';
+			}
+			resolve();
+		}, 50);
+	});
+
+	await new Promise<void>(resolve => window.setTimeout(resolve, FADE_DURATION));
+	displayState.value = 'showing';
+};
+
+// フェードアウト実行
+const fadeOut = async () => {
+	if (!textEl.value) return;
+
+	displayState.value = 'fadingOut';
+	textEl.value.style.opacity = '0';
+
+	await new Promise<void>(resolve => window.setTimeout(resolve, FADE_DURATION));
+};
+
+// マーキーモード用のテキスト変更処理
+const changeTextMarquee = async () => {
+	if (!textEl.value) return;
+	if (!articleQueue.value.length) {
+		fillQueue();
+	}
+
+	const article = articleQueue.value.shift();
+	if (!article) return;
+
+	// テキスト設定
+	setArticleText(article);
+
+	// マーキーアニメーション設定
+	const speed = 120;
+	const duration = textEl.value.offsetWidth / speed;
+	textEl.value.style.setProperty('--marquee-duration', `${duration}s`);
+	textEl.value.classList.add('marquee');
+
+	currentIndex.value = (currentIndex.value + 1) % articleQueue.value.length;
+
+	// 次のテキストへ
+	window.setTimeout(changeText, duration * 1000 + 500);
+};
+
+// フェードモード用のテキスト変更処理
+const changeTextFade = async () => {
+	if (!textEl.value) return;
+
+	// フェードアウト
+	await fadeOut();
+
+	// キューのチェックとテキスト設定
 	if (!articleQueue.value.length) {
 		fillQueue();
 	}
 	const article = articleQueue.value.shift();
 	if (!article) return;
-	textEl.value.classList.remove('marquee');
 
-	textEl.value.innerHTML = `<b>${escapeHtml(article.title)}</b>　${escapeHtml(article.text)}`;
-	currentArticle.value = article;
-	const speed = 120;
-	const duration = textEl.value.offsetWidth / speed;
-	textEl.value.style.setProperty('--marquee-duration', `${duration}s`);
-	textEl.value.classList.add('marquee');
-	currentIndex.value = (currentIndex.value + 1) % articleQueue.value.length;
+	setArticleText(article);
 
-	setTimeout(changeText, duration * 1000 + 500);
+	// フェードイン
+	await fadeIn();
+
+	// 表示時間待機
+	await new Promise<void>(resolve => window.setTimeout(resolve, FADE_SHOW_DURATION));
+
+	// 次のサイクルへ
+	changeTextFade();
+};
+
+// メインのテキスト変更処理
+const changeText = async () => {
+	if (animated) {
+		await changeTextMarquee();
+	} else {
+		await changeTextFade();
+	}
 };
 
 const toPlainText = (nodes: MfmNode[]): string => {
@@ -222,13 +331,17 @@ onMounted(async () => {
 
 .text {
 	flex: 1;
-	opacity: 1;
 	white-space: nowrap;
 	padding-left: 100%;
-}
+	transition: opacity 0.5s ease-in-out;
 
-.hide {
-	opacity: 0;
+	&.fadeIn {
+		opacity: 1;
+	}
+
+	&.fadeOut {
+		opacity: 0;
+	}
 }
 </style>
 
