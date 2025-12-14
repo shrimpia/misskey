@@ -1,5 +1,5 @@
 <template>
-<SearchMarker path="/settings/ebisskey" label="独自機能" :keywords="['ebisskey']" icon="ti ti-power">
+<SearchMarker path="/settings/ebisskey" label="独自機能" :keywords="['ebisskey']" icon="ti ti-bulb-filled">
 	<div class="_gaps_m">
 		<MkFeatureBanner icon="/client-assets/shrimp_3d.png" color="#b93e43">
 			<SearchKeyword>
@@ -9,6 +9,7 @@
 		<FormSection>
 			<template #label>独自機能</template>
 			<div class="_gaps_m">
+				<!-- ニックネーム -->
 				<SearchMarker :keywords="['nickname']">
 					<MkPreferenceContainer k="ebisskey.nicknameEnabled">
 						<MkSwitch v-model="nicknameEnabled">
@@ -20,6 +21,7 @@
 						</MkSwitch>
 					</MkPreferenceContainer>
 				</SearchMarker>
+				<!-- パクる -->
 				<SearchMarker :keywords="['steal']">
 					<MkPreferenceContainer k="ebisskey.stealEnabled">
 						<MkSwitch v-model="stealEnabled">
@@ -30,60 +32,41 @@
 						</MkSwitch>
 					</MkPreferenceContainer>
 				</SearchMarker>
-				<SearchMarker :keywords="['sound', 'reaction']">
-					<MkPreferenceContainer k="ebisskey.soundReactionMode">
-						<MkSelect v-model="soundReactionMode" :items="soundReactionModeItems">
-							<template #label>サウンドリアクション (Beta)</template>
-							<template #caption>
-								一部の絵文字リアクションで、特別なサウンドが再生されます。
-							</template>
-						</MkSelect>
-					</MkPreferenceContainer>
-				</SearchMarker>
-				<div class="_gaps_m">
-					<FormLink to="/settings/emoji-sound-list">
-						<template #icon><i class="ti ti-list"></i></template>
-						サウンドリアクション一覧を見る
-					</FormLink>
-				</div>
-			</div>
-		</FormSection>
-		<FormSection>
-			<template #label>パッチ</template>
-			<div class="_gaps_m">
-				<div>Misskeyの機能に変更を加えます。</div>
 
-				<SearchMarker :keywords="['note', 'info', 'button']">
-					<MkPreferenceContainer k="ebisskey.infoButtonForNoteActionsEnabled">
-						<MkSwitch v-model="infoButtonForNoteActionsEnabled">
-							<SearchLabel>ノートに詳細表示ボタンを表示する</SearchLabel>
+				<!-- シュリンピアヘッドライン -->
+				<SearchMarker :keywords="['shrimpia', 'headline']">
+					<MkPreferenceContainer k="shrimpia.headlineEnabled">
+						<MkSwitch v-model="headlineEnabled">
+							<SearchLabel>シュリンピアヘッドライン</SearchLabel>
 							<template #caption>
-								オプション「{{ i18n.ts.showNoteActionsOnlyHover }}」をオンにしたときに適用されます。
+								画面上部に電光掲示板を表示します。<br/>
+								シュリンピアのお知らせやヒント、イベント情報などをお知らせします。
 							</template>
 						</MkSwitch>
 					</MkPreferenceContainer>
 				</SearchMarker>
-				<MkPreferenceContainer k="ebisskey.featuredTimelineEnabled">
-					<MkSwitch v-model="featuredTimelineEnabled">
-						<SearchLabel>ハイライトタイムラインをホームに表示する</SearchLabel>
-					</MkSwitch>
-				</MkPreferenceContainer>
-				<MkPreferenceContainer k="shrimpia.headlineEnabled">
-					<SearchMarker :keywords="['shrimpia', 'headline']">
-						<MkSwitch v-model="headlineEnabled">
-							シュリンピアヘッドライン <span class="_beta">{{ i18n.ts.beta }}</span>
-							<template #caption>
-								帝国のお知らせ、ヒント、イベント情報などをお知らせします。
-							</template>
-						</MkSwitch>
-					</SearchMarker>
-				</MkPreferenceContainer>
-			</div>
-		</FormSection>
-		<FormSection>
-			<template #label><i class="ti ti-flask"/> Ebisskey Labs</template>
-			<div class="_gaps_m">
-				<div>まだ開発中の機能を試してみませんか。一部の機能はちゃんと動かないかもしれません。</div>
+
+				<!-- サウンドリアクション -->
+				<SearchMarker :keywords="['sound', 'reaction']">
+					<MkFolder :defaultOpen="soundReactionMode !== 'never'">
+						<template #icon><i class="ti ti-music"></i></template>
+						<template #label><SearchLabel>サウンドリアクション</SearchLabel></template>
+						<div class="_gaps_m">
+							<div>
+								一部の絵文字リアクションで、特別なサウンドが再生されます。<br/>
+								どのタイミングでサウンドを再生するか設定できます。
+							</div>
+							<MkPreferenceContainer k="ebisskey.soundReactionMode">
+								<template #label>再生モード</template>
+								<MkSelect v-model="soundReactionMode" :items="soundReactionModeItems"/>
+							</MkPreferenceContainer>
+							<FormLink to="/settings/emoji-sound-list">
+								<template #icon><i class="ti ti-list"></i></template>
+								サウンドリアクション一覧を見る
+							</FormLink>
+						</div>
+					</MkFolder>
+				</SearchMarker>
 
 				<!-- エアリプ機能 -->
 				<SearchMarker :keywords="['air-reply']">
@@ -147,6 +130,34 @@
 						</template>
 					</MkFolder>
 				</SearchMarker>
+			</div>
+		</FormSection>
+		<FormSection>
+			<template #label>パッチ</template>
+			<div class="_gaps_m">
+				<div>Misskeyの機能に変更を加えます。</div>
+
+				<SearchMarker :keywords="['note', 'info', 'button']">
+					<MkPreferenceContainer k="ebisskey.infoButtonForNoteActionsEnabled">
+						<MkSwitch v-model="infoButtonForNoteActionsEnabled">
+							<SearchLabel>ノートに詳細表示ボタンを表示する</SearchLabel>
+							<template #caption>
+								オプション「{{ i18n.ts.showNoteActionsOnlyHover }}」をオンにしたときに適用されます。
+							</template>
+						</MkSwitch>
+					</MkPreferenceContainer>
+				</SearchMarker>
+				<MkPreferenceContainer k="ebisskey.featuredTimelineEnabled">
+					<MkSwitch v-model="featuredTimelineEnabled">
+						<SearchLabel>ハイライトタイムラインをホームに表示する</SearchLabel>
+					</MkSwitch>
+				</MkPreferenceContainer>
+			</div>
+		</FormSection>
+		<FormSection>
+			<template #label><i class="ti ti-flask"/> Shrimpia Labs</template>
+			<div class="_gaps_m">
+				<div>まだ開発中の機能を試してみませんか。一部の機能はちゃんと動かないかもしれません。</div>
 
 				<MkFolder :defaultOpen="true">
 					<template #icon><i class="ti ti-settings"></i></template>
