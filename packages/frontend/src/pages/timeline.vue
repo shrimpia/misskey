@@ -10,6 +10,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 			{{ i18n.ts._timelineDescription[src] }}
 		</MkTip>
 		<MkPostForm v-if="prefer.r.showFixedPostForm.value" :class="$style.postForm" class="_panel" fixed style="margin-bottom: var(--MI-margin);"/>
+		<div v-if="showOptionsAboveTimeline" class="_panel" :class="[$style.tlOptions]">
+			<button
+				v-for="(button) in timelineOptionItems"
+				:key="button.text.toString()"
+				v-tooltip="button.text.toString()"
+				class="_button"
+				:class="[$style.tlOptionButton, button.ref.value ? $style.tlOptionButtonActive : '']"
+				:disabled="typeof button.disabled === 'boolean' ? button.disabled : button.disabled?.value"
+				@click="button.ref.value = !button.ref.value"
+			>
+				<i :class="button.icon"></i>
+			</button>
+			<button v-tooltip="i18n.ts.hide" class="_button" :class="[$style.tlOptionButton, $style.tlRightOptionButton]" @click="showOptionsAboveTimeline = false">
+				<i class="ti ti-minimize"></i>
+			</button>
+		</div>
 		<MkStreamingNotesTimeline
 			ref="tlComponent"
 			:key="src + withRenotes + withReplies + onlyFiles + withSensitive"
@@ -31,7 +47,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { computed, watch, provide, useTemplateRef, ref, onMounted, onActivated } from 'vue';
 import type { Tab } from '@/components/global/MkPageHeader.tabs.vue';
-import type { MenuItem } from '@/types/menu.js';
+import type { MenuItem, MenuSwitch } from '@/types/menu.js';
 import type { BasicTimelineType } from '@/timelines.js';
 import MkStreamingNotesTimeline from '@/components/MkStreamingNotesTimeline.vue';
 import MkPostForm from '@/components/MkPostForm.vue';
@@ -114,6 +130,8 @@ const withSensitive = computed<boolean>({
 });
 
 const showFixedPostForm = prefer.model('showFixedPostForm');
+
+const showOptionsAboveTimeline = ref(true);
 
 async function chooseList(ev: MouseEvent): Promise<void> {
 	const lists = await userListsCache.fetch();
@@ -213,65 +231,80 @@ onActivated(() => {
 	switchTlIfNeeded();
 });
 
+const timelineMenuItems = computed(() => {
+	const menuItems: (MenuItem & { showsOnTimeline?: boolean })[] = [];
+
+	menuItems.push({
+		type: 'switch',
+		icon: 'ti ti-repeat',
+		text: i18n.ts.showRenotes,
+		ref: withRenotes,
+	});
+
+	if (isBasicTimeline(src.value) && hasWithReplies(src.value)) {
+		menuItems.push({
+			type: 'switch',
+			icon: 'ti ti-messages',
+			text: i18n.ts.showRepliesToOthersInTimeline,
+			ref: withReplies,
+			disabled: onlyFiles,
+		});
+	}
+
+	menuItems.push({
+		type: 'switch',
+		icon: 'ti ti-eye-exclamation',
+		text: i18n.ts.withSensitive,
+		ref: withSensitive,
+	}, {
+		type: 'switch',
+		icon: 'ti ti-photo',
+		text: i18n.ts.fileAttachedOnly,
+		ref: onlyFiles,
+		disabled: isBasicTimeline(src.value) && hasWithReplies(src.value) ? withReplies : false,
+	}, {
+		type: 'switch',
+		icon: 'ti ti-robot',
+		text: i18n.ts.showBotNotes,
+		ref: withBots,
+		disabled: !isBasicTimeline(src.value),
+	});
+
+	if (src.value === 'home') {
+		menuItems.push({
+			type: 'switch',
+			icon: 'ti ti-rocket-off',
+			text: i18n.ts.localOnly,
+			ref: onlyLocals,
+		});
+	}
+
+	menuItems.push({
+		type: 'divider',
+	}, {
+		type: 'switch',
+		icon: 'ti ti-edit',
+		text: i18n.ts.showFixedPostForm,
+		ref: showFixedPostForm,
+	}, {
+		type: 'switch',
+		icon: 'ti ti-arrow-down',
+		text: 'オプションをタイムラインの上に表示する',
+		ref: showOptionsAboveTimeline,
+		showsOnTimeline: false,
+	});
+	return menuItems;
+});
+
+// タイムライン上部に表示可能なオプション項目
+const timelineOptionItems = computed(() => timelineMenuItems.value.filter(i => 'type' in i && i.type === 'switch' && i.showsOnTimeline !== false) as MenuSwitch[]);
+
 const headerActions = computed(() => {
 	const items = [{
 		icon: 'ti ti-dots',
 		text: i18n.ts.options,
 		handler: (ev) => {
-			const menuItems: MenuItem[] = [];
-
-			menuItems.push({
-				type: 'switch',
-				icon: 'ti ti-repeat',
-				text: i18n.ts.showRenotes,
-				ref: withRenotes,
-			});
-
-			if (isBasicTimeline(src.value) && hasWithReplies(src.value)) {
-				menuItems.push({
-					type: 'switch',
-					icon: 'ti ti-messages',
-					text: i18n.ts.showRepliesToOthersInTimeline,
-					ref: withReplies,
-					disabled: onlyFiles,
-				});
-			}
-
-			menuItems.push({
-				type: 'switch',
-				icon: 'ti ti-eye-exclamation',
-				text: i18n.ts.withSensitive,
-				ref: withSensitive,
-			}, {
-				type: 'switch',
-				icon: 'ti ti-photo',
-				text: i18n.ts.fileAttachedOnly,
-				ref: onlyFiles,
-				disabled: isBasicTimeline(src.value) && hasWithReplies(src.value) ? withReplies : false,
-			}, {
-				type: 'switch',
-				icon: 'ti ti-robot',
-				text: i18n.ts.showBotNotes,
-				ref: withBots,
-				disabled: !isBasicTimeline(src.value),
-			}, {
-				type: 'divider',
-			}, {
-				type: 'switch',
-				text: i18n.ts.showFixedPostForm,
-				ref: showFixedPostForm,
-			});
-
-			if (src.value === 'home') {
-				menuItems.push({
-					type: 'switch',
-					icon: 'ti ti-rocket-off',
-					text: i18n.ts.localOnly,
-					ref: onlyLocals,
-				});
-			}
-
-			os.popupMenu(menuItems, ev.currentTarget ?? ev.target);
+			os.popupMenu(timelineMenuItems.value, ev.currentTarget ?? ev.target);
 		},
 	}];
 
@@ -361,5 +394,44 @@ definePage(() => ({
 	background: var(--MI_THEME-bg);
 	border-radius: var(--MI-radius);
 	overflow: clip;
+}
+
+.tlOptions {
+	padding: 8px;
+	margin-bottom: 4px;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.tlOptionButton {
+	padding: 8px 16px;
+	border-radius: var(--MI-radius);
+	flex: none;
+	display: inline-block;
+	padding: 8px;
+	margin: 0;
+	font-size: 1em;
+	width: auto;
+	height: 100%;
+	border-radius: 6px;
+	opacity: 0.4;
+
+	&:hover {
+		background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
+	}
+
+	&:disabled {
+		opacity: 0.2;
+		cursor: not-allowed;
+	}
+
+	&.tlOptionButtonActive {
+		opacity: 1;
+	}
+
+	&.tlRightOptionButton {
+		margin-left: auto;
+		opacity: 1;
+	}
 }
 </style>
