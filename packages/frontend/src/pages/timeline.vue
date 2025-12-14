@@ -131,7 +131,7 @@ const withSensitive = computed<boolean>({
 
 const showFixedPostForm = prefer.model('showFixedPostForm');
 
-const showOptionsAboveTimeline = ref(true);
+const showOptionsAboveTimeline = prefer.model('ebisskey.showOptionsAboveTimeline');
 
 async function chooseList(ev: MouseEvent): Promise<void> {
 	const lists = await userListsCache.fetch();

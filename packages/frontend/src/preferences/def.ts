@@ -615,6 +615,9 @@ export const PREF_DEF = definePreferences({
 	'ebisskey.soundReactionMode': {
 		default: 'never' as 'never' | 'onlyMyReaction' | 'always',
 	},
+	'ebisskey.showOptionsAboveTimeline': {
+		default: false,
+	},
 	'shrimpia.headlineEnabled': {
 		default: true,
 	},
