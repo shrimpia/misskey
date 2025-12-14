@@ -176,6 +176,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<button v-if="stealButtonVisible" ref="stealButton" class="button _button" :class="$style.noteFooterButton" @mousedown.prevent="stealMenu(appearNote, stealButton)">
 					<i class="ti ti-swipe"></i>
 				</button>
+				<button v-if="prefer.s['ebisskey.useAirReply'] && prefer.s['ebisskey.airReplyButtonPlacement'] === 'noteFooter'" class="_button" :class="$style.noteFooterButton" @click.prevent="airReply()">
+					<i class="ti ti-bubble-text"></i>
+				</button>
 				<button v-if="prefer.s.showClipButtonInNoteFooter" ref="clipButton" class="_button" :class="$style.noteFooterButton" @mousedown.prevent="clip()">
 					<i class="ti ti-paperclip"></i>
 				</button>
