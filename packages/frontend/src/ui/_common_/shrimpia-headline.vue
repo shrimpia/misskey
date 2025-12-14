@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div :class="$style.root">
-	<MkA :to="currentArticle?.link || ''" :class="$style.inner">
+	<div role="button" :class="$style.inner" @click="showDialog">
 		<i :class="[$style.icon, currentArticle?.iconClass ?? '']"/>
 		<div
 			ref="textEl"
@@ -15,20 +15,20 @@ SPDX-License-Identifier: AGPL-3.0-only
 				!animated && displayState === 'fadingOut' && $style.fadeOut
 			]"
 		/>
-	</MkA>
+	</div>
 </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, nextTick } from 'vue';
+import { onMounted, ref, nextTick, defineAsyncComponent } from 'vue';
 import { parse } from 'mfm-js';
 import type { MfmNode } from 'mfm-js';
 import type { Event } from '@/scripts/portal-api/events';
 import { fetchEvents } from '@/scripts/portal-api/events';
-import MkA from '@/components/global/MkA.vue';
 import { fetchHints } from '@/scripts/portal-api/hints';
 import { $i } from '@/i.js';
 import { prefer } from '@/preferences';
+import { popup } from '@/os';
 
 const articleQueue = ref<Article[]>([]);
 const currentIndex = ref(0);
@@ -38,10 +38,12 @@ let hintArticles: Article[] = [];
 const currentArticle = ref<Article | null>(null);
 
 type Article = {
+	type: 'event' | 'hint' | 'announcement';
 	title: string;
 	text: string;
 	iconClass: string;
 	link?: string;
+	isExternalLink?: boolean;
 };
 
 // フェードモード用の状態管理
@@ -51,6 +53,8 @@ const displayState = ref<DisplayState>('showing');
 // フェードモードのタイミング定数
 const FADE_DURATION = 500; // 0.5秒
 const FADE_SHOW_DURATION = 10000; // 10秒
+
+const SHRIMPIA_URL = 'https://mk.shrimpia.network';
 
 const iconClasses = {
 	'info': 'ti ti-info-circle',
@@ -81,11 +85,12 @@ const fillQueue = () => {
 	// 未読のお知らせを先頭に追加
 	const unreadAnnouncements = $i?.unreadAnnouncements.filter(a => a.display === 'banner') ?? [];
 	const announcementArticles = unreadAnnouncements.map(a => ({
+		type: 'announcement',
 		title: a.title,
 		text: a.text.length > 140 ? a.text.slice(0, 140) + '...' : a.text,
 		iconClass: iconClasses[a.icon],
 		link: '/announcements/' + a.id,
-	}));
+	} satisfies Article));
 
 	q = [...announcementArticles, ...q];
 
@@ -264,6 +269,7 @@ const fetchEventArticles = async () => {
 			// 本文は最大140文字に制限
 			let description = toPlainText(parse(ev.description));
 			a.push({
+				type: 'event',
 				title: `${date} ${ev.name}`,
 				text: description.length > 140 ? description.slice(0, 140) + '...' : description,
 				iconClass: 'ti ti-calendar-bolt',
@@ -279,14 +285,25 @@ const fetchEventArticles = async () => {
 const fetchHintArticles = async () => {
 	try {
 		hintArticles = (await fetchHints()).map(h => ({
+			type: 'hint',
 			title: '',
 			text: h.content,
 			iconClass: 'ti ti-bulb',
-			link: h.url ?? undefined,
+			link: (h.url?.startsWith(SHRIMPIA_URL) ? h.url.slice(SHRIMPIA_URL.length) : h.url) ?? undefined,
+			isExternalLink: h.url ? !h.url.startsWith(SHRIMPIA_URL) : false,
 		}));
 	} catch (error) {
 		console.error('Failed to call Shrimpia Portal, so hint articles are not displayed.');
 	}
+};
+
+const showDialog = () => {
+	if (!currentArticle.value) return;
+	const { dispose } = popup(defineAsyncComponent(() => import('@/components/ShrimpiaHeadlineArticleDialog.vue')), {
+		article: currentArticle.value,
+	}, {
+		closed: () => dispose(),
+	});
 };
 
 onMounted(async () => {
@@ -315,6 +332,7 @@ onMounted(async () => {
 	padding: 5px 0;
 	min-width: 0;
 	overflow: hidden;
+	cursor: pointer;
 }
 
 .icon {
