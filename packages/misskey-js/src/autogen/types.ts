@@ -6959,6 +6959,7 @@ export interface operations {
                     description: string;
                     url: string;
                     roleIdsThatCanBeUsedThisDecoration?: string[];
+                    category?: string | null;
                 };
             };
         };
@@ -6980,6 +6981,7 @@ export interface operations {
                         description: string;
                         url: string;
                         roleIdsThatCanBeUsedThisDecoration: string[];
+                        category: string | null;
                     };
                 };
             };
@@ -7131,6 +7133,7 @@ export interface operations {
                         description: string;
                         url: string;
                         roleIdsThatCanBeUsedThisDecoration: string[];
+                        category?: string | null;
                     }[];
                 };
             };
@@ -7191,6 +7194,7 @@ export interface operations {
                     description?: string;
                     url?: string;
                     roleIdsThatCanBeUsedThisDecoration?: string[];
+                    category?: string | null;
                 };
             };
         };
@@ -23894,6 +23898,7 @@ export interface operations {
                         description: string;
                         url: string;
                         roleIdsThatCanBeUsedThisDecoration: string[];
+                        category?: string | null;
                     }[];
                 };
             };
