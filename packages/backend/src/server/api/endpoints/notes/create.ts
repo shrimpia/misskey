@@ -123,6 +123,13 @@ export const meta = {
 			code: 'CONTAINS_TOO_MANY_MENTIONS',
 			id: '4de0363a-3046-481b-9b0f-feff3e211025',
 		},
+
+		noteWithUrlRateLimitExceeded: {
+			message: 'Note with URL rate limit exceeded.',
+			code: 'NOTE_WITH_URL_RATE_LIMIT_EXCEEDED',
+			id: '2e86dcc0-592c-49f6-99bf-4fcd262ad972',
+			httpStatusCode: 429,
+		},
 	},
 } as const;
 
@@ -253,6 +260,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 						throw new ApiError(meta.errors.containsProhibitedWords);
 					} else if (err.id === '9f466dab-c856-48cd-9e65-ff90ff750580') {
 						throw new ApiError(meta.errors.containsTooManyMentions);
+					} else if (err.id === '2e86dcc0-592c-49f6-99bf-4fcd262ad972') {
+						throw new ApiError(meta.errors.noteWithUrlRateLimitExceeded);
 					} else if (err.id === '801c046c-5bf5-4234-ad2b-e78fc20a2ac7') {
 						throw new ApiError(meta.errors.noSuchFile);
 					} else if (err.id === '53983c56-e163-45a6-942f-4ddc485d4290') {

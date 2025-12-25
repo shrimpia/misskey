@@ -3893,6 +3893,10 @@ export interface Locale extends ILocale {
      */
     "rateLimitExceeded": string;
     /**
+     * URL付きノートのレート制限を超えました
+     */
+    "noteWithUrlRateLimitExceeded": string;
+    /**
      * 画像のクロップ
      */
     "cropImage": string;
@@ -8267,6 +8271,30 @@ export interface Locale extends ILocale {
              * ウォーターマーク機能の使用可否
              */
             "watermarkAvailable": string;
+            /**
+             * URL付きノートの投稿数制限
+             */
+            "noteWithUrlLimit": string;
+            /**
+             * 時間あたりに投稿できるURL付きノートの最大数を制限します。0で無制限になります。
+             */
+            "noteWithUrlLimit_description": string;
+            /**
+             * URL付きノートのレート制限期間
+             */
+            "noteWithUrlLimitDuration": string;
+            /**
+             * URL付きノートの投稿数制限を適用する期間（ミリ秒）を設定します。デフォルトは3600000（1時間）です。
+             */
+            "noteWithUrlLimitDuration_description": string;
+            /**
+             * URL付きノートの制限をパブリック投稿のみに適用
+             */
+            "noteWithUrlLimitPublicOnly": string;
+            /**
+             * オンにすると、URL付きノートの投稿数制限はパブリック投稿のみに適用されます。
+             */
+            "noteWithUrlLimitPublicOnly_description": string;
         };
         "_condition": {
             /**

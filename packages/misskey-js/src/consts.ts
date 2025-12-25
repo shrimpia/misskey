@@ -230,6 +230,9 @@ export const rolePolicies = [
 	'noteDraftLimit',
 	'scheduledNoteLimit',
 	'watermarkAvailable',
+	'noteWithUrlLimit',
+	'noteWithUrlLimitDuration',
+	'noteWithUrlLimitPublicOnly',
 ] as const;
 
 export const queueTypes = [

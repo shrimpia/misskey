@@ -1130,6 +1130,13 @@ async function post(ev?: MouseEvent) {
 		});
 	}).catch(err => {
 		posting.value = false;
+		if (err.id === '2e86dcc0-592c-49f6-99bf-4fcd262ad972') {
+			os.alert({
+				type: 'error',
+				text: '一定期間に可能なURL付きノートの投稿回数を超えました。しばらく時間をおいてから再度お試しください。',
+			});
+			return;
+		}
 		os.alert({
 			type: 'error',
 			text: err.message + '\n' + (err as any).id,
