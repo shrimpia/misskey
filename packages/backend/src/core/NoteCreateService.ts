@@ -7,10 +7,12 @@ import { setImmediate } from 'node:timers/promises';
 import * as mfm from 'mfm-js';
 import { In, DataSource, IsNull, LessThan } from 'typeorm';
 import * as Redis from 'ioredis';
+import Limiter from 'ratelimiter';
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { extractMentions } from '@/misc/extract-mentions.js';
 import { extractCustomEmojisFromMfm } from '@/misc/extract-custom-emojis-from-mfm.js';
 import { extractHashtags } from '@/misc/extract-hashtags.js';
+import { hasUrl } from '@/misc/extract-urls-from-mfm.js';
 import type { IMentionedRemoteUsers } from '@/models/Note.js';
 import { MiNote } from '@/models/Note.js';
 import type { BlockingsRepository, ChannelFollowingsRepository, ChannelsRepository, DriveFilesRepository, FollowingsRepository, InstancesRepository, MiFollowing, MiMeta, MutingsRepository, NotesRepository, NoteThreadMutingsRepository, UserListMembershipsRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
@@ -162,6 +164,9 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		@Inject(DI.redisForTimelines)
 		private redisForTimelines: Redis.Redis,
+
+		@Inject(DI.redis)
+		private redisClient: Redis.Redis,
 
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
@@ -515,20 +520,47 @@ export class NoteCreateService implements OnApplicationShutdown {
 		let mentionedUsers = data.apMentions;
 
 		// Parse MFM if needed
+		const tokens = (data.text ? mfm.parse(data.text)! : []);
+		const cwTokens = data.cw ? mfm.parse(data.cw)! : [];
+		const choiceTokens = data.poll && data.poll.choices
+			? concat(data.poll.choices.map(choice => mfm.parse(choice)!))
+			: [];
+
+		const combinedTokens = tokens.concat(cwTokens).concat(choiceTokens);
+
 		if (!tags || !emojis || !mentionedUsers) {
-			const tokens = (data.text ? mfm.parse(data.text)! : []);
-			const cwTokens = data.cw ? mfm.parse(data.cw)! : [];
-			const choiceTokens = data.poll && data.poll.choices
-				? concat(data.poll.choices.map(choice => mfm.parse(choice)!))
-				: [];
-
-			const combinedTokens = tokens.concat(cwTokens).concat(choiceTokens);
-
 			tags = data.apHashtags ?? extractHashtags(combinedTokens);
 
 			emojis = data.apEmojis ?? extractCustomEmojisFromMfm(combinedTokens);
 
 			mentionedUsers = data.apMentions ?? await this.extractMentionedUsers(user, combinedTokens);
+		}
+
+		// Check URL rate limit
+		const hasUrls = combinedTokens.length > 0 && hasUrl(combinedTokens);
+		if (hasUrls) {
+			const policies = await this.roleService.getUserPolicies(user.id);
+
+			if (policies.noteWithUrlLimit > 0) {
+				// Check if should limit based on public-only option
+				const shouldLimit = !policies.noteWithUrlLimitPublicOnly ||
+				                   data.visibility === 'public';
+
+				if (shouldLimit) {
+					const limitInfo = await this.checkRateLimit(
+						`noteWithUrl:${user.id}`,
+						policies.noteWithUrlLimitDuration,
+						policies.noteWithUrlLimit,
+					);
+
+					if (limitInfo.remaining === 0) {
+						throw new IdentifiableError(
+							'2e86dcc0-592c-49f6-99bf-4fcd262ad972',
+							'Note with URL rate limit exceeded',
+						);
+					}
+				}
+			}
 		}
 
 		// #region Ebisskey
@@ -1186,6 +1218,29 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 
 		return false;
+	}
+
+	@bindThis
+	private async checkRateLimit(key: string, duration: number, max: number): Promise<{ remaining: number; total: number; reset: number }> {
+		return new Promise<{ remaining: number; total: number; reset: number }>((resolve, reject) => {
+			const limiter = new Limiter({
+				id: key,
+				duration: duration,
+				max: max,
+				db: this.redisClient,
+			});
+
+			limiter.get((err, info) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve({
+					remaining: info.remaining,
+					total: info.total,
+					reset: info.reset,
+				});
+			});
+		});
 	}
 
 	@bindThis

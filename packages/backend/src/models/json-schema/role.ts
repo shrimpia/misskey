@@ -325,6 +325,18 @@ export const packedRolePoliciesSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		noteWithUrlLimit: {
+			type: 'integer',
+			optional: false, nullable: false,
+		},
+		noteWithUrlLimitDuration: {
+			type: 'integer',
+			optional: false, nullable: false,
+		},
+		noteWithUrlLimitPublicOnly: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
 	},
 } as const;
 

@@ -321,6 +321,32 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<template #label>{{ i18n.ts.enable }}</template>
 						</MkSwitch>
 					</MkFolder>
+
+					<MkFolder v-if="matchQuery([i18n.ts._role._options.noteWithUrlLimit, 'noteWithUrlLimit'])">
+						<template #label>{{ i18n.ts._role._options.noteWithUrlLimit }}</template>
+						<template #suffix>{{ policies.noteWithUrlLimit }}</template>
+						<MkInput v-model="policies.noteWithUrlLimit" type="number">
+							<template #caption>{{ i18n.ts._role._options.noteWithUrlLimit_description }}</template>
+						</MkInput>
+					</MkFolder>
+
+					<MkFolder v-if="matchQuery([i18n.ts._role._options.noteWithUrlLimitDuration, 'noteWithUrlLimitDuration'])">
+						<template #label>{{ i18n.ts._role._options.noteWithUrlLimitDuration }}</template>
+						<template #suffix>{{ Math.floor(policies.noteWithUrlLimitDuration / 1000 / 60) + i18n.ts._time.minute }}</template>
+						<MkInput v-model="policies.noteWithUrlLimitDuration" type="number">
+							<template #suffix>ms</template>
+							<template #caption>{{ i18n.ts._role._options.noteWithUrlLimitDuration_description }}</template>
+						</MkInput>
+					</MkFolder>
+
+					<MkFolder v-if="matchQuery([i18n.ts._role._options.noteWithUrlLimitPublicOnly, 'noteWithUrlLimitPublicOnly'])">
+						<template #label>{{ i18n.ts._role._options.noteWithUrlLimitPublicOnly }}</template>
+						<template #suffix>{{ policies.noteWithUrlLimitPublicOnly ? i18n.ts.yes : i18n.ts.no }}</template>
+						<MkSwitch v-model="policies.noteWithUrlLimitPublicOnly">
+							<template #label>{{ i18n.ts.enable }}</template>
+							<template #caption>{{ i18n.ts._role._options.noteWithUrlLimitPublicOnly_description }}</template>
+						</MkSwitch>
+					</MkFolder>
 				</div>
 			</MkFolder>
 			<MkButton primary rounded @click="create"><i class="ti ti-plus"></i> {{ i18n.ts._role.new }}</MkButton>

@@ -843,6 +843,68 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</MkRange>
 				</div>
 			</MkFolder>
+
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.noteWithUrlLimit, 'noteWithUrlLimit'])">
+				<template #label>{{ i18n.ts._role._options.noteWithUrlLimit }}</template>
+				<template #suffix>
+					<span v-if="role.policies.noteWithUrlLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ role.policies.noteWithUrlLimit.value }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.noteWithUrlLimit)"></i></span>
+				</template>
+				<div class="_gaps">
+					<MkSwitch v-model="role.policies.noteWithUrlLimit.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+					</MkSwitch>
+					<MkInput v-model="role.policies.noteWithUrlLimit.value" :disabled="role.policies.noteWithUrlLimit.useDefault" type="number" :readonly="readonly">
+						<template #caption>{{ i18n.ts._role._options.noteWithUrlLimit_description }}</template>
+					</MkInput>
+					<MkRange v-model="role.policies.noteWithUrlLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.noteWithUrlLimitDuration, 'noteWithUrlLimitDuration'])">
+				<template #label>{{ i18n.ts._role._options.noteWithUrlLimitDuration }}</template>
+				<template #suffix>
+					<span v-if="role.policies.noteWithUrlLimitDuration.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ Math.floor(role.policies.noteWithUrlLimitDuration.value / 1000 / 60) + i18n.ts._time.minute }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.noteWithUrlLimitDuration)"></i></span>
+				</template>
+				<div class="_gaps">
+					<MkSwitch v-model="role.policies.noteWithUrlLimitDuration.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+					</MkSwitch>
+					<MkInput v-model="role.policies.noteWithUrlLimitDuration.value" :disabled="role.policies.noteWithUrlLimitDuration.useDefault" type="number" :readonly="readonly">
+						<template #suffix>ms</template>
+						<template #caption>{{ i18n.ts._role._options.noteWithUrlLimitDuration_description }}</template>
+					</MkInput>
+					<MkRange v-model="role.policies.noteWithUrlLimitDuration.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.noteWithUrlLimitPublicOnly, 'noteWithUrlLimitPublicOnly'])">
+				<template #label>{{ i18n.ts._role._options.noteWithUrlLimitPublicOnly }}</template>
+				<template #suffix>
+					<span v-if="role.policies.noteWithUrlLimitPublicOnly.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ role.policies.noteWithUrlLimitPublicOnly.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.noteWithUrlLimitPublicOnly)"></i></span>
+				</template>
+				<div class="_gaps">
+					<MkSwitch v-model="role.policies.noteWithUrlLimitPublicOnly.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+					</MkSwitch>
+					<MkSwitch v-model="role.policies.noteWithUrlLimitPublicOnly.value" :disabled="role.policies.noteWithUrlLimitPublicOnly.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts.enable }}</template>
+						<template #caption>{{ i18n.ts._role._options.noteWithUrlLimitPublicOnly_description }}</template>
+					</MkSwitch>
+					<MkRange v-model="role.policies.noteWithUrlLimitPublicOnly.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
 		</div>
 	</FormSlot>
 </div>
