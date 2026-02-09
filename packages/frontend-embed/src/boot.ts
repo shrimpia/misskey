@@ -14,21 +14,20 @@ if (import.meta.env.DEV) {
 
 import '@/style.scss';
 import { createApp, defineAsyncComponent } from 'vue';
-import defaultLightTheme from '@@/themes/l-light.json5';
-import defaultDarkTheme from '@@/themes/d-dark.json5';
+import defaultLightTheme from '@@/themes/l-shrimpia-redcherry.json5';
+import defaultDarkTheme from '@@/themes/d-shrimpia-latenight.json5';
 import { MediaProxy } from '@@/js/media-proxy.js';
 import { storeBootloaderErrors } from '@@/js/store-boot-errors';
+import { url, version, lang } from '@@/js/config.js';
+import { parseEmbedParams } from '@@/js/embed-page.js';
+import type { Theme } from '@/theme.js';
 import { applyTheme, assertIsTheme } from '@/theme.js';
 import { fetchCustomEmojis } from '@/custom-emojis.js';
 import { DI } from '@/di.js';
 import { serverMetadata } from '@/server-metadata.js';
-import { url, version, lang } from '@@/js/config.js';
-import { parseEmbedParams } from '@@/js/embed-page.js';
 import { postMessageToParentWindow, setIframeId } from '@/post-message.js';
 import { serverContext } from '@/server-context.js';
 import { i18n } from '@/i18n.js';
-
-import type { Theme } from '@/theme.js';
 
 console.log('Misskey Embed');
 
