@@ -1,6 +1,10 @@
-# Ebisskey リリースノート
+# misskey-shrimpia リリースノート
 
-Ebisskeyとしての変更履歴です。Misskeyのリリースノートは [CHANGELOG](/CHANGELOG.md) を確認してください。
+misskey-shrimpiaとしての変更履歴です。Misskey本家のリリースノートは [CHANGELOG](/CHANGELOG.md) を確認してください。
+
+## 2025.12.2-sh.1
+- ローカルにフォロワーのいないリモートユーザーからの、通知を発生し得る投稿をブロックする措置を廃止
+- 
 
 ## 2025.10.0
 - Enhance: removed `reactionsCount` from `/api/stats` response due to performance reasons (cherry-pick from https://github.com/niri-la/misskey.niri.la/pull/224)

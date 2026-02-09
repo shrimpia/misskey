@@ -531,20 +531,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 			mentionedUsers = data.apMentions ?? await this.extractMentionedUsers(user, combinedTokens);
 		}
 
-		// #region Ebisskey
-		// ローカル宛てのメンション、リプライ、引用ノートの発行元が、ローカルユーザーにフォローされていない場合は投稿を拒否する
-		const willCauseNotification = mentionedUsers.filter(u => u.host === null).length > 0 ||
-			(data.reply != null && data.reply.userHost === null) ||
-			(this.isRenote(data) && this.isQuote(data) && data.renote.userHost === null) ||
-			(data.visibility === 'specified' && data.visibleUsers != null && data.visibleUsers.some(u => u.host === null));
-
-		if (user.host != null && willCauseNotification) {
-			const userEntity = await this.usersRepository.findOneBy({ id: user.id });
-			if ((userEntity?.followersCount ?? 0) === 0) {
-				throw new Error('Temporarily, notes including mentions, replies and renotes to local-user from remote users which is not followed by local-users are not allowed');
-			}
-		}
-		// #endregion
 		// if the host is media-silenced, custom emojis are not allowed
 		if (this.utilityService.isMediaSilencedHost(this.meta.mediaSilencedHosts, user.host)) emojis = [];
 
