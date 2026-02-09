@@ -13,7 +13,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div :class="$style.icon"><i class="ti ti-world"></i></div>
 			<div :class="$style.body">
 				<span :class="$style.itemTitle">{{ i18n.ts._visibility.public }}</span>
-				<!-- Ebisskey -->
+				<!-- shrimpia -->
 				<span v-if="!isSilenced" :class="$style.itemDescription">{{ i18n.ts._visibility.publicDescription }}</span>
 				<span v-else :class="$style.itemError">サイレンス中のため利用不可</span>
 			</div>
@@ -158,7 +158,7 @@ function choose(visibility: typeof Misskey.noteVisibilities[number]): void {
 	opacity: 0.6;
 }
 
-// Ebisskey
+// shrimpia
 .itemError {
 	display: block;
 	font-weight: bold;

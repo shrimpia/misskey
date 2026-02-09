@@ -261,7 +261,7 @@ const draftKey = computed((): string => {
 	if (renoteTargetNote.value) {
 		key += `renote:${renoteTargetNote.value.id}`;
 	} else if (replyTargetNote.value) {
-		// Ebisskey
+		// shrimpia
 		const keyPrefix = props.isAirReply ? 'air-reply' : 'reply';
 		key += `${keyPrefix}:${replyTargetNote.value.id}`;
 	} else {

@@ -700,7 +700,7 @@ export function getRenoteMenu(props: {
 			},
 		}])]);
 
-		// Ebisskey
+		// shrimpia
 		if (isRenote) {
 			normalRenoteItems.push({
 				text: i18n.ts.unrenote,
@@ -714,7 +714,7 @@ export function getRenoteMenu(props: {
 			});
 		}
 
-		// Ebisskey
+		// shrimpia
 		if (prefer.s['ebisskey.useAirReply'] && prefer.s['ebisskey.airReplyButtonPlacement'] === 'renoteMenu') {
 			normalRenoteItems.push({
 				icon: 'ti ti-bubble-text',

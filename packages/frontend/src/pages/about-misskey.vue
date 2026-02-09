@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div v-panel class="about">
 					<div ref="containerEl" class="container" :class="{ playing: easterEggEngine != null }">
 						<img src="/client-assets/about-icon.png" alt="" class="icon" draggable="false" @load="iconLoaded" @click="gravity"/>
-						<div class="misskey">Ebisskey</div>
+						<div class="misskey">misskey-shrimpia</div>
 						<div class="version">v{{ version }}</div>
 						<span v-for="emoji in easterEggEmojis" :key="emoji.id" class="emoji" :data-physics-x="emoji.left" :data-physics-y="emoji.top" :class="{ _physics_circle_: !emoji.emoji.startsWith(':') }">
 							<MkCustomEmoji v-if="emoji.emoji[0] === ':'" class="emoji" :name="emoji.emoji" :normal="true" :noStyle="true" :fallbackToImage="true"/>
@@ -23,11 +23,20 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div style="text-align: center;">
 					{{ i18n.ts._aboutMisskey.about }}<br><a href="https://misskey-hub.net/docs/about-misskey/" target="_blank" class="_link">{{ i18n.ts.learnMore }}</a>
 				</div>
+				<div style="text-align: center;">
+					{{ instance.name ?? host }} では、Misskey をカスタマイズした <a class="_link" href="https://github.com/shrimpia/misskey" target="_blank" rel="noopener noreferrer">misskey-shrimpia</a> が動作しています。<br>
+					misskey-shrimpiaは、Shrimpia Networkによって2022年から開発されています。
+				</div>
 				<div v-if="$i != null" style="text-align: center;">
-					<MkButton primary rounded inline @click="iLoveMisskey"><Mfm text="$[jelly 🦐]"/> #シュリンピア帝国 万歳！</MkButton>
+					<MkButton primary rounded inline @click="iLoveMisskey">I <Mfm text="$[jelly ❤]"/> #Misskey</MkButton>
 				</div>
 				<FormSection>
 					<div class="_gaps_s">
+						<FormLink to="https://github.com/shrimpia/misskey" external>
+							<template #icon><i class="ti ti-code"></i></template>
+							{{ i18n.ts._aboutMisskey.source }} (misskey-shrimpia)
+							<template #suffix>GitHub</template>
+						</FormLink>
 						<FormLink to="https://github.com/misskey-dev/misskey" external>
 							<template #icon><i class="ti ti-code"></i></template>
 							{{ i18n.ts._aboutMisskey.source }} ({{ i18n.ts._aboutMisskey.original }})
@@ -45,7 +54,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</FormLink>
 					</div>
 				</FormSection>
-				<FormSection v-if="instance.repositoryUrl !== 'https://github.com/misskey-dev/misskey'">
+				<!-- shrimpia: 上述しているため省略 -->
+				<!-- <FormSection v-if="instance.repositoryUrl !== 'https://github.com/misskey-dev/misskey'">
 					<div class="_gaps_s">
 						<MkInfo>
 							{{ i18n.tsx._aboutMisskey.thisIsModifiedVersion({ name: instance.name ?? host }) }}
@@ -63,7 +73,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							{{ i18n.ts.sourceCodeIsNotYetProvided }}
 						</MkInfo>
 					</div>
-				</FormSection>
+				</FormSection> -->
 				<FormSection>
 					<template #label>{{ i18n.ts._aboutMisskey.projectMembers }}</template>
 					<div :class="$style.contributors">
@@ -114,15 +124,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<div>
 							<a style="display: inline-block;" class="sads-llc" title="合同会社サッズ" href="https://sads-llc.co.jp/" target="_blank"><img style="width: 100%;" src="https://assets.misskey-hub.net/sponsors/sads-llc.png" alt="合同会社サッズ"></a>
 						</div>
-					</div>
-				</FormSection>
-				<FormSection>
-					<template #label>Ebisskey Contributor</template>
-					<div :class="$style.contributors">
-						<a href="https://github.com/EbiseLutica" target="_blank" :class="$style.contributor">
-							<img src="https://avatars.githubusercontent.com/u/7106976?v=4" :class="$style.contributorAvatar">
-							<span :class="$style.contributorUsername">@EbiseLutica</span>
-						</a>
 					</div>
 				</FormSection>
 				<FormSection>
@@ -463,11 +464,7 @@ function gravity() {
 
 function iLoveMisskey() {
 	os.post({
-		initialText: `<center>
-#シュリンピア帝国
-
-$[tada 🦐 万歳！$[flip 🦐]]
-</center>`,
+		initialText: 'I $[jelly ❤] #Misskey',
 		instant: true,
 	});
 }

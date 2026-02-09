@@ -507,7 +507,7 @@ function reply(): void {
 	});
 }
 
-// Ebisskey
+// shrimpia
 function airReply(): void {
 	// 公開範囲を引き継いだ投稿フォームを作成
 	os.post({
