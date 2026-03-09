@@ -533,6 +533,10 @@ export interface Locale extends ILocale {
      */
     "sensitive": string;
     /**
+     * トゲのあるリアクション
+     */
+    "harmfulReaction": string;
+    /**
      * 追加
      */
     "add": string;

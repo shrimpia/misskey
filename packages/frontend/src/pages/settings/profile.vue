@@ -194,7 +194,7 @@ import { genId } from '@/utility/id.js';
 const $i = ensureSignin();
 
 const reactionAcceptance = store.model('reactionAcceptance');
-const allowHarmfulReaction = computed(store.makeGetterSetter('allowHarmfulReaction'));
+const allowHarmfulReaction = store.model('allowHarmfulReaction');
 
 function assertVaildLang(lang: string | null): lang is keyof typeof langmap {
 	return lang != null && lang in langmap;
