@@ -51,6 +51,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts">
 import type { SortOrder } from '@/components/MkSortOrderEditor.define.js';
 import type { GridSortOrderKey } from './custom-emojis-manager.impl.js';
+import type { PageHeaderItem } from '@/types/page-header.js';
 
 export type EmojiSearchQuery = {
 	name: string | null;
@@ -252,7 +253,7 @@ function setupGrid(): GridSetting {
 						icon: 'ti ti-trash',
 						action: () => {
 							removeDataFromGrid(context, (cell) => {
-								gridItems.value[cell.row.index][cell.column.setting.bindTo] = undefined;
+								(gridItems.value[cell.row.index] as any)[cell.column.setting.bindTo] = undefined;
 							});
 						},
 					},
@@ -457,7 +458,7 @@ function onGridCellValidation(event: GridCellValidationEvent) {
 function onGridCellValueChange(event: GridCellValueChangeEvent) {
 	const { row, column, newValue } = event;
 	if (gridItems.value.length > row.index && column.setting.bindTo in gridItems.value[row.index]) {
-		gridItems.value[row.index][column.setting.bindTo] = newValue;
+		(gridItems.value[row.index] as any)[column.setting.bindTo] = newValue;
 	}
 }
 
@@ -530,7 +531,7 @@ const headerPageMetadata = computed(() => ({
 	icon: 'ti ti-icons',
 }));
 
-const headerActions = computed(() => [{
+const headerActions = computed<PageHeaderItem[]>(() => [{
 	icon: 'ti ti-search',
 	text: i18n.ts.search,
 	handler: async () => {
@@ -557,7 +558,7 @@ const headerActions = computed(() => [{
 }, {
 	icon: 'ti ti-list-numbers',
 	text: i18n.ts._customEmojisManager._gridCommon.searchLimit,
-	handler: (ev: MouseEvent) => {
+	handler: (ev) => {
 		async function changeSearchLimit(to: number) {
 			if (updatedItemsCount.value > 0) {
 				const { canceled } = await os.confirm({

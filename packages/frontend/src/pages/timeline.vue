@@ -49,6 +49,7 @@ import { computed, watch, provide, useTemplateRef, ref, onMounted, onActivated }
 import type { Tab } from '@/components/global/MkPageHeader.tabs.vue';
 import type { MenuItem, MenuSwitch } from '@/types/menu.js';
 import type { BasicTimelineType } from '@/timelines.js';
+import type { PageHeaderItem } from '@/types/page-header.js';
 import MkStreamingNotesTimeline from '@/components/MkStreamingNotesTimeline.vue';
 import MkPostForm from '@/components/MkPostForm.vue';
 import * as os from '@/os.js';
@@ -133,7 +134,7 @@ const showFixedPostForm = prefer.model('showFixedPostForm');
 
 const showOptionsAboveTimeline = prefer.model('ebisskey.showOptionsAboveTimeline');
 
-async function chooseList(ev: MouseEvent): Promise<void> {
+async function chooseList(ev: PointerEvent): Promise<void> {
 	const lists = await userListsCache.fetch();
 	const items: (MenuItem | undefined)[] = [
 		...lists.map(list => ({
@@ -152,7 +153,7 @@ async function chooseList(ev: MouseEvent): Promise<void> {
 	os.popupMenu(items.filter(i => i != null), ev.currentTarget ?? ev.target);
 }
 
-async function chooseAntenna(ev: MouseEvent): Promise<void> {
+async function chooseAntenna(ev: PointerEvent): Promise<void> {
 	const antennas = await antennasCache.fetch();
 	const items: (MenuItem | undefined)[] = [
 		...antennas.map(antenna => ({
@@ -172,7 +173,7 @@ async function chooseAntenna(ev: MouseEvent): Promise<void> {
 	os.popupMenu(items.filter(i => i != null), ev.currentTarget ?? ev.target);
 }
 
-async function chooseChannel(ev: MouseEvent): Promise<void> {
+async function chooseChannel(ev: PointerEvent): Promise<void> {
 	const channels = await favoritedChannelsCache.fetch();
 	const items: (MenuItem | undefined)[] = [
 		...channels.map(channel => {
@@ -300,7 +301,7 @@ const timelineMenuItems = computed(() => {
 const timelineOptionItems = computed(() => timelineMenuItems.value.filter(i => 'type' in i && i.type === 'switch' && i.showsOnTimeline !== false) as MenuSwitch[]);
 
 const headerActions = computed(() => {
-	const items = [{
+	const items: PageHeaderItem[] = [{
 		icon: 'ti ti-dots',
 		text: i18n.ts.options,
 		handler: (ev) => {
@@ -312,7 +313,7 @@ const headerActions = computed(() => {
 		items.unshift({
 			icon: 'ti ti-refresh',
 			text: i18n.ts.reload,
-			handler: (ev: Event) => {
+			handler: () => {
 				tlComponent.value?.reloadTimeline();
 			},
 		});

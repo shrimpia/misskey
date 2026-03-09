@@ -58,7 +58,7 @@ function load() {
 
 load();
 
-async function add(ev: MouseEvent) {
+async function add(ev: PointerEvent) {
 	const { dispose } = await os.popupAsyncWithDialog(import('./avatar-decoration-edit-dialog.vue').then(x => x.default), {
 		categories: Object.keys(groupedDecorations.value),
 	}, {
@@ -71,7 +71,7 @@ async function add(ev: MouseEvent) {
 	});
 }
 
-async function edit(avatarDecoration) {
+async function edit(avatarDecoration: Misskey.entities.AdminAvatarDecorationsListResponse[number]) {
 	const { dispose } = await os.popupAsyncWithDialog(import('./avatar-decoration-edit-dialog.vue').then(x => x.default), {
 		avatarDecoration: avatarDecoration,
 		categories: Object.keys(groupedDecorations.value),
