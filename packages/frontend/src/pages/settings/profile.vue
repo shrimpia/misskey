@@ -130,6 +130,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</MkSelect>
 		</SearchMarker>
 
+		<SearchMarker :keywords="['reaction', 'harmful']">
+			<MkSwitch v-model="allowHarmfulReaction">
+				<template #label><SearchLabel>{{ i18n.ts.allowHarmfulReaction }}</SearchLabel></template>
+			</MkSwitch>
+		</SearchMarker>
+
 		<SearchMarker>
 			<MkFolder>
 				<template #label><SearchLabel>{{ i18n.ts.advancedSettings }}</SearchLabel></template>
@@ -191,6 +197,7 @@ const $i = ensureSignin();
 const Sortable = defineAsyncComponent(() => import('vuedraggable').then(x => x.default));
 
 const reactionAcceptance = computed(store.makeGetterSetter('reactionAcceptance'));
+const allowHarmfulReaction = computed(store.makeGetterSetter('allowHarmfulReaction'));
 
 function assertVaildLang(lang: string | null): lang is keyof typeof langmap {
 	return lang != null && lang in langmap;

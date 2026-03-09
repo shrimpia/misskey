@@ -35,6 +35,12 @@ export const packedEmojiSimpleSchema = {
 			type: 'boolean',
 			optional: true, nullable: false,
 		},
+		// #region shrimpia
+		isHarmful: {
+			type: 'boolean',
+			optional: true, nullable: false,
+		},
+		// #endregion
 		roleIdsThatCanBeUsedThisEmojiAsReaction: {
 			type: 'array',
 			optional: true, nullable: false,
@@ -93,6 +99,12 @@ export const packedEmojiDetailedSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		// #region shrimpia
+		isHarmful: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		// #endregion
 		roleIdsThatCanBeUsedThisEmojiAsReaction: {
 			type: 'array',
 			optional: false, nullable: false,
@@ -168,6 +180,12 @@ export const packedEmojiDetailedAdminSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		// #region shrimpia
+		isHarmful: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		// #endregion
 		roleIdsThatCanBeUsedThisEmojiAsReaction: {
 			type: 'array',
 			items: {

@@ -104,6 +104,7 @@ type GridItem = {
 	aliases: string;
 	license: string;
 	isSensitive: boolean;
+	isHarmful: boolean;
 	localOnly: boolean;
 	roleIdsThatCanBeUsedThisEmojiAsReaction: { id: string, name: string }[];
 	type: string | null;
@@ -166,6 +167,7 @@ function setupGrid(): GridSetting {
 			{ bindTo: 'aliases', title: 'aliases', type: 'text', editable: true, width: 140 },
 			{ bindTo: 'license', title: 'license', type: 'text', editable: true, width: 140 },
 			{ bindTo: 'isSensitive', title: 'sensitive', type: 'boolean', editable: true, width: 90 },
+			{ bindTo: 'isHarmful', title: 'harmful', type: 'boolean', editable: true, width: 90 },
 			{ bindTo: 'localOnly', title: 'localOnly', type: 'boolean', editable: true, width: 90 },
 			{
 				bindTo: 'roleIdsThatCanBeUsedThisEmojiAsReaction', title: 'role', type: 'text', editable: true, width: 140,
@@ -260,6 +262,7 @@ async function onRegistryClicked() {
 						aliases: emptyStrToEmptyArray(item.aliases),
 						license: emptyStrToNull(item.license),
 						isSensitive: item.isSensitive,
+						isHarmful: item.isHarmful,
 						localOnly: item.localOnly,
 						roleIdsThatCanBeUsedThisEmojiAsReaction: item.roleIdsThatCanBeUsedThisEmojiAsReaction.map(it => it.id),
 						fileId: item.fileId!,
@@ -353,6 +356,7 @@ function fromDriveFile(it: Misskey.entities.DriveFile): GridItem {
 		aliases: '',
 		license: '',
 		isSensitive: it.isSensitive,
+		isHarmful: it.isHarmful,
 		localOnly: false,
 		roleIdsThatCanBeUsedThisEmojiAsReaction: [],
 		type: it.type,

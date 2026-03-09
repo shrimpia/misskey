@@ -78,6 +78,13 @@ export class MiEmoji {
 	})
 	public isSensitive: boolean;
 
+	// #region shrimpia
+	@Column('boolean', {
+		default: false,
+	})
+	public isHarmful: boolean;
+	// #endregion
+
 	// TODO: 定期ジョブで存在しなくなったロールIDを除去するようにする
 	@Column('varchar', {
 		array: true, length: 128, default: '{}',

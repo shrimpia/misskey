@@ -35,6 +35,9 @@ export class EmojiEntityService {
 			url: emoji.publicUrl || emoji.originalUrl,
 			localOnly: emoji.localOnly ? true : undefined,
 			isSensitive: emoji.isSensitive ? true : undefined,
+			// #region shrimpia
+			isHarmful: emoji.isHarmful ? true : undefined,
+			// #endregion
 			roleIdsThatCanBeUsedThisEmojiAsReaction: emoji.roleIdsThatCanBeUsedThisEmojiAsReaction.length > 0 ? emoji.roleIdsThatCanBeUsedThisEmojiAsReaction : undefined,
 		};
 	}
@@ -64,6 +67,9 @@ export class EmojiEntityService {
 			isSensitive: emoji.isSensitive,
 			localOnly: emoji.localOnly,
 			roleIdsThatCanBeUsedThisEmojiAsReaction: emoji.roleIdsThatCanBeUsedThisEmojiAsReaction,
+			// #region shrimpia
+			isHarmful: emoji.isHarmful,
+			// #endregion
 		};
 	}
 
@@ -121,6 +127,9 @@ export class EmojiEntityService {
 			license: emoji.license,
 			localOnly: emoji.localOnly,
 			isSensitive: emoji.isSensitive,
+			// #region shrimpia
+			isHarmful: emoji.isHarmful,
+			// #endregion
 			roleIdsThatCanBeUsedThisEmojiAsReaction: roles.map(it => ({ id: it.id, name: it.name })),
 		};
 	}

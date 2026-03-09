@@ -4456,6 +4456,8 @@ export type components = {
             localOnly?: boolean;
             /** @enum {string|null} */
             reactionAcceptance: 'likeOnly' | 'likeOnlyForRemote' | 'nonSensitiveOnly' | 'nonSensitiveOnlyForLocalLikeOnlyForRemote' | null;
+            /** @shrimpia */
+            allowHarmfulReaction: boolean;
             reactionEmojis: {
                 [key: string]: string;
             };
@@ -4517,6 +4519,8 @@ export type components = {
             localOnly: boolean;
             /** @enum {string|null} */
             reactionAcceptance: 'likeOnly' | 'likeOnlyForRemote' | 'nonSensitiveOnly' | 'nonSensitiveOnlyForLocalLikeOnlyForRemote' | null;
+            /** @shrimpia */
+            allowHarmfulReaction: boolean;
             scheduledAt: number | null;
             isActuallyScheduled: boolean;
         };
@@ -5142,6 +5146,8 @@ export type components = {
             url: string;
             localOnly?: boolean;
             isSensitive?: boolean;
+            /** @shrimpia */
+            isHarmful?: boolean;
             roleIdsThatCanBeUsedThisEmojiAsReaction?: string[];
         };
         EmojiDetailed: {
@@ -5156,6 +5162,8 @@ export type components = {
             license: string | null;
             isSensitive: boolean;
             localOnly: boolean;
+            /** @shrimpia */
+            isHarmful: boolean;
             roleIdsThatCanBeUsedThisEmojiAsReaction: string[];
         };
         EmojiDetailedAdmin: {
@@ -5175,6 +5183,8 @@ export type components = {
             license: string | null;
             localOnly: boolean;
             isSensitive: boolean;
+            /** @shrimpia */
+            isHarmful: boolean;
             roleIdsThatCanBeUsedThisEmojiAsReaction: {
                 /** Format: misskey:id */
                 id: string;
@@ -8047,6 +8057,8 @@ export interface operations {
                     license?: string | null;
                     isSensitive?: boolean;
                     localOnly?: boolean;
+                    /** @shrimpia */
+                    isHarmful?: boolean;
                     roleIdsThatCanBeUsedThisEmojiAsReaction?: string[];
                 };
             };
@@ -8870,6 +8882,8 @@ export interface operations {
                     license?: string | null;
                     isSensitive?: boolean;
                     localOnly?: boolean;
+                    /** @shrimpia */
+                    isHarmful?: boolean;
                     roleIdsThatCanBeUsedThisEmojiAsReaction?: string[];
                 };
             };
@@ -29493,6 +29507,8 @@ export interface operations {
                      * @enum {string|null}
                      */
                     reactionAcceptance?: null | 'likeOnly' | 'likeOnlyForRemote' | 'nonSensitiveOnly' | 'nonSensitiveOnlyForLocalLikeOnlyForRemote';
+                    /** @shrimpia @default false */
+                    allowHarmfulReaction?: boolean;
                     /** @default false */
                     noExtractMentions?: boolean;
                     /** @default false */

@@ -133,6 +133,9 @@ type Option = {
 	poll?: IPoll | null;
 	localOnly?: boolean | null;
 	reactionAcceptance?: MiNote['reactionAcceptance'];
+	// #region shrimpia
+	allowHarmfulReaction?: boolean;
+	// #endregion
 	cw?: string | null;
 	visibility?: string;
 	visibleUsers?: MinimumUser[] | null;
@@ -251,6 +254,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		apMentions?: MinimumUser[] | null;
 		apHashtags?: string[] | null;
 		apEmojis?: string[] | null;
+		allowHarmfulReaction?: boolean;
 	}): Promise<MiNote> {
 		const visibleUsers = data.visibleUserIds.length > 0 ? await this.usersRepository.findBy({
 			id: In(data.visibleUserIds),
@@ -380,6 +384,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			cw: data.cw,
 			localOnly: data.localOnly,
 			reactionAcceptance: data.reactionAcceptance,
+			allowHarmfulReaction: data.allowHarmfulReaction,
 			visibility: data.visibility,
 			visibleUsers,
 			channel,
@@ -590,6 +595,9 @@ export class NoteCreateService implements OnApplicationShutdown {
 			userId: user.id,
 			localOnly: data.localOnly!,
 			reactionAcceptance: data.reactionAcceptance ?? null,
+			// #region shrimpia
+			allowHarmfulReaction: data.allowHarmfulReaction ?? false,
+			// #endregion
 			visibility: data.visibility as any,
 			visibleUserIds: data.visibility === 'specified'
 				? data.visibleUsers

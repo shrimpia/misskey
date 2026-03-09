@@ -1096,6 +1096,9 @@ likeOnly: "いいねのみ"
 likeOnlyForRemote: "全て (リモートはいいねのみ)"
 nonSensitiveOnly: "非センシティブのみ"
 nonSensitiveOnlyForLocalLikeOnlyForRemote: "非センシティブのみ (リモートはいいねのみ)"
+# region shrimpia
+allowHarmfulReaction: "トゲのあるリアクションを許可する"
+# endregion
 rolesAssignedToMe: "自分に割り当てられたロール"
 resetPasswordConfirm: "パスワードリセットしますか？"
 sensitiveWords: "センシティブワード"

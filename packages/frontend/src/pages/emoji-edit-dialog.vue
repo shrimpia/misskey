@@ -67,6 +67,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</div>
 				</MkFolder>
 				<MkSwitch v-model="isSensitive">isSensitive</MkSwitch>
+				<!-- #region shrimpia -->
+				<MkSwitch v-model="isHarmful">isHarmful</MkSwitch>
+				<!-- #endregion -->
 				<MkSwitch v-model="localOnly">{{ i18n.ts.localOnly }}</MkSwitch>
 				<MkButton v-if="emoji" danger @click="del()"><i class="ti ti-trash"></i> {{ i18n.ts.delete }}</MkButton>
 			</div>
@@ -109,6 +112,9 @@ const category = ref<string>(props.emoji?.category ? props.emoji.category : '');
 const aliases = ref<string>(props.emoji ? props.emoji.aliases.join(' ') : '');
 const license = ref<string>(props.emoji?.license ? props.emoji.license : '');
 const isSensitive = ref(props.emoji ? props.emoji.isSensitive : false);
+// #region shrimpia
+const isHarmful = ref(props.emoji ? (props.emoji.isHarmful ?? false) : false);
+// #endregion
 const localOnly = ref(props.emoji ? props.emoji.localOnly : false);
 const roleIdsThatCanBeUsedThisEmojiAsReaction = ref(props.emoji ? props.emoji.roleIdsThatCanBeUsedThisEmojiAsReaction : []);
 const rolesThatCanBeUsedThisEmojiAsReaction = ref<Misskey.entities.Role[]>([]);
@@ -154,6 +160,9 @@ async function done() {
 		aliases: aliases.value.split(' ').filter(x => x !== ''),
 		license: license.value === '' ? null : license.value,
 		isSensitive: isSensitive.value,
+		// #region shrimpia
+		isHarmful: isHarmful.value,
+		// #endregion
 		localOnly: localOnly.value,
 		roleIdsThatCanBeUsedThisEmojiAsReaction: rolesThatCanBeUsedThisEmojiAsReaction.value.map(x => x.id),
 		fileId: file.value ? file.value.id : undefined,

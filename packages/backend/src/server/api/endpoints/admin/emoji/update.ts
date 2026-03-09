@@ -71,6 +71,9 @@ export const paramDef = {
 				license: { type: 'string', nullable: true },
 				isSensitive: { type: 'boolean' },
 				localOnly: { type: 'boolean' },
+				// #region shrimpia
+				isHarmful: { type: 'boolean' },
+				// #endregion
 				roleIdsThatCanBeUsedThisEmojiAsReaction: { type: 'array', items: {
 					type: 'string',
 				} },
@@ -108,6 +111,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				license: ps.license,
 				isSensitive: ps.isSensitive,
 				localOnly: ps.localOnly,
+				// #region shrimpia
+				isHarmful: ps.isHarmful,
+				// #endregion
 				roleIdsThatCanBeUsedThisEmojiAsReaction: ps.roleIdsThatCanBeUsedThisEmojiAsReaction,
 			}, me);
 

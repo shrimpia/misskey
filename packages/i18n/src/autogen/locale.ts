@@ -4389,6 +4389,10 @@ export interface Locale extends ILocale {
      */
     "nonSensitiveOnlyForLocalLikeOnlyForRemote": string;
     /**
+     * トゲのあるリアクションを許可する
+     */
+    "allowHarmfulReaction": string;
+    /**
      * 自分に割り当てられたロール
      */
     "rolesAssignedToMe": string;

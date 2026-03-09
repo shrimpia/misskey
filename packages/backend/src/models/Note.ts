@@ -99,6 +99,13 @@ export class MiNote {
 	})
 	public reactionAcceptance: typeof noteReactionAcceptances[number];
 
+	// #region shrimpia
+	@Column('boolean', {
+		default: true,
+	})
+	public allowHarmfulReaction: boolean;
+	// #endregion
+
 	@Column('smallint', {
 		default: 0,
 	})

@@ -1095,6 +1095,9 @@ likeOnly: "Only likes"
 likeOnlyForRemote: "All (Only likes for remote instances)"
 nonSensitiveOnly: "Non-sensitive only"
 nonSensitiveOnlyForLocalLikeOnlyForRemote: "Non-sensitive only (Only likes from remote)"
+# region shrimpia
+allowHarmfulReaction: "Allow harmful reactions"
+# endregion
 rolesAssignedToMe: "Roles assigned to me"
 resetPasswordConfirm: "Really reset your password?"
 sensitiveWords: "Sensitive words"

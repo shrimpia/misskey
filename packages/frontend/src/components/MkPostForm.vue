@@ -226,6 +226,9 @@ if (props.initialVisibleUsers) {
 	props.initialVisibleUsers.forEach(u => pushVisibleUser(u));
 }
 const reactionAcceptance = ref(store.s.reactionAcceptance);
+// #region shrimpia
+const allowHarmfulReaction = ref(store.s.allowHarmfulReaction);
+// #endregion
 const scheduledAt = ref<number | null>(null);
 const draghover = ref(false);
 const quoteId = ref<string | null>(null);
@@ -675,25 +678,34 @@ function showOtherSettings() {
 		action: () => {
 			toggleReactionAcceptance();
 		},
-	}, { type: 'divider' }, {
-		type: 'switch',
-		icon: 'ti ti-eye',
-		text: i18n.ts.preview,
-		ref: showPreview,
-	}, {
-		icon: 'ti ti-trash',
-		text: i18n.ts.reset,
-		danger: true,
-		action: async () => {
-			if (props.mock) return;
-			const { canceled } = await os.confirm({
-				type: 'question',
-				text: i18n.ts.resetAreYouSure,
-			});
-			if (canceled) return;
-			clear();
-		},
-	}] satisfies MenuItem[];
+	},
+		// #region shrimpia
+																				{
+																					type: 'switch',
+																					icon: 'ti ti-mood-angry',
+																					text: i18n.ts.allowHarmfulReaction,
+																					ref: allowHarmfulReaction,
+																				},
+		// #endregion
+																				{ type: 'divider' }, {
+																					type: 'switch',
+																					icon: 'ti ti-eye',
+																					text: i18n.ts.preview,
+																					ref: showPreview,
+																				}, {
+																					icon: 'ti ti-trash',
+																					text: i18n.ts.reset,
+																					danger: true,
+																					action: async () => {
+																						if (props.mock) return;
+																						const { canceled } = await os.confirm({
+																							type: 'question',
+																							text: i18n.ts.resetAreYouSure,
+																						});
+																						if (canceled) return;
+																						clear();
+																					},
+																				}] satisfies MenuItem[];
 
 	os.popupMenu(menuItems, otherSettingsButton.value);
 }
@@ -881,6 +893,9 @@ function saveDraft() {
 			...( visibleUsers.value.length > 0 ? { visibleUserIds: visibleUsers.value.map(x => x.id) } : {}),
 			quoteId: quoteId.value,
 			reactionAcceptance: reactionAcceptance.value,
+			// #region shrimpia
+			allowHarmfulReaction: allowHarmfulReaction.value,
+			// #endregion
 			scheduledAt: scheduledAt.value,
 		},
 	};
@@ -913,6 +928,9 @@ async function saveServerDraft(options: {
 		replyId: replyTargetNote.value ? replyTargetNote.value.id : null,
 		channelId: targetChannel.value ? targetChannel.value.id : null,
 		reactionAcceptance: reactionAcceptance.value,
+		// #region shrimpia
+		allowHarmfulReaction: allowHarmfulReaction.value,
+		// #endregion
 		scheduledAt: scheduledAt.value,
 		isActuallyScheduled: options.isActuallyScheduled ?? false,
 	});
@@ -1014,6 +1032,9 @@ async function post(ev?: MouseEvent) {
 		visibility: visibility.value,
 		visibleUserIds: visibility.value === 'specified' ? visibleUsers.value.map(u => u.id) : undefined,
 		reactionAcceptance: reactionAcceptance.value,
+		// #region shrimpia
+		allowHarmfulReaction: allowHarmfulReaction.value,
+		// #endregion
 	};
 
 	if (withHashtags.value && hashtags.value && hashtags.value.trim() !== '') {

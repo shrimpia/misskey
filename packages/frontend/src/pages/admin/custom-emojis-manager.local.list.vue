@@ -101,6 +101,7 @@ type GridItem = {
 	aliases: string;
 	license: string;
 	isSensitive: boolean;
+	isHarmful: boolean;
 	localOnly: boolean;
 	roleIdsThatCanBeUsedThisEmojiAsReaction: { id: string, name: string }[];
 	fileId?: string;
@@ -192,6 +193,7 @@ function setupGrid(): GridSetting {
 			{ bindTo: 'aliases', title: 'aliases', type: 'text', editable: true, width: 140 },
 			{ bindTo: 'license', title: 'license', type: 'text', editable: true, width: 140 },
 			{ bindTo: 'isSensitive', title: 'sensitive', type: 'boolean', editable: true, width: 90 },
+			{ bindTo: 'isHarmful', title: 'harmful', type: 'boolean', editable: true, width: 90 },
 			{ bindTo: 'localOnly', title: 'localOnly', type: 'boolean', editable: true, width: 90 },
 			{
 				bindTo: 'roleIdsThatCanBeUsedThisEmojiAsReaction', title: 'role', type: 'text', editable: true, width: 140,
@@ -341,6 +343,7 @@ async function onUpdateButtonClicked() {
 					aliases: emptyStrToEmptyArray(item.aliases),
 					license: emptyStrToNull(item.license),
 					isSensitive: item.isSensitive,
+					isHarmful: item.isHarmful,
 					localOnly: item.localOnly,
 					roleIdsThatCanBeUsedThisEmojiAsReaction: item.roleIdsThatCanBeUsedThisEmojiAsReaction.map(it => it.id),
 					fileId: item.fileId,
@@ -468,6 +471,7 @@ async function refreshCustomEmojis() {
 		category: emptyStrToUndefined(searchQuery.value.category),
 		license: emptyStrToUndefined(searchQuery.value.license),
 		isSensitive: searchQuery.value.sensitive != null ? Boolean(searchQuery.value.sensitive).valueOf() : undefined,
+		isHarmful: searchQuery.value.harmful != null ? Boolean(searchQuery.value.harmful).valueOf() : undefined,
 		localOnly: searchQuery.value.localOnly != null ? Boolean(searchQuery.value.localOnly).valueOf() : undefined,
 		updatedAtFrom: emptyStrToUndefined(searchQuery.value.updatedAtFrom),
 		updatedAtTo: emptyStrToUndefined(searchQuery.value.updatedAtTo),
@@ -506,6 +510,7 @@ function refreshGridItems() {
 		aliases: it.aliases.join(' '),
 		license: it.license ?? '',
 		isSensitive: it.isSensitive,
+		isHarmful: it.isHarmful,
 		localOnly: it.localOnly,
 		roleIdsThatCanBeUsedThisEmojiAsReaction: it.roleIdsThatCanBeUsedThisEmojiAsReaction,
 		updatedAt: it.updatedAt,

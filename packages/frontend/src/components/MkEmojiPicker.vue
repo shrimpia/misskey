@@ -379,6 +379,13 @@ function canReact(emoji: Misskey.entities.EmojiSimple | UnicodeEmojiDef | string
 	return !props.targetNote || checkReactionPermissions($i!, props.targetNote, emoji);
 }
 
+// #region shrimpia
+function isHarmfulBlocked(emoji: Misskey.entities.EmojiSimple | UnicodeEmojiDef | string): boolean {
+	if (typeof emoji === 'string' || 'char' in emoji) return false;
+	return !!(emoji.isHarmful && !(props.targetNote?.allowHarmfulReaction ?? true));
+}
+// #endregion
+
 function filterCategory(emoji: Misskey.entities.EmojiSimple, category: string): boolean {
 	return category === '' ? (emoji.category === 'null' || !emoji.category) : emoji.category === category;
 }

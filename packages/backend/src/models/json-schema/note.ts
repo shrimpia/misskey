@@ -206,6 +206,12 @@ export const packedNoteSchema = {
 			optional: false, nullable: true,
 			enum: ['likeOnly', 'likeOnlyForRemote', 'nonSensitiveOnly', 'nonSensitiveOnlyForLocalLikeOnlyForRemote', null],
 		},
+		// #region shrimpia
+		allowHarmfulReaction: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		// #endregion
 		reactionEmojis: {
 			type: 'object',
 			optional: false, nullable: false,

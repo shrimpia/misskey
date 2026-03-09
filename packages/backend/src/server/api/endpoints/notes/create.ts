@@ -136,6 +136,9 @@ export const paramDef = {
 		cw: { type: 'string', nullable: true, minLength: 1, maxLength: 100 },
 		localOnly: { type: 'boolean', default: false },
 		reactionAcceptance: { type: 'string', nullable: true, enum: [null, 'likeOnly', 'likeOnlyForRemote', 'nonSensitiveOnly', 'nonSensitiveOnlyForLocalLikeOnlyForRemote'], default: null },
+		// #region shrimpia
+		allowHarmfulReaction: { type: 'boolean', default: false },
+		// #endregion
 		noExtractMentions: { type: 'boolean', default: false },
 		noExtractHashtags: { type: 'boolean', default: false },
 		noExtractEmojis: { type: 'boolean', default: false },
@@ -235,6 +238,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					cw: ps.cw ?? null,
 					localOnly: ps.localOnly,
 					reactionAcceptance: ps.reactionAcceptance,
+					// #region shrimpia
+					allowHarmfulReaction: ps.allowHarmfulReaction,
+					// #endregion
 					visibility: ps.visibility,
 					visibleUserIds: ps.visibleUserIds ?? [],
 					channelId: ps.channelId ?? null,

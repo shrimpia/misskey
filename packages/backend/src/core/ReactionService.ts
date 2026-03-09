@@ -148,6 +148,12 @@ export class ReactionService {
 							reaction = FALLBACK;
 						}
 
+						// #region shrimpia
+						if (emoji.isHarmful && !note.allowHarmfulReaction) {
+							throw new IdentifiableError('a904f59f-d2ad-4b7f-b9f6-600993da9fca', 'This note does not accept harmful reactions.');
+						}
+						// #endregion
+
 						// for media silenced host, custom emoji reactions are not allowed
 						if (reacterHost != null && this.utilityService.isMediaSilencedHost(this.meta.mediaSilencedHosts, reacterHost)) {
 							reaction = FALLBACK;

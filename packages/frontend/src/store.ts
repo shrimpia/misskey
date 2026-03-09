@@ -125,6 +125,13 @@ export const store = markRaw(new Pizzax('base', {
 		default: true,
 	},
 
+	// #region Shrimpia
+	allowHarmfulReaction: {
+		where: 'account',
+		default: false,
+	},
+	// #endregion
+
 	//#region TODO: そのうち消す (preferに移行済み)
 	defaultWithReplies: {
 		where: 'account',

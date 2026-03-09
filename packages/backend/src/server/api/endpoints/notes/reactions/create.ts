@@ -42,6 +42,14 @@ export const meta = {
 			code: 'CANNOT_REACT_TO_RENOTE',
 			id: 'eaccdc08-ddef-43fe-908f-d108faad57f5',
 		},
+
+		// #region shrimpia
+		harmfulReactionRejected: {
+			message: 'This note does not accept harmful reactions.',
+			code: 'HARMFUL_REACTION_REJECTED',
+			id: 'a904f59f-d2ad-4b7f-b9f6-600993da9fca',
+		},
+		// #endregion
 	},
 } as const;
 
@@ -69,6 +77,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				if (err.id === '51c42bb4-931a-456b-bff7-e5a8a70dd298') throw new ApiError(meta.errors.alreadyReacted);
 				if (err.id === 'e70412a4-7197-4726-8e74-f3e0deb92aa7') throw new ApiError(meta.errors.youHaveBeenBlocked);
 				if (err.id === '12c35529-3c79-4327-b1cc-e2cf63a71925') throw new ApiError(meta.errors.cannotReactToRenote);
+				// #region shrimpia
+				if (err.id === 'a904f59f-d2ad-4b7f-b9f6-600993da9fca') throw new ApiError(meta.errors.harmfulReactionRejected);
+				// #endregion
 				throw err;
 			});
 			return;
