@@ -63,6 +63,10 @@ export class LocalTimelineChannel extends Channel {
 		if (note.user.requireSigninToViewContents && this.user == null) return;
 		if (note.renote && note.renote.user.requireSigninToViewContents && this.user == null) return;
 		if (note.reply && note.reply.user.requireSigninToViewContents && this.user == null) return;
+		// #region shrimpia
+		// ローカルのみかつ自分がログインしていない場合はノートオブジェクトを変異させないよう早期リターン
+		if (note.localOnly && this.user == null) return;
+		// #endregion
 
 		// 関係ない返信は除外
 		if (note.reply && this.user && !this.following[note.userId]?.withReplies && !this.withReplies) {
