@@ -92,6 +92,49 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</MkFolder>
 				</SearchMarker>
 
+				<!-- #region shrimpia -->
+				<SearchMarker :keywords="['spam', 'url']">
+					<MkFolder>
+						<template #icon><SearchIcon><i class="ti ti-link"></i></SearchIcon></template>
+						<template #label><SearchLabel>URLスパム防止</SearchLabel></template>
+
+						<div class="_gaps">
+							<MkTextarea v-model="spamUrlPatterns">
+								<template #caption>スパム判定するURLパターンを改行で区切って入力します（例: x.com, twitter.com）。直近N件中M件以上該当する場合にエラーとなります。</template>
+							</MkTextarea>
+							<div style="display: flex; gap: 8px;">
+								<MkInput v-model="spamUrlWindowSize" type="number" :min="1">
+									<template #label>チェック件数 (N件)</template>
+								</MkInput>
+								<MkInput v-model="spamUrlThreshold" type="number" :min="1">
+									<template #label>閾値 (M件)</template>
+								</MkInput>
+							</div>
+							<MkButton primary @click="save_spamUrl">{{ i18n.ts.save }}</MkButton>
+						</div>
+					</MkFolder>
+				</SearchMarker>
+
+				<SearchMarker :keywords="['spam', 'renote', 'pure renote']">
+					<MkFolder>
+						<template #icon><SearchIcon><i class="ti ti-repeat"></i></SearchIcon></template>
+						<template #label><SearchLabel>リノートスパム防止</SearchLabel></template>
+
+						<div class="_gaps">
+							<div style="display: flex; gap: 8px;">
+								<MkInput v-model="spamRenoteWindowSize" type="number" :min="1">
+									<template #label>チェック件数 (N件)</template>
+								</MkInput>
+								<MkInput v-model="spamRenoteThreshold" type="number" :min="1">
+									<template #label>閾値 (M件)</template>
+								</MkInput>
+							</div>
+							<MkButton primary @click="save_spamRenote">{{ i18n.ts.save }}</MkButton>
+						</div>
+					</MkFolder>
+				</SearchMarker>
+				<!-- #endregion -->
+
 				<SearchMarker :keywords="['hidden', 'tags', 'hashtags']">
 					<MkFolder>
 						<template #icon><SearchIcon><i class="ti ti-eye-off"></i></SearchIcon></template>
@@ -189,6 +232,13 @@ const {
 const sensitiveWords = ref(meta.sensitiveWords.join('\n'));
 const prohibitedWords = ref(meta.prohibitedWords.join('\n'));
 const prohibitedWordsForNameOfUser = ref(meta.prohibitedWordsForNameOfUser.join('\n'));
+// #region shrimpia
+const spamUrlPatterns = ref(meta.spamUrlPatterns.join('\n'));
+const spamUrlWindowSize = ref(meta.spamUrlWindowSize);
+const spamUrlThreshold = ref(meta.spamUrlThreshold);
+const spamRenoteWindowSize = ref(meta.spamRenoteWindowSize);
+const spamRenoteThreshold = ref(meta.spamRenoteThreshold);
+// #endregion
 const hiddenTags = ref(meta.hiddenTags.join('\n'));
 const preservedUsernames = ref(meta.preservedUsernames.join('\n'));
 const blockedHosts = ref(meta.blockedHosts.join('\n'));
@@ -260,6 +310,23 @@ function save_prohibitedWordsForNameOfUser() {
 		fetchInstance(true);
 	});
 }
+
+// #region shrimpia
+function save_spamUrl() {
+	os.apiWithDialog('admin/update-meta', {
+		spamUrlPatterns: spamUrlPatterns.value.split('\n').filter(Boolean),
+		spamUrlWindowSize: spamUrlWindowSize.value,
+		spamUrlThreshold: spamUrlThreshold.value,
+	}).then(() => { fetchInstance(true); });
+}
+
+function save_spamRenote() {
+	os.apiWithDialog('admin/update-meta', {
+		spamRenoteWindowSize: spamRenoteWindowSize.value,
+		spamRenoteThreshold: spamRenoteThreshold.value,
+	}).then(() => { fetchInstance(true); });
+}
+// #endregion
 
 function save_hiddenTags() {
 	os.apiWithDialog('admin/update-meta', {

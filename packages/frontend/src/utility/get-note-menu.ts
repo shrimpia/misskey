@@ -638,6 +638,11 @@ export function getRenoteMenu(props: {
 					}).then((res) => {
 						os.toast(i18n.ts.renoted);
 						globalEvents.emit('notePosted', res.createdNote);
+					}).catch(err => {
+						os.alert({
+							type: 'error',
+							text: err.message + '\n' + (err as any).id,
+						});
 					});
 				}
 			},
@@ -687,6 +692,11 @@ export function getRenoteMenu(props: {
 					}).then((res) => {
 						os.toast(i18n.ts.renoted);
 						globalEvents.emit('notePosted', res.createdNote);
+					}).catch(err => {
+						os.alert({
+							type: 'error',
+							text: err.message + '\n' + (err as any).id,
+						});
 					});
 				}
 			},
@@ -701,7 +711,7 @@ export function getRenoteMenu(props: {
 		}])]);
 
 		// shrimpia
-		if (isRenote) {
+		if (isRenote && props.note.userId === $i?.id) {
 			normalRenoteItems.push({
 				text: i18n.ts.unrenote,
 				icon: 'ti ti-trash',

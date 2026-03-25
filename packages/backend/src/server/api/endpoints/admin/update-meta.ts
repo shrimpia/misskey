@@ -52,6 +52,15 @@ export const paramDef = {
 				type: 'string',
 			},
 		},
+		// #region shrimpia
+		spamUrlPatterns: {
+			type: 'array', nullable: true, items: { type: 'string', minLength: 1 },
+		},
+		spamUrlWindowSize: { type: 'integer', nullable: true },
+		spamUrlThreshold: { type: 'integer', nullable: true },
+		spamRenoteWindowSize: { type: 'integer', nullable: true },
+		spamRenoteThreshold: { type: 'integer', nullable: true },
+		// #endregion
 		themeColor: { type: 'string', nullable: true, pattern: '^#[0-9a-fA-F]{6}$' },
 		mascotImageUrl: { type: 'string', nullable: true },
 		bannerUrl: { type: 'string', nullable: true },
@@ -275,6 +284,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					return h !== '' && h !== lv && !set.blockedHosts?.includes(h);
 				});
 			}
+			// #region shrimpia
+			if (Array.isArray(ps.spamUrlPatterns)) {
+				set.spamUrlPatterns = ps.spamUrlPatterns.filter(Boolean);
+			}
+			if (ps.spamUrlWindowSize !== undefined) set.spamUrlWindowSize = ps.spamUrlWindowSize;
+			if (ps.spamUrlThreshold !== undefined) set.spamUrlThreshold = ps.spamUrlThreshold;
+			if (ps.spamRenoteWindowSize !== undefined) set.spamRenoteWindowSize = ps.spamRenoteWindowSize;
+			if (ps.spamRenoteThreshold !== undefined) set.spamRenoteThreshold = ps.spamRenoteThreshold;
+			// #endregion
 			if (ps.themeColor !== undefined) {
 				set.themeColor = ps.themeColor;
 			}

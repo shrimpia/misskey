@@ -108,6 +108,33 @@ export class MiMeta {
 	})
 	public mediaSilencedHosts: string[];
 
+	// #region shrimpia
+	@Column('varchar', {
+		length: 1024, array: true, default: '{}',
+	})
+	public spamUrlPatterns: string[];
+
+	@Column('integer', {
+		default: 10,
+	})
+	public spamUrlWindowSize: number;
+
+	@Column('integer', {
+		default: 5,
+	})
+	public spamUrlThreshold: number;
+
+	@Column('integer', {
+		default: 10,
+	})
+	public spamRenoteWindowSize: number;
+
+	@Column('integer', {
+		default: 5,
+	})
+	public spamRenoteThreshold: number;
+	// #endregion
+
 	@Column('varchar', {
 		length: 1024,
 		nullable: true,

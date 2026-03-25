@@ -444,6 +444,15 @@ export class NoteCreateService implements OnApplicationShutdown {
 			throw new IdentifiableError('689ee33f-f97c-479a-ac49-1b9f8140af99', 'Note contains prohibited words');
 		}
 
+		// #region shrimpia - スパム防止チェック
+		if (user.host === null && data.channel == null && data.visibility === 'public') {
+			await this.checkSpamUrl(user.id, data.text);
+			if (this.isRenote(data) && !this.isQuote(data)) {
+				await this.checkSpamPureRenote(user.id);
+			}
+		}
+		// #endregion
+
 		const inSilencedInstance = this.utilityService.isSilencedHost(this.meta.silencedHosts, user.host);
 
 		if (data.visibility === 'public' && inSilencedInstance && user.host !== null) {
@@ -1181,6 +1190,46 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		return false;
 	}
+
+	// #region shrimpia
+	@bindThis
+	private async checkSpamUrl(userId: MiUser['id'], text: string | null | undefined): Promise<void> {
+		const spamUrlPatterns = this.meta.spamUrlPatterns;
+		if (spamUrlPatterns.length === 0 || !text) return;
+		if (!spamUrlPatterns.some(pattern => text.includes(pattern))) return;
+
+		const recentNotes = await this.notesRepository.find({
+			where: { userId, channelId: IsNull(), visibility: 'public' },
+			order: { id: 'DESC' },
+			take: this.meta.spamUrlWindowSize,
+			select: ['id', 'text'],
+		});
+		const spamCount = recentNotes.filter(note => {
+			const { text } = note;
+			if (text == null) return false;
+			return spamUrlPatterns.some(pattern => text.includes(pattern));
+		}).length;
+		if (spamCount >= this.meta.spamUrlThreshold) {
+			throw new IdentifiableError('7c09fca2-4156-4ac0-9736-a1b9d16fbc50', 'Too many notes with spam URLs');
+		}
+	}
+
+	@bindThis
+	private async checkSpamPureRenote(userId: MiUser['id']): Promise<void> {
+		const recentNotes = await this.notesRepository.find({
+			where: { userId, channelId: IsNull(), visibility: 'public' },
+			order: { id: 'DESC' },
+			take: this.meta.spamRenoteWindowSize,
+			select: ['id', 'renoteId', 'text', 'fileIds', 'hasPoll'],
+		});
+		const pureRenoteCount = recentNotes.filter(note =>
+			note.renoteId != null && !note.text && (!note.fileIds || note.fileIds.length === 0) && !note.hasPoll,
+		).length;
+		if (pureRenoteCount >= this.meta.spamRenoteThreshold) {
+			throw new IdentifiableError('ab1d0563-cfc2-41aa-9cb9-c4474cefbc7c', 'Too many pure renotes');
+		}
+	}
+	// #endregion
 
 	@bindThis
 	private collapseNotesCount(oldValue: number, newValue: number) {

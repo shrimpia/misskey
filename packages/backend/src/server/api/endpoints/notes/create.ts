@@ -123,6 +123,20 @@ export const meta = {
 			code: 'CONTAINS_TOO_MANY_MENTIONS',
 			id: '4de0363a-3046-481b-9b0f-feff3e211025',
 		},
+
+		// #region shrimpia
+		tooManySpamUrlNotes: {
+			message: 'Due to server settings, you cannot create any more notes containing those URLs in a row.',
+			code: 'TOO_MANY_SPAM_URL_NOTES',
+			id: '7c09fca2-4156-4ac0-9736-a1b9d16fbc50',
+		},
+
+		tooManyPureRenotes: {
+			message: 'Due to server settings, you cannot renote any more in a row.',
+			code: 'TOO_MANY_PURE_RENOTES',
+			id: 'ab1d0563-cfc2-41aa-9cb9-c4474cefbc7c',
+		},
+		// #endregion
 	},
 } as const;
 
@@ -289,6 +303,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 						throw new ApiError(meta.errors.cannotCreateAlreadyExpiredPoll);
 					} else if (err.id === 'bfa3905b-25f5-4894-b430-da331a490e4b') {
 						throw new ApiError(meta.errors.noSuchChannel);
+					// #region shrimpia
+					} else if (err.id === '7c09fca2-4156-4ac0-9736-a1b9d16fbc50') {
+						throw new ApiError(meta.errors.tooManySpamUrlNotes);
+					} else if (err.id === 'ab1d0563-cfc2-41aa-9cb9-c4474cefbc7c') {
+						throw new ApiError(meta.errors.tooManyPureRenotes);
+					// #endregion
 					}
 				}
 				throw err;

@@ -189,6 +189,32 @@ export const meta = {
 					type: 'string',
 				},
 			},
+			// #region shrimpia
+			spamUrlPatterns: {
+				type: 'array',
+				optional: false, nullable: false,
+				items: {
+					type: 'string',
+					optional: false, nullable: false,
+				},
+			},
+			spamUrlWindowSize: {
+				type: 'integer',
+				optional: false, nullable: false,
+			},
+			spamUrlThreshold: {
+				type: 'integer',
+				optional: false, nullable: false,
+			},
+			spamRenoteWindowSize: {
+				type: 'integer',
+				optional: false, nullable: false,
+			},
+			spamRenoteThreshold: {
+				type: 'integer',
+				optional: false, nullable: false,
+			},
+			// #endregion
 			bannedEmailDomains: {
 				type: 'array',
 				optional: true, nullable: false,
@@ -677,6 +703,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				sensitiveWords: instance.sensitiveWords,
 				prohibitedWords: instance.prohibitedWords,
 				prohibitedWordsForNameOfUser: instance.prohibitedWordsForNameOfUser,
+				// #region shrimpia
+				spamUrlPatterns: instance.spamUrlPatterns,
+				spamUrlWindowSize: instance.spamUrlWindowSize,
+				spamUrlThreshold: instance.spamUrlThreshold,
+				spamRenoteWindowSize: instance.spamRenoteWindowSize,
+				spamRenoteThreshold: instance.spamRenoteThreshold,
+				// #endregion
 				preservedUsernames: instance.preservedUsernames,
 				hcaptchaSecretKey: instance.hcaptchaSecretKey,
 				mcaptchaSecretKey: instance.mcaptchaSecretKey,
