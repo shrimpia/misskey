@@ -4,9 +4,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><MkPageHeader/></template>
-	<MkSpacer :contentMax="800">
+<PageWithHeader :actions="headerActions" :tabs="headerTabs">
+	<div class="_spacer _gaps" style="--MI_SPACER-w: 700px;">
+		<MkFeatureBanner icon="/client-assets/calendar_3d.png" color="#B93E43">
+			シュリンピアでイベントを開催しましょう。
+			ゲーム大会、オフ会、創作企画、部活動など、シュリンピア上で開催するイベントであれば、どなたでも自由に登録できます！
+		</MkFeatureBanner>
 		<Transition
 			:enterActiveClass="prefer.s.animation ? $style.transition_fade_enterActive : ''"
 			:leaveActiveClass="prefer.s.animation ? $style.transition_fade_leaveActive : ''"
@@ -21,18 +24,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkResult v-else-if="empty" type="empty"/>
 
 			<div v-else class="_gaps">
-				<MkInfo>
-					帝国にて今後開催予定のイベントです。<br/>
-					イベントを作成する場合は<a class="_link" href="https://portal.shrimpia.network/events" target="_blank" rel="noreferrer noopener">シュリンピアポータル</a>をご利用ください。
-				</MkInfo>
 				<section v-for="event in events" :key="event.id" class="_panel" :class="$style.event">
 					<div :class="$style.header">
 						<h1 :class="$style.title"><i v-if="event.isOfficial" v-tooltip="'公式イベントです！'" :class="$style.official" class="ti ti-discount-check-filled"></i> {{ event.name }}</h1>
 						<div :class="$style.date">
-							{{ getDateString(event) }}
+							<i class="ti ti-calendar"></i> {{ getDateString(event) }}
 						</div>
 						<div :class="$style.author">
-							<MkMention :username="event.authorName" host="mk.shrimpia.network"/>
+							<i class="ti ti-user"></i> <MkMention :username="event.authorName" host="mk.shrimpia.network"/>
 						</div>
 					</div>
 					<div v-if="event.description" :class="$style.content">
@@ -41,18 +40,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</section>
 			</div>
 		</Transition>
-	</MkSpacer>
-</MkStickyContainer>
+	</div>
+</PageWithHeader>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, ref, computed } from 'vue';
 import type { Event } from '@/scripts/portal-api/events.js';
-import MkInfo from '@/components/MkInfo.vue';
 import MkMention from '@/components/MkMention.vue';
 import { fetchEvents } from '@/scripts/portal-api/events.js';
 import { definePage } from '@/page.js';
 import { prefer } from '@/preferences.js';
+import MkFeatureBanner from '@/components/MkFeatureBanner.vue';
 
 definePage(() => ({
 	title: 'イベントカレンダー',
@@ -95,6 +94,17 @@ const getDateString = (event: Event) => {
 	}
 };
 
+const headerActions = computed(() => [{
+	asFullButton: true,
+	icon: 'ti ti-building-broadcast-tower',
+	text: 'シュリンピアポータルで開く',
+	handler: () => {
+		window.open('https://portal.shrimpia.network/events', '_blank', 'noopener noreferrer');
+	},
+}]);
+
+const headerTabs = computed(() => []);
+
 </script>
 
 <style lang="scss" module>
@@ -121,7 +131,7 @@ const getDateString = (event: Event) => {
 	margin: 0 0 8px 0;
 }
 
-.date {
+.date, .author {
 	font-size: 90%;
 	opacity: 0.7;
 }
