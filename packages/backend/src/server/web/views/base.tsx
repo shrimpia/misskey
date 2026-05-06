@@ -52,7 +52,7 @@ export function Layout(props: PropsWithChildren<CommonProps<{
 					{props.serverErrorImageUrl != null ? <link rel="prefetch" as="image" href={props.serverErrorImageUrl} /> : null}
 					{props.infoImageUrl != null ? <link rel="prefetch" as="image" href={props.infoImageUrl} /> : null}
 					{props.notFoundImageUrl != null ? <link rel="prefetch" as="image" href={props.notFoundImageUrl} /> : null}
-					<link rel="stylesheet" href="https://koruri.chillout.chat/koruri.css" />
+					<link rel="stylesheet" href="https://koruri.shrimpia.network/koruri.css" />
 
 					{props.frontendViteFiles == null ? <script type="module" src="/vite/@vite/client"></script> : null}
 
