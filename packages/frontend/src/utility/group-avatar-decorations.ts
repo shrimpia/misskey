@@ -3,17 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as Misskey from 'misskey-js';
-
-type AvatarDecoration = Misskey.entities.GetAvatarDecorationsResponse[number];
+type AvatarDecorationBase = { category?: string | null | undefined };
 
 /**
  * アバターデコレーションをカテゴリごとにグループ化します。
  * @param decorations アバターデコレーションの配列
  * @returns カテゴリごとにグループ化されたアバターデコレーションオブジェクト
  */
-export const groupAvatarDecorations = (decorations: AvatarDecoration[]) => {
-	const grouped: Record<string, AvatarDecoration[]> = {};
+export function groupAvatarDecorations<T extends AvatarDecorationBase>(decorations: T[]) {
+	const grouped: Record<string, T[]> = {};
 
 	for (const decoration of decorations) {
 		const category = decoration.category ?? '';
@@ -24,4 +22,4 @@ export const groupAvatarDecorations = (decorations: AvatarDecoration[]) => {
 	}
 
 	return grouped;
-};
+}
