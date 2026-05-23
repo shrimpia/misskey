@@ -164,10 +164,20 @@
 						<SearchLabel>ハイライトタイムラインをホームに表示する</SearchLabel>
 					</MkSwitch>
 				</MkPreferenceContainer>
+				<MkPreferenceContainer k="shrimpia.postGuidelineWarningDisabled">
+					<MkSwitch v-model="postGuidelineWarningDisabled">
+						<SearchLabel>投稿時の、投稿ガイドラインの警告を無効化する</SearchLabel>
+					</MkSwitch>
+				</MkPreferenceContainer>
+				<MkPreferenceContainer k="shrimpia.aiWarningDisabled">
+					<MkSwitch v-model="aiWarningDisabled">
+						<SearchLabel>投稿時の、生成AIコンテンツに関する警告を無効化する</SearchLabel>
+					</MkSwitch>
+				</MkPreferenceContainer>
 			</div>
 		</FormSection>
 		<FormSection>
-			<template #label><i class="ti ti-flask"/> Shrimpia Labs</template>
+			<template #label><i class="ti ti-flask"></i> Shrimpia Labs</template>
 			<div class="_gaps_m">
 				<div>まだ開発中の機能を試してみませんか。一部の機能はちゃんと動かないかもしれません。</div>
 
@@ -217,6 +227,8 @@ const soundReactionModeItems = [
 ];
 const infoButtonForNoteActionsEnabled = prefer.model('ebisskey.infoButtonForNoteActionsEnabled');
 const featuredTimelineEnabled = prefer.model('ebisskey.featuredTimelineEnabled');
+const postGuidelineWarningDisabled = prefer.model('shrimpia.postGuidelineWarningDisabled');
+const aiWarningDisabled = prefer.model('shrimpia.aiWarningDisabled');
 const useAirReply = prefer.model('ebisskey.useAirReply');
 const airReplyButtonPlacement = prefer.model('ebisskey.airReplyButtonPlacement');
 const airReplyButtonPlacementItems = [
