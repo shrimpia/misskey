@@ -87,13 +87,23 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</div>
 	<input v-show="withHashtags" ref="hashtagsInputEl" v-model="hashtags" :class="$style.hashtags" :placeholder="i18n.ts.hashtags" list="hashtags">
 
-	<div v-if="!prefer.r['shrimpia.postGuidelineWarningDisabled'].value" :class="$style.filesWarn">
-		<div :class="$style.filesWarnText">
-			<Mfm :text="postGuidelineWarning"/>
+	<div :class="$style.warningArea">
+		<div v-if="!prefer.r['shrimpia.postGuidelineWarningDisabled'].value" :class="$style.filesWarn">
+			<div :class="$style.filesWarnText">
+				<Mfm :text="postGuidelineWarning"/>
+			</div>
+			<button class="_button" :class="$style.filesWarnClose" @click="closePostGuidelineWarning">
+				{{ i18n.ts.neverShow }}
+			</button>
 		</div>
-		<button class="_textButton" :class="$style.filesWarnClose" @click="closePostGuidelineWarning">
-			<i class="ti ti-x"></i>
-		</button>
+		<div v-if="!prefer.r['shrimpia.aiWarningDisabled'].value && isVisibleAiWarning" :class="$style.filesWarn">
+			<div :class="$style.filesWarnText">
+				<Mfm :text="aiWarning"/>
+			</div>
+			<button class="_button" :class="$style.filesWarnClose" @click="closeAiWarning">
+				{{ i18n.ts.neverShow }}
+			</button>
+		</div>
 	</div>
 	<XPostFormAttaches v-model="files" @detach="detachFile" @changeSensitive="updateFileSensitive" @changeName="updateFileName"/>
 	<div v-if="uploader.items.value.length > 0" style="padding: 12px;">
@@ -316,8 +326,52 @@ const submitIcon = computed((): string => {
 	return posted.value ? 'ti ti-check' : scheduledAt.value != null ? 'ti ti-calendar-time' : props.isAirReply ? 'ti ti-bubble-text' : replyTargetNote.value ? 'ti ti-arrow-back-up' : renoteTargetNote.value ? 'ti ti-quote' : 'ti ti-send';
 });
 
-// Shrimpia
+// #region Shrimpia
 const postGuidelineWarning = '[投稿ガイドライン](https://docs.shrimpia.network/guidelines/creating-note/)を確認してください。不適切な投稿は罰則の対象となります。';
+const aiWarning = 'AIが生成した画像・音声を投稿する場合、ハッシュタグが必須です。\n[生成AIコンテンツについて](https://docs.shrimpia.network/guidelines/creating-note/#-%E7%94%9F%E6%88%90ai%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)を確認してください。';
+
+const genAIRelatedWords = [
+	'ai',
+	'claude',
+	'chatgpt',
+	'gemini',
+	'grok',
+];
+
+const isVisibleAiWarning = computed(() => {
+	// フォームにファイルが添付されていない場合はAI警告を表示しない
+	if (files.value.length === 0 && uploader.items.value.length === 0) {
+		return false;
+	}
+
+	// Intl.Segmenterがなければ、代わりに単純なincludesで比較。非対応ブラウザに配慮するため
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+	if (Intl?.Segmenter == null) {
+		if (_DEV_) console.warn('Intl.Segmenter is not supported in this environment. Ai word detection may be inaccurate.');
+		const target = text.value.toLowerCase();
+		for (const word of genAIRelatedWords) {
+			if (target.includes(word)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// あれば、Intl.Segmenterで単語単位に分割して比較
+	if (_DEV_) console.log('Using Intl.Segmenter for Ai word detection.');
+	const segmenter = new Intl.Segmenter(navigator.language, { granularity: 'word' });
+	const segments = segmenter.segment(text.value);
+	if (_DEV_) {
+		console.log('Segments:', Array.from(segments).map(s => s.segment));
+	}
+	for (const { segment } of segments) {
+		if (genAIRelatedWords.includes(segment.toLowerCase())) {
+			return true;
+		}
+	}
+	return false;
+});
+// #endregion
 
 const textLength = computed((): number => {
 	return (text.value + imeText.value).length;
@@ -1303,9 +1357,17 @@ async function openAccountMenu(ev: PointerEvent) {
 	os.popupMenu(items, ev.currentTarget ?? ev.target);
 }
 
+// #region shrimpia
 function closePostGuidelineWarning() {
 	prefer.commit('shrimpia.postGuidelineWarningDisabled', true);
+	os.toast('設定→独自機能→パッチ　からいつでも再表示できます');
 }
+
+function closeAiWarning() {
+	prefer.commit('shrimpia.aiWarningDisabled', true);
+	os.toast('設定→独自機能→パッチ　からいつでも再表示できます');
+}
+// #endregion
 
 function showDraftMenu(ev: MouseEvent) {
 	function showDraftsDialog(scheduled: boolean) {
@@ -1978,14 +2040,29 @@ html[data-color-scheme=light] .preview {
 }
 
 .filesWarn {
-	display: flex;
-	gap: 8px;
 	background: var(--MI_THEME-infoWarnBg);
 	color: var(--MI_THEME-infoWarnFg);
+	border-radius: 6px;
 	padding: 8px 16px;
 }
 
-.filesWarnText {
-	flex: 1;
+.filesWarnClose {
+	padding: 4px 8px;
+	margin-top: 12px;
+	border-radius: 6px;
+	font-size: 0.9em;
+	font-weight: bold;
+	color: var(--MI_THEME-accent);
+
+	&:hover {
+		background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
+	}
+}
+
+.warningArea {
+	padding: 0 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 }
 </style>

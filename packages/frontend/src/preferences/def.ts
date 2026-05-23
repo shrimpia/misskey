@@ -631,5 +631,8 @@ export const PREF_DEF = definePreferences({
 	'shrimpia.postGuidelineWarningDisabled': {
 		default: false,
 	},
+	'shrimpia.aiWarningDisabled': {
+		default: false,
+	},
 	// #endregion
 });
