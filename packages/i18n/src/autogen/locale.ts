@@ -3565,6 +3565,10 @@ export interface Locale extends ILocale {
      */
     "startingperiod": string;
     /**
+     * 終了期間
+     */
+    "endingperiod": string;
+    /**
      * メモ
      */
     "memo": string;

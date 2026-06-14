@@ -4501,7 +4501,6 @@ export type components = {
             localOnly?: boolean;
             /** @enum {string|null} */
             reactionAcceptance: 'likeOnly' | 'likeOnlyForRemote' | 'nonSensitiveOnly' | 'nonSensitiveOnlyForLocalLikeOnlyForRemote' | null;
-            /** @shrimpia */
             allowHarmfulReaction: boolean;
             reactionEmojis: {
                 [key: string]: string;
@@ -4564,8 +4563,6 @@ export type components = {
             localOnly: boolean;
             /** @enum {string|null} */
             reactionAcceptance: 'likeOnly' | 'likeOnlyForRemote' | 'nonSensitiveOnly' | 'nonSensitiveOnlyForLocalLikeOnlyForRemote' | null;
-            /** @shrimpia */
-            allowHarmfulReaction: boolean;
             scheduledAt: number | null;
             isActuallyScheduled: boolean;
         };
@@ -5191,7 +5188,6 @@ export type components = {
             url: string;
             localOnly?: boolean;
             isSensitive?: boolean;
-            /** @shrimpia */
             isHarmful?: boolean;
             roleIdsThatCanBeUsedThisEmojiAsReaction?: string[];
         };
@@ -5207,7 +5203,6 @@ export type components = {
             license: string | null;
             isSensitive: boolean;
             localOnly: boolean;
-            /** @shrimpia */
             isHarmful: boolean;
             roleIdsThatCanBeUsedThisEmojiAsReaction: string[];
         };
@@ -5228,7 +5223,6 @@ export type components = {
             license: string | null;
             localOnly: boolean;
             isSensitive: boolean;
-            /** @shrimpia */
             isHarmful: boolean;
             roleIdsThatCanBeUsedThisEmojiAsReaction: {
                 /** Format: misskey:id */
@@ -5738,6 +5732,7 @@ export type components = {
             reaction: string;
             file: components['schemas']['DriveFile'];
             volume: number;
+            license: string | null;
         };
     };
     responses: never;
@@ -8040,6 +8035,7 @@ export interface operations {
                     fileId: string;
                     /** @default 1 */
                     volume?: number;
+                    license?: string | null;
                 };
             };
         };
@@ -8113,7 +8109,6 @@ export interface operations {
                     license?: string | null;
                     isSensitive?: boolean;
                     localOnly?: boolean;
-                    /** @shrimpia */
                     isHarmful?: boolean;
                     roleIdsThatCanBeUsedThisEmojiAsReaction?: string[];
                 };
@@ -8920,7 +8915,6 @@ export interface operations {
                     license?: string | null;
                     isSensitive?: boolean;
                     localOnly?: boolean;
-                    /** @shrimpia */
                     isHarmful?: boolean;
                     roleIdsThatCanBeUsedThisEmojiAsReaction?: string[];
                 };
@@ -9673,6 +9667,11 @@ export interface operations {
                         sensitiveWords: string[];
                         prohibitedWords: string[];
                         prohibitedWordsForNameOfUser: string[];
+                        spamUrlPatterns: string[];
+                        spamUrlWindowSize: number;
+                        spamUrlThreshold: number;
+                        spamRenoteWindowSize: number;
+                        spamRenoteThreshold: number;
                         bannedEmailDomains?: string[];
                         preservedUsernames: string[];
                         hcaptchaSecretKey: string | null;
@@ -12973,6 +12972,11 @@ export interface operations {
                     sensitiveWords?: string[] | null;
                     prohibitedWords?: string[] | null;
                     prohibitedWordsForNameOfUser?: string[] | null;
+                    spamUrlPatterns?: string[] | null;
+                    spamUrlWindowSize?: number | null;
+                    spamUrlThreshold?: number | null;
+                    spamRenoteWindowSize?: number | null;
+                    spamRenoteThreshold?: number | null;
                     themeColor?: string | null;
                     mascotImageUrl?: string | null;
                     bannerUrl?: string | null;
@@ -19406,6 +19410,8 @@ export interface operations {
                     type?: string | null;
                     /** @enum {string|null} */
                     sort?: '+createdAt' | '-createdAt' | '+name' | '-name' | '+size' | '-size' | null;
+                    createdAtFrom?: number | null;
+                    createdAtUntil?: number | null;
                 };
             };
         };
@@ -20895,6 +20901,7 @@ export interface operations {
                         [key: string]: {
                             url: string;
                             volume: number;
+                            license: string | null;
                         };
                     };
                 };
@@ -29592,7 +29599,7 @@ export interface operations {
                      * @enum {string|null}
                      */
                     reactionAcceptance?: null | 'likeOnly' | 'likeOnlyForRemote' | 'nonSensitiveOnly' | 'nonSensitiveOnlyForLocalLikeOnlyForRemote';
-                    /** @shrimpia @default false */
+                    /** @default false */
                     allowHarmfulReaction?: boolean;
                     /** @default false */
                     noExtractMentions?: boolean;

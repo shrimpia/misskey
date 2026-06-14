@@ -64,6 +64,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkTip k="drive"><div v-html="i18n.ts.driveAboutTip"></div></MkTip>
 			</div>
 
+			<!-- #region shrimpia 適用中のフィルタ表示 -->
+			<div v-if="isFilterActive" :class="$style.filterBar" class="_acrylic">
+				<i class="ti ti-filter" :class="$style.filterBarIcon"></i>
+				<div :class="$style.filterBarChips">
+					<span v-if="typeFilterLabel != null" :class="$style.filterChip">{{ i18n.ts.type }}: {{ typeFilterLabel }}</span>
+					<span v-if="dateFilterLabel != null" :class="$style.filterChip">{{ i18n.ts.registeredDate }}: {{ dateFilterLabel }}</span>
+				</div>
+				<button class="_button" :class="$style.filterBarButton" @click="openFilterDialog"><i class="ti ti-pencil"></i> {{ i18n.ts.edit }}</button>
+			</div>
+			<!-- #endregion -->
+
 			<div :class="$style.folders">
 				<XFolder
 					v-for="(f, i) in foldersPaginator.items.value"
@@ -162,7 +173,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onActivated, onBeforeUnmount, onMounted, ref, useTemplateRef, watch, computed, TransitionGroup, markRaw } from 'vue';
+import { nextTick, onActivated, onBeforeUnmount, onMounted, ref, useTemplateRef, watch, computed, TransitionGroup, markRaw, defineAsyncComponent } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkButton from './MkButton.vue';
 import type { MenuItem } from '@/types/menu.js';
@@ -234,13 +245,23 @@ const fetching = ref(true);
 
 const sortModeSelect = ref<NonNullable<Misskey.entities.DriveFilesRequest['sort']>>('+createdAt');
 
+// #region shrimpia 絞り込み
+const typeFilter = ref<string | null>(null); // null=全て / 'image/*' / 'video/*' / 'audio/*' / 'other'
+const createdAtFrom = ref<number | null>(null); // unix ms（開始日 00:00:00）
+const createdAtUntil = ref<number | null>(null); // unix ms（終了日 翌日 00:00:00 = その日を含む）
+// #endregion
+
 const filesPaginator = markRaw(new Paginator('drive/files', {
 	limit: 30,
 	canFetchDetection: 'limit',
 	params: () => ({ // 自動でリロードしたくないためcomputedParamsは使わない
 		folderId: folder.value ? folder.value.id : null,
-		type: props.type,
+		type: props.type ?? typeFilter.value ?? undefined,
 		sort: ['-createdAt', '+createdAt'].includes(sortModeSelect.value) ? null : sortModeSelect.value,
+		// #region shrimpia 登録日範囲での絞り込み
+		createdAtFrom: createdAtFrom.value ?? undefined,
+		createdAtUntil: createdAtUntil.value ?? undefined,
+		// #endregion
 	}),
 }));
 const foldersPaginator = markRaw(new Paginator('drive/folders', {
@@ -268,6 +289,11 @@ watch(folder, () => emit('cd', folder.value));
 watch(sortModeSelect, () => {
 	initialize();
 });
+// #region shrimpia 絞り込み変更時に再読込
+watch([typeFilter, createdAtFrom, createdAtUntil], () => {
+	initialize();
+});
+// #endregion
 
 async function initialize() {
 	fetching.value = true;
@@ -604,6 +630,59 @@ function goRoot() {
 	initialize();
 }
 
+// #region shrimpia 絞り込み
+function msToDateInput(ms: number | null): string | null {
+	if (ms == null) return null;
+	const d = new Date(ms);
+	const y = d.getFullYear();
+	const m = (d.getMonth() + 1).toString().padStart(2, '0');
+	const day = d.getDate().toString().padStart(2, '0');
+	return `${y}-${m}-${day}`;
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const isFilterActive = computed(() => typeFilter.value != null || createdAtFrom.value != null || createdAtUntil.value != null);
+
+// フィルタ中の種別の表示名
+const typeFilterLabel = computed(() => {
+	switch (typeFilter.value) {
+		case 'image/*': return i18n.ts.image;
+		case 'video/*': return i18n.ts.video;
+		case 'audio/*': return i18n.ts.audio;
+		case 'other': return i18n.ts.other;
+		default: return null;
+	}
+});
+
+// フィルタ中の登録日範囲の表示文字列（例: 2026-01-01 〜 2026-02-01）
+const dateFilterLabel = computed(() => {
+	if (createdAtFrom.value == null && createdAtUntil.value == null) return null;
+	const from = msToDateInput(createdAtFrom.value);
+	// 終了日は翌日0時で保持しているため表示用に1日戻す
+	const until = createdAtUntil.value != null ? msToDateInput(createdAtUntil.value - DAY_MS) : null;
+	return `${from ?? ''} 〜 ${until ?? ''}`;
+});
+
+function openFilterDialog() {
+	const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/MkDriveFileFilterDialog.vue')), {
+		initialType: typeFilter.value,
+		initialFrom: msToDateInput(createdAtFrom.value),
+		// 保存時に終了日を翌日0時にしているため、表示用に1日戻す
+		initialUntil: createdAtUntil.value != null ? msToDateInput(createdAtUntil.value - DAY_MS) : null,
+	}, {
+		done: (r?: { type: string | null; from: string | null; until: string | null }) => {
+			if (r == null) return; // キャンセル
+			typeFilter.value = r.type;
+			createdAtFrom.value = r.from ? new Date(`${r.from}T00:00:00`).getTime() : null;
+			// 終了日はその日を含めるため翌日0時にする
+			createdAtUntil.value = r.until ? new Date(`${r.until}T00:00:00`).getTime() + DAY_MS : null;
+		},
+		closed: () => dispose(),
+	});
+}
+// #endregion
+
 function getMenu() {
 	const menu: MenuItem[] = [];
 
@@ -664,6 +743,18 @@ function getMenu() {
 			active: sortModeSelect.value === '-name',
 		}],
 	});
+
+	// #region shrimpia 絞り込み（種別が固定されるselectダイアログでは出さない）
+	if (props.type == null) {
+		menu.push({
+			type: 'button',
+			text: i18n.ts.filter,
+			icon: 'ti ti-filter',
+			indicate: isFilterActive.value,
+			action: () => { openFilterDialog(); },
+		});
+	}
+	// #endregion
 
 	if (folder.value) {
 		menu.push({
@@ -856,6 +947,53 @@ onBeforeUnmount(() => {
 	padding: 16px 32px;
 }
 
+// #region shrimpia 適用中のフィルタ表示
+.filterBar {
+	position: sticky;
+	top: 52px; // TODO: ハードコーディングしないで済むならそうしたい
+	z-index: 5;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 8px 32px 0;
+	padding: 8px 12px;
+	border-radius: 8px;
+	background: var(--MI_THEME-buttonBg);
+	font-size: 0.9em;
+}
+
+.filterBarIcon {
+	flex-shrink: 0;
+	opacity: 0.7;
+}
+
+.filterBarChips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	flex-grow: 1;
+	min-width: 0;
+}
+
+.filterChip {
+	padding: 2px 8px;
+	border-radius: 6px;
+	background: var(--MI_THEME-accentedBg);
+	color: var(--MI_THEME-accent);
+	white-space: nowrap;
+}
+
+.filterBarButton {
+	flex-shrink: 0;
+	padding: 2px 8px;
+	border-radius: 6px;
+
+	&:hover {
+		background: var(--MI_THEME-accentedBg);
+	}
+}
+// #endregion
+
 .folders,
 .files {
 	display: grid;
@@ -873,6 +1011,12 @@ onBeforeUnmount(() => {
 	.files {
 		padding: 16px;
 	}
+
+	// #region shrimpia
+	.filterBar {
+		margin: 8px 16px 0;
+	}
+	// #endregion
 }
 
 .date {

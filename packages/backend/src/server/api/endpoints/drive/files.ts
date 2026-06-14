@@ -8,6 +8,7 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { DriveFilesRepository } from '@/models/_.js';
 import { QueryService } from '@/core/QueryService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
+import { IdService } from '@/core/IdService.js';
 import { DI } from '@/di-symbols.js';
 
 export const meta = {
@@ -39,6 +40,10 @@ export const paramDef = {
 		folderId: { type: 'string', format: 'misskey:id', nullable: true, default: null },
 		type: { type: 'string', nullable: true, pattern: /^[a-zA-Z\/\-*]+$/.toString().slice(1, -1) },
 		sort: { type: 'string', nullable: true, enum: ['+createdAt', '-createdAt', '+name', '-name', '+size', '-size', null] },
+		// #region shrimpia 登録日範囲での絞り込み
+		createdAtFrom: { type: 'integer', nullable: true },
+		createdAtUntil: { type: 'integer', nullable: true },
+		// #endregion
 	},
 	required: [],
 } as const;
@@ -51,6 +56,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 		private driveFileEntityService: DriveFileEntityService,
 		private queryService: QueryService,
+		private idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.driveFilesRepository.createQueryBuilder('file'), ps.sinceId, ps.untilId, ps.sinceDate, ps.untilDate)
@@ -62,12 +68,28 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				query.andWhere('file.folderId IS NULL');
 			}
 
+			// #region shrimpia 登録日範囲での絞り込み（カーソルとは独立して両端を保持）
+			if (ps.createdAtFrom) {
+				query.andWhere('file.id > :createdAtFromId', { createdAtFromId: this.idService.gen(ps.createdAtFrom) });
+			}
+			if (ps.createdAtUntil) {
+				query.andWhere('file.id < :createdAtUntilId', { createdAtUntilId: this.idService.gen(ps.createdAtUntil) });
+			}
+			// #endregion
+
 			if (ps.type) {
-				if (ps.type.endsWith('/*')) {
-					query.andWhere('file.type like :type', { type: ps.type.replace('/*', '/') + '%' });
-				} else {
-					query.andWhere('file.type = :type', { type: ps.type });
-				}
+				// #region shrimpia 「その他」= 画像/動画/音声以外
+				if (ps.type === 'other') {
+					query.andWhere('file.type NOT LIKE :otherImg', { otherImg: 'image/%' })
+						.andWhere('file.type NOT LIKE :otherVid', { otherVid: 'video/%' })
+						.andWhere('file.type NOT LIKE :otherAud', { otherAud: 'audio/%' });
+				} else
+				// #endregion
+					if (ps.type.endsWith('/*')) {
+						query.andWhere('file.type like :type', { type: ps.type.replace('/*', '/') + '%' });
+					} else {
+						query.andWhere('file.type = :type', { type: ps.type });
+					}
 			}
 
 			switch (ps.sort) {
