@@ -39,6 +39,7 @@ import { DI } from '@/di.js';
 import { noteEvents } from '@/composables/use-note-capture.js';
 import { mute as muteEmoji, unmute as unmuteEmoji, checkMuted as isEmojiMuted } from '@/utility/emoji-mute.js';
 import { claimAchievement } from '@/utility/achievements';
+import { addToEmojiPalette } from '@/utility/emoji-palette.js';
 import { haptic } from '@/utility/haptic.js';
 
 const props = defineProps<{
@@ -209,6 +210,16 @@ async function menu(ev: PointerEvent) {
 					if (canceled) return;
 					muteEmoji(props.reaction);
 				});
+			},
+		});
+	}
+
+	if (canToggle.value) {
+		menuItems.push({
+			text: i18n.ts.addToEmojiPalette,
+			icon: 'ti ti-palette',
+			action: () => {
+				addToEmojiPalette(isLocalCustomEmoji ? `:${emojiName.value}:` : props.reaction);
 			},
 		});
 	}
