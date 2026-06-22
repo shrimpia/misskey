@@ -207,6 +207,16 @@ export async function common(createVue: () => Promise<App<Element>>) {
 		}
 	}, { immediate: true });
 
+	// #region shrimpia インク節約モード
+	watch(prefer.r['shrimpia.isGrayscaleMode'], v => {
+		if (v) {
+			window.document.documentElement.style.setProperty('filter', 'grayscale(1)');
+		} else {
+			window.document.documentElement.style.removeProperty('filter');
+		}
+	}, { immediate: true });
+	// #endregion
+
 	// Keep screen on
 	const onVisibilityChange = () => window.document.addEventListener('visibilitychange', () => {
 		if (window.document.visibilityState === 'visible') {

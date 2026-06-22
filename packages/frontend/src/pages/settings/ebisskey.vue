@@ -21,6 +21,7 @@
 						</MkSwitch>
 					</MkPreferenceContainer>
 				</SearchMarker>
+
 				<!-- パクる -->
 				<SearchMarker :keywords="['steal']">
 					<MkPreferenceContainer k="ebisskey.stealEnabled">
@@ -142,6 +143,26 @@
 						</template>
 					</MkFolder>
 				</SearchMarker>
+
+				<MkFolder :defaultOpen="headlineEnabled">
+					<template #icon><i class="ti ti-horse-toy"></i></template>
+					<template #label><SearchLabel>ジョーク</SearchLabel></template>
+					<div class="_gaps_m">
+						<div>ヘンテコなネタ機能です。真に受けないでください。</div>
+						<!-- #region shrimpia インク節約モード -->
+						<SearchMarker :keywords="['grayscale', 'ink', 'インク', 'グレースケール']">
+							<MkPreferenceContainer k="shrimpia.isGrayscaleMode">
+								<MkSwitch v-model="isGrayscaleMode">
+									<SearchLabel>インク節約モード</SearchLabel>
+									<template #caption>
+										画面全体をグレースケールにして、Misskeyの表示に使用するインクを節約します。
+									</template>
+								</MkSwitch>
+							</MkPreferenceContainer>
+						</SearchMarker>
+						<!-- #endregion -->
+					</div>
+				</MkFolder>
 			</div>
 		</FormSection>
 		<FormSection>
@@ -247,6 +268,7 @@ const headlineViewModeItems = [
 	{ label: 'スクロールする', value: 'alwaysAnimated' },
 	{ label: 'スクロールしない', value: 'neverAnimated' },
 ];
+const isGrayscaleMode = prefer.model('shrimpia.isGrayscaleMode');
 // #endregion
 
 const noteVisibilityColorHome = ref(prefer.s['ebisskey.noteVisibilityColorHome']);

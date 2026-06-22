@@ -634,5 +634,8 @@ export const PREF_DEF = definePreferences({
 	'shrimpia.aiWarningDisabled': {
 		default: false,
 	},
+	'shrimpia.isGrayscaleMode': {
+		default: false,
+	},
 	// #endregion
 });
