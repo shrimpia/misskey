@@ -49,7 +49,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<template v-else>
 		<article :class="$style.note" @contextmenu.stop="onContextmenu">
 			<header :class="$style.noteHeader">
-				<MkAvatar :class="$style.noteHeaderAvatar" :user="appearNote.user" indicator link preview/>
+				<!-- #region shrimpia なでなで機能: 有効時は link を無効化してクリックでなでる -->
+				<MkAvatar ref="avatarEl" :class="$style.noteHeaderAvatar" :user="appearNote.user" indicator :link="!prefer.s['shrimpia.headPattingEnabled']" preview @click="onAvatarClick"/>
+				<!-- #endregion -->
 				<div :class="$style.noteHeaderBody">
 					<div>
 						<MkA v-user-preview="appearNote.user.id" :class="$style.noteHeaderName" :to="userPage(appearNote.user)">
@@ -293,6 +295,7 @@ import MkButton from '@/components/MkButton.vue';
 import { isEnabledUrlPreview } from '@/utility/url-preview.js';
 import { getAppearNote } from '@/utility/get-appear-note.js';
 import { prefer } from '@/preferences.js';
+import { playHeadPat } from '@/utility/head-pat.js'; // shrimpia
 import { getPluginHandlers } from '@/plugin.js';
 import { DI } from '@/di.js';
 import { globalEvents, useGlobalEvent } from '@/events.js';
@@ -343,6 +346,17 @@ const reactButton = useTemplateRef('reactButton');
 const stealButton = useTemplateRef('stealButton'); // shrimpia
 const clipButton = useTemplateRef('clipButton');
 const galleryEl = useTemplateRef('galleryEl');
+
+// #region shrimpia なでなで機能
+// link 有効時は MkAvatar が click を emit しないため、このハンドラはなでモード時のみ発火する
+const avatarEl = useTemplateRef('avatarEl');
+
+function onAvatarClick() {
+	const el = (avatarEl.value as { $el?: HTMLElement } | null)?.$el;
+	if (el) playHeadPat(el);
+}
+// #endregion
+
 const isMyRenote = $i && ($i.id === note.userId);
 const showContent = ref(false);
 const isDeleted = ref(false);
@@ -781,6 +795,7 @@ function loadConversation() {
 	flex-shrink: 0;
 	width: 58px;
 	height: 58px;
+	cursor: pointer;
 }
 
 .noteHeaderBody {

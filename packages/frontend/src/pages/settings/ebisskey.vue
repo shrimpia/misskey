@@ -202,19 +202,28 @@
 			<div class="_gaps_m">
 				<div>まだ開発中の機能を試してみませんか。一部の機能はちゃんと動かないかもしれません。</div>
 
-				<MkFolder :defaultOpen="true">
-					<template #icon><i class="ti ti-settings"></i></template>
-					<template #label>その他</template>
-					<SearchMarker :keywords="['textarea', 'auto', 'size']">
-						<MkSwitch v-model="useTextAreaAutoSize">
-							<SearchLabel>テキストエリアの自動サイズ調整</SearchLabel>
+				<SearchMarker :keywords="['textarea', 'auto', 'size']">
+					<MkSwitch v-model="useTextAreaAutoSize">
+						<SearchLabel>テキストエリアの自動サイズ調整</SearchLabel>
+						<template #caption>
+							入力したテキストの行数に合わせて長文の入力欄（例：投稿フォーム）の高さを自動調整します。<br/>
+							一部のブラウザで正常に動作しないかもしれません。
+						</template>
+					</MkSwitch>
+				</SearchMarker>
+
+				<!-- #region shrimpia なでなで機能 -->
+				<SearchMarker :keywords="['head', 'pat', 'nadenade', 'なでなで', 'なで']">
+					<MkPreferenceContainer k="shrimpia.headPattingEnabled">
+						<MkSwitch v-model="headPatting">
+							<SearchLabel>なでなで機能</SearchLabel>
 							<template #caption>
-								入力したテキストの行数に合わせて長文の入力欄（例：投稿フォーム）の高さを自動調整します。<br/>
-								一部のブラウザで正常に動作しないかもしれません。
+								ノートのアイコンをクリックすると、プロフィールを開く代わりに頭をなでられるようになります。
 							</template>
 						</MkSwitch>
-					</SearchMarker>
-				</MkFolder>
+					</MkPreferenceContainer>
+				</SearchMarker>
+				<!-- #endregion -->
 			</div>
 		</FormSection>
 	</div>
@@ -269,6 +278,7 @@ const headlineViewModeItems = [
 	{ label: 'スクロールしない', value: 'neverAnimated' },
 ];
 const isGrayscaleMode = prefer.model('shrimpia.isGrayscaleMode');
+const headPatting = prefer.model('shrimpia.headPattingEnabled');
 // #endregion
 
 const noteVisibilityColorHome = ref(prefer.s['ebisskey.noteVisibilityColorHome']);

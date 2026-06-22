@@ -48,7 +48,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</div>
 	<article v-else :class="$style.article" @contextmenu.stop="onContextmenu">
 		<div v-if="appearNote.channel" :class="$style.colorBar" :style="{ background: appearNote.channel.color }"></div>
-		<MkAvatar :class="[$style.avatar, prefer.s.useStickyIcons ? $style.useSticky : null]" :user="appearNote.user" :link="!mock" :preview="!mock"/>
+		<!-- #region shrimpia なでなで機能: 有効時は link を無効化してクリックでなでる -->
+		<MkAvatar ref="avatarEl" :class="[$style.avatar, prefer.s.useStickyIcons ? $style.useSticky : null]" :user="appearNote.user" :link="!mock && !prefer.s['shrimpia.headPattingEnabled']" :preview="!mock" @click="onAvatarClick"/>
+		<!-- #endregion -->
 		<div :class="$style.main">
 			<MkNoteHeader :note="appearNote" :mini="true"/>
 			<MkInstanceTicker v-if="showTicker" :host="appearNote.user.host" :instance="appearNote.user.instance"/>
@@ -255,6 +257,7 @@ import { stealMenu } from '@/utility/steal-menu.js';
 import { isEnabledUrlPreview } from '@/utility/url-preview.js';
 import { getAppearNote } from '@/utility/get-appear-note.js';
 import { prefer } from '@/preferences.js';
+import { playHeadPat } from '@/utility/head-pat.js'; // shrimpia
 import { getPluginHandlers } from '@/plugin.js';
 import { DI } from '@/di.js';
 import { globalEvents } from '@/events.js';
@@ -311,6 +314,7 @@ const { $note: $appearNote, subscribe: subscribeManuallyToNoteCapture } = useNot
 });
 
 const rootEl = useTemplateRef('rootEl');
+const avatarEl = useTemplateRef('avatarEl'); // shrimpia
 const menuButton = useTemplateRef('menuButton');
 const renoteButton = useTemplateRef('renoteButton');
 const renoteTime = useTemplateRef('renoteTime');
@@ -318,6 +322,15 @@ const reactButton = useTemplateRef('reactButton');
 const stealButton = useTemplateRef('stealButton'); // shrimpia
 const clipButton = useTemplateRef('clipButton');
 const galleryEl = useTemplateRef('galleryEl');
+
+// #region shrimpia なでなで機能
+// link 有効時は MkAvatar が click を emit しないため、このハンドラはなでモード時のみ発火する
+function onAvatarClick() {
+	const el = (avatarEl.value as { $el?: HTMLElement } | null)?.$el;
+	if (el) playHeadPat(el);
+}
+// #endregion
+
 const isMyRenote = $i && ($i.id === note.userId);
 const showContent = ref(false);
 const parsed = computed(() => appearNote.text ? mfm.parse(appearNote.text) : null);
@@ -944,6 +957,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 	margin: 0 14px 0 0;
 	width: 58px;
 	height: 58px;
+	cursor: pointer;
 
 	&.useSticky {
 		position: sticky !important;

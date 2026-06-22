@@ -637,5 +637,8 @@ export const PREF_DEF = definePreferences({
 	'shrimpia.isGrayscaleMode': {
 		default: false,
 	},
+	'shrimpia.headPattingEnabled': {
+		default: false,
+	},
 	// #endregion
 });

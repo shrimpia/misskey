@@ -10,7 +10,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div v-else-if="!muted" :class="[$style.root, { [$style.children]: depth > 1 }]">
 	<div :class="$style.main">
 		<div v-if="note.channel" :class="$style.colorBar" :style="{ background: note.channel.color }"></div>
-		<MkAvatar :class="$style.avatar" :user="note.user" link preview/>
+		<!-- #region shrimpia なでなで機能: 有効時は link を無効化してクリックでなでる -->
+		<MkAvatar ref="avatarEl" :class="$style.avatar" :user="note.user" :link="!prefer.s['shrimpia.headPattingEnabled']" preview @click="onAvatarClick"/>
+		<!-- #endregion -->
 		<div :class="$style.body">
 			<MkNoteHeader :class="$style.header" :note="note" :mini="true"/>
 			<div>
@@ -43,7 +45,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkNoteHeader from '@/components/MkNoteHeader.vue';
 import MkSubNoteContent from '@/components/MkSubNoteContent.vue';
@@ -54,6 +56,8 @@ import { i18n } from '@/i18n.js';
 import { $i } from '@/i.js';
 import { userPage } from '@/filters/user.js';
 import { checkWordMute } from '@/utility/check-word-mute.js';
+import { prefer } from '@/preferences.js'; // shrimpia
+import { playHeadPat } from '@/utility/head-pat.js'; // shrimpia
 
 const props = withDefaults(defineProps<{
 	note: Misskey.entities.Note | null;
@@ -69,6 +73,16 @@ const muted = ref(props.note && $i ? checkWordMute(props.note, $i, $i.mutedWords
 
 const showContent = ref(false);
 const replies = ref<Misskey.entities.Note[]>([]);
+
+// #region shrimpia なでなで機能
+// link 有効時は MkAvatar が click を emit しないため、このハンドラはなでモード時のみ発火する
+const avatarEl = useTemplateRef('avatarEl');
+
+function onAvatarClick() {
+	const el = (avatarEl.value as { $el?: HTMLElement } | null)?.$el;
+	if (el) playHeadPat(el);
+}
+// #endregion
 
 if (props.detail && props.note) {
 	misskeyApi('notes/children', {
@@ -113,6 +127,7 @@ if (props.detail && props.note) {
 	width: 38px;
 	height: 38px;
 	border-radius: 8px;
+	cursor: pointer;
 }
 
 .body {
