@@ -250,7 +250,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, markRaw, provide, ref, useTemplateRef } from 'vue';
+import { computed, inject, markRaw, onMounted, onUnmounted, provide, ref, useTemplateRef } from 'vue';
 import * as mfm from 'mfm-js';
 import * as Misskey from 'misskey-js';
 import { isLink } from '@@/js/is-link.js';
@@ -295,7 +295,7 @@ import MkButton from '@/components/MkButton.vue';
 import { isEnabledUrlPreview } from '@/utility/url-preview.js';
 import { getAppearNote } from '@/utility/get-appear-note.js';
 import { prefer } from '@/preferences.js';
-import { playHeadPat } from '@/utility/head-pat.js'; // shrimpia
+import { playHeadPat, registerHeadPatTarget } from '@/utility/head-pat.js'; // shrimpia
 import { getPluginHandlers } from '@/plugin.js';
 import { DI } from '@/di.js';
 import { globalEvents, useGlobalEvent } from '@/events.js';
@@ -353,8 +353,18 @@ const avatarEl = useTemplateRef('avatarEl');
 
 function onAvatarClick() {
 	const el = (avatarEl.value as { $el?: HTMLElement } | null)?.$el;
-	if (el) playHeadPat(el);
+	if (el) playHeadPat(el, appearNote.id);
 }
+
+// 他人のなでなでを受信した際に対象アバターを引けるよう、登録簿に登録する
+let unregisterHeadPatTarget: (() => void) | null = null;
+onMounted(() => {
+	const el = (avatarEl.value as { $el?: HTMLElement } | null)?.$el;
+	if (el) unregisterHeadPatTarget = registerHeadPatTarget(appearNote.id, el);
+});
+onUnmounted(() => {
+	unregisterHeadPatTarget?.();
+});
 // #endregion
 
 const isMyRenote = $i && ($i.id === note.userId);

@@ -119,6 +119,7 @@ import { prefer } from '@/preferences.js';
 import { globalEvents } from '@/events.js';
 import { store } from '@/store.js';
 import XNavbar from '@/ui/_common_/navbar.vue';
+import { setupHeadPatStream } from '@/utility/head-pat.js'; // shrimpia
 
 const XStreamIndicator = defineAsyncComponent(() => import('./stream-indicator.vue'));
 const XWidgets = defineAsyncComponent(() => import('./widgets.vue'));
@@ -158,6 +159,10 @@ function exitSafeMode() {
 	url.searchParams.delete('safemode');
 	unisonReload(url.toString());
 }
+
+// #region shrimpia なでなで機能（他人のなでなでをリアルタイム表示する）
+setupHeadPatStream();
+// #endregion
 
 if ($i) {
 	if (store.s.realtimeMode) {

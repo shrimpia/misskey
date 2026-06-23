@@ -640,5 +640,8 @@ export const PREF_DEF = definePreferences({
 	'shrimpia.headPattingEnabled': {
 		default: false,
 	},
+	'shrimpia.headPattingWatchOthersEnabled': {
+		default: true,
+	},
 	// #endregion
 });

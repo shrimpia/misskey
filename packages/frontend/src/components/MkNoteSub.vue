@@ -45,7 +45,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, useTemplateRef } from 'vue';
+import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkNoteHeader from '@/components/MkNoteHeader.vue';
 import MkSubNoteContent from '@/components/MkSubNoteContent.vue';
@@ -57,7 +57,7 @@ import { $i } from '@/i.js';
 import { userPage } from '@/filters/user.js';
 import { checkWordMute } from '@/utility/check-word-mute.js';
 import { prefer } from '@/preferences.js'; // shrimpia
-import { playHeadPat } from '@/utility/head-pat.js'; // shrimpia
+import { playHeadPat, registerHeadPatTarget } from '@/utility/head-pat.js'; // shrimpia
 
 const props = withDefaults(defineProps<{
 	note: Misskey.entities.Note | null;
@@ -80,8 +80,18 @@ const avatarEl = useTemplateRef('avatarEl');
 
 function onAvatarClick() {
 	const el = (avatarEl.value as { $el?: HTMLElement } | null)?.$el;
-	if (el) playHeadPat(el);
+	if (el && props.note) playHeadPat(el, props.note.id);
 }
+
+// 他人のなでなでを受信した際に対象アバターを引けるよう、登録簿に登録する
+let unregisterHeadPatTarget: (() => void) | null = null;
+onMounted(() => {
+	const el = (avatarEl.value as { $el?: HTMLElement } | null)?.$el;
+	if (el && props.note) unregisterHeadPatTarget = registerHeadPatTarget(props.note.id, el);
+});
+onUnmounted(() => {
+	unregisterHeadPatTarget?.();
+});
 // #endregion
 
 if (props.detail && props.note) {

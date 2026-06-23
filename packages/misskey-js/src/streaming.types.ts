@@ -295,6 +295,20 @@ export type Channels = {
 			};
 		};
 	};
+	// #region shrimpia なでなで機能（他人のなでなでをリアルタイム配信するストリーム）
+	headPat: {
+		params: null;
+		events: {
+			pat: (payload: { noteId: string; clientId: string; }) => void;
+		};
+		receives: {
+			pat: {
+				noteId: string;
+				clientId: string;
+			};
+		};
+	};
+	// #endregion
 };
 
 export type NoteUpdatedEvent = { id: Note['id'] } & ({

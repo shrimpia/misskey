@@ -211,7 +211,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, onMounted, ref, useTemplateRef, provide } from 'vue';
+import { computed, inject, onMounted, onUnmounted, ref, useTemplateRef, provide } from 'vue';
 import * as mfm from 'mfm-js';
 import * as Misskey from 'misskey-js';
 import { isLink } from '@@/js/is-link.js';
@@ -257,7 +257,7 @@ import { stealMenu } from '@/utility/steal-menu.js';
 import { isEnabledUrlPreview } from '@/utility/url-preview.js';
 import { getAppearNote } from '@/utility/get-appear-note.js';
 import { prefer } from '@/preferences.js';
-import { playHeadPat } from '@/utility/head-pat.js'; // shrimpia
+import { playHeadPat, registerHeadPatTarget } from '@/utility/head-pat.js'; // shrimpia
 import { getPluginHandlers } from '@/plugin.js';
 import { DI } from '@/di.js';
 import { globalEvents } from '@/events.js';
@@ -327,8 +327,18 @@ const galleryEl = useTemplateRef('galleryEl');
 // link 有効時は MkAvatar が click を emit しないため、このハンドラはなでモード時のみ発火する
 function onAvatarClick() {
 	const el = (avatarEl.value as { $el?: HTMLElement } | null)?.$el;
-	if (el) playHeadPat(el);
+	if (el) playHeadPat(el, appearNote.id);
 }
+
+// 他人のなでなでを受信した際に対象アバターを引けるよう、登録簿に登録する
+let unregisterHeadPatTarget: (() => void) | null = null;
+onMounted(() => {
+	const el = (avatarEl.value as { $el?: HTMLElement } | null)?.$el;
+	if (el) unregisterHeadPatTarget = registerHeadPatTarget(appearNote.id, el);
+});
+onUnmounted(() => {
+	unregisterHeadPatTarget?.();
+});
 // #endregion
 
 const isMyRenote = $i && ($i.id === note.userId);

@@ -213,12 +213,22 @@
 				</SearchMarker>
 
 				<!-- #region shrimpia なでなで機能 -->
-				<SearchMarker :keywords="['head', 'pat', 'nadenade', 'なでなで', 'なで']">
+				<SearchMarker :keywords="['head', 'pat', 'nadenade', 'なでなで']">
 					<MkPreferenceContainer k="shrimpia.headPattingEnabled">
 						<MkSwitch v-model="headPatting">
 							<SearchLabel>なでなで機能</SearchLabel>
 							<template #caption>
 								ノートのアイコンをクリックすると、プロフィールを開く代わりに頭をなでられるようになります。
+							</template>
+						</MkSwitch>
+					</MkPreferenceContainer>
+				</SearchMarker>
+				<SearchMarker :keywords="['head', 'pat', 'nadenade', '他人のなでなでを見る']">
+					<MkPreferenceContainer k="shrimpia.headPattingWatchOthersEnabled">
+						<MkSwitch v-model="headPattingWatchOthers" :disabled="!headPatting">
+							<SearchLabel>他人のなでなでを見る</SearchLabel>
+							<template #caption>
+								他のユーザーがアイコンをなでた様子が、リアルタイムで表示されるようになります。リアルタイムモードをオフにしている場合、この機能は使えません。
 							</template>
 						</MkSwitch>
 					</MkPreferenceContainer>
@@ -279,6 +289,7 @@ const headlineViewModeItems = [
 ];
 const isGrayscaleMode = prefer.model('shrimpia.isGrayscaleMode');
 const headPatting = prefer.model('shrimpia.headPattingEnabled');
+const headPattingWatchOthers = prefer.model('shrimpia.headPattingWatchOthersEnabled');
 // #endregion
 
 const noteVisibilityColorHome = ref(prefer.s['ebisskey.noteVisibilityColorHome']);

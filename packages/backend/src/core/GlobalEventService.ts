@@ -212,6 +212,15 @@ export interface ReversiGameEventTypes {
 }
 //#endregion
 
+// #region shrimpia なでなで機能
+export interface HeadPatEventTypes {
+	pat: {
+		noteId: MiNote['id'];
+		clientId: string;
+	};
+}
+// #endregion
+
 // 辞書(interface or type)から{ type, body }ユニオンを定義
 // https://stackoverflow.com/questions/49311989/can-i-infer-the-type-of-a-value-using-extends-keyof-type
 // VS Codeの展開を防止するためにEvents型を定義
@@ -329,6 +338,12 @@ export type GlobalEvents = {
 		name: `reversiGameStream:${MiReversiGame['id']}`;
 		payload: EventTypesToEventPayload<ReversiGameEventTypes>;
 	};
+	// #region shrimpia なでなで機能
+	headPat: {
+		name: 'headPatStream';
+		payload: EventTypesToEventPayload<HeadPatEventTypes>;
+	};
+	// #endregion
 };
 
 // API event definitions
@@ -416,6 +431,13 @@ export class GlobalEventService {
 	public publishNotesStream(note: Packed<'Note'>): void {
 		this.publish('notesStream', null, note);
 	}
+
+	// #region shrimpia なでなで機能
+	@bindThis
+	public publishHeadPatStream(noteId: MiNote['id'], clientId: string): void {
+		this.publish('headPatStream', 'pat', { noteId, clientId });
+	}
+	// #endregion
 
 	@bindThis
 	public publishAdminStream<K extends keyof AdminEventTypes>(userId: MiUser['id'], type: K, value?: AdminEventTypes[K]): void {
