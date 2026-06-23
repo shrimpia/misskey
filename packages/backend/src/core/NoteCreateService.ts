@@ -1261,7 +1261,10 @@ export class NoteCreateService implements OnApplicationShutdown {
 			where: { userId, channelId: IsNull(), visibility: 'public' },
 			order: { id: 'DESC' },
 			take: this.meta.spamUrlWindowSize,
-			select: ['id', 'text'],
+			select: {
+				id: true,
+				text: true,
+			},
 		});
 		const spamCount = recentNotes.filter(note => {
 			const { text } = note;
@@ -1279,7 +1282,13 @@ export class NoteCreateService implements OnApplicationShutdown {
 			where: { userId, channelId: IsNull(), visibility: 'public' },
 			order: { id: 'DESC' },
 			take: this.meta.spamRenoteWindowSize,
-			select: ['id', 'renoteId', 'text', 'fileIds', 'hasPoll'],
+			select: {
+				id: true,
+				renoteId: true,
+				text: true,
+				fileIds: true,
+				hasPoll: true,
+			},
 		});
 		const pureRenoteCount = recentNotes.filter(note =>
 			note.renoteId != null && !note.text && (!note.fileIds || note.fileIds.length === 0) && !note.hasPoll,

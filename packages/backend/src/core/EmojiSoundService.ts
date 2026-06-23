@@ -142,7 +142,7 @@ export class EmojiSoundService {
 	@bindThis
 	public async packForPublic(): Promise<Record<string, { url: string; volume: number; license: string | null }>> {
 		const emojiSounds = await this.emojiSoundsRepository.find({
-			relations: ['file'],
+			relations: { file: true },
 		});
 		const result: Record<string, { url: string; volume: number; license: string | null }> = {};
 
