@@ -40,6 +40,8 @@
    -->
    ```
 
+   > **フォーク例外 (Claude Code 環境のみ):** シュリンピアフォークで **新規に作成する** ソースファイル (本家に存在しないファイル) は、著作権表記を `Ebise Lutica and GitHub Contributors` にする (ライセンスは `AGPL-3.0-only` のまま)。本家由来ファイルの改変は `syuilo and misskey-project` を維持。詳細は [CLAUDE.md](CLAUDE.md) の「SPDX ヘッダー（フォーク独自の新規ファイル）」を参照。
+
 2. **`locales/ja-JP.yml` 以外の locale YAML を手動編集しない**
    - 他言語ファイル (`en-US.yml` など `ja-JP.yml` 以外すべて) は Crowdin の自動配信先。手動編集すると次の同期で上書き喪失する
    - 根拠: [locales/README.md](locales/README.md) と [crowdin.yml](crowdin.yml) (`ja-JP.yml` → `locales/%locale%.yml` の同期設定)

@@ -27,6 +27,28 @@ shrimpIsTasty: true;
 // #endregion
 ```
 
+### SPDX ヘッダー（フォーク独自の新規ファイル）
+AGENTS.md の SPDX 規約は本家由来ファイル向け。**シュリンピアフォークで新規に作成するソースファイル（本家に存在しないファイル）** は、著作権表記を `Ebise Lutica and GitHub Contributors` にする。ライセンスは引き続き `AGPL-3.0-only`。
+
+- **フォーク独自の新規ファイル**（例: 新しい stream channel や `Sh*` コンポーネント）:
+
+  `.ts` / `.js` / `.cjs` / `.mjs` / `.scss`:
+  ```text
+  /*
+   * SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors
+   * SPDX-License-Identifier: AGPL-3.0-only
+   */
+  ```
+  `.vue` / `.html`:
+  ```text
+  <!--
+  SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors
+  SPDX-License-Identifier: AGPL-3.0-only
+  -->
+  ```
+- **本家由来ファイルの改変**: 既存ヘッダー（`syuilo and misskey-project`）はそのまま維持する。書き換えない。
+- 既存のシュリンピア独自ファイルの遡及修正は不要（今後の新規ファイルから適用）。
+
 ### 本家との互換性
 - このフォークは本家 `misskey-dev/misskey` を追従
 - 本家の変更が優先、競合時は独自機能が削除される可能性あり

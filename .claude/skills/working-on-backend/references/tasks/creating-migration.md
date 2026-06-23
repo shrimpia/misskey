@@ -27,6 +27,7 @@
 - ファイル名の `descriptive-name` 部分は既存履歴で混在 (PascalCase / camelCase / kebab-case)、変更を表す単一英語名なら良い
 - **クラス名は PascalCase + 13 桁タイムスタンプ** (例: `class BirthdayIndex1767169026317`)
 - **`name` プロパティもクラス名と同一文字列** にする (`name = 'BirthdayIndex1767169026317'`)
+- **フォーク例外:** シュリンピアフォークで新規作成するファイルは `SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors` にする (ライセンスは `AGPL-3.0-only` のまま)。詳細は ルート [CLAUDE.md](../../../../../CLAUDE.md) 参照
 
 ```js
 /*

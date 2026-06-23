@@ -36,6 +36,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 `/* ... */` (TS / JS 形式) は **使わない**。既存の `.vue` ファイルがすべて HTML コメント形式を採用しており、SFC 先頭として自然な形式に統一するため。
 
+> **フォーク例外:** シュリンピアフォークで新規作成するファイル (本家に存在しないファイル。例: `Sh*` コンポーネント) は `SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors` にする (ライセンスは `AGPL-3.0-only` のまま)。本家由来ファイルの改変は `syuilo and misskey-project` を維持。詳細は ルート [CLAUDE.md](../../../../../CLAUDE.md) 参照。
+
 ### `.stories.impl.ts` ファイル (TS コメント)
 
 ```ts

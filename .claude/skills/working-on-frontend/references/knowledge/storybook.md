@@ -6,7 +6,7 @@
 
 - **ファイル名は `.stories.impl.ts` 固定** (`.stories.ts` は `packages/frontend/.storybook/generate.tsx` による生成物で手編集・コミット不可)
 - 同階層に置く (`components/MkButton.stories.impl.ts`、`components/global/MkAvatar.stories.impl.ts` 等)
-- 先頭に TS コメント形式の SPDX ヘッダーが必要
+- 先頭に TS コメント形式の SPDX ヘッダーが必要 (フォーク独自の新規ファイルは `SPDX-FileCopyrightText` を `Ebise Lutica and GitHub Contributors` にする。詳細は ルート [CLAUDE.md](../../../../../CLAUDE.md) 参照)
 
 ## 基本: 単一 story (Default のみ)
 
