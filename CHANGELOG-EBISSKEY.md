@@ -2,7 +2,7 @@
 
 misskey-shrimpiaとしての変更履歴です。Misskey本家のリリースノートは [CHANGELOG](/CHANGELOG.md) を確認してください。
 
-## Unreleased
+## 2026.6.0-sh.3
 - なでなで機能: 他人のなでなでをリアルタイムで表示できるように
 
 ## 2026.6.0-sh.2
