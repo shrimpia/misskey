@@ -890,6 +890,15 @@ export type paths = {
          */
         post: operations['admin___system-webhook___update'];
     };
+    '/admin/unset-mfa': {
+        /**
+         * admin/unset-mfa
+         * @description No description provided.
+         *
+         *     **Credential required**: *Yes* / **Permission**: *write:admin:unset-mfa*
+         */
+        post: operations['admin___unset-mfa'];
+    };
     '/admin/unset-user-avatar': {
         /**
          * admin/unset-user-avatar
@@ -9711,6 +9720,10 @@ export interface operations {
                         sensitiveMediaDetectionSensitivity: 'medium' | 'low' | 'high' | 'veryLow' | 'veryHigh';
                         setSensitiveFlagAutomatically: boolean;
                         enableSensitiveMediaDetectionForVideos: boolean;
+                        sensitiveMediaDetectionApiUrl: string | null;
+                        sensitiveMediaDetectionApiKey: string | null;
+                        sensitiveMediaDetectionTimeout: number;
+                        sensitiveMediaDetectionMaxImagesPerRequest: number;
                         /** Format: id */
                         proxyAccountId: string;
                         email: string | null;
@@ -9788,6 +9801,7 @@ export interface operations {
                         urlPreviewRequireContentLength: boolean;
                         urlPreviewUserAgent: string | null;
                         urlPreviewSummaryProxyUrl: string | null;
+                        urlPreviewSensitiveList: string[];
                         /** @enum {string} */
                         federation: 'all' | 'specified' | 'none';
                         federationHosts: string[];
@@ -12861,6 +12875,69 @@ export interface operations {
             };
         };
     };
+    'admin___unset-mfa': {
+        requestBody: {
+            content: {
+                'application/json': {
+                    /** Format: misskey:id */
+                    userId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK (without any results) */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+            };
+            /** @description Client error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Authentication error */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Forbidden error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description I'm Ai */
+            418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+        };
+    };
     'admin___unset-user-avatar': {
         requestBody: {
             content: {
@@ -13176,6 +13253,10 @@ export interface operations {
                     sensitiveMediaDetectionSensitivity?: 'medium' | 'low' | 'high' | 'veryLow' | 'veryHigh';
                     setSensitiveFlagAutomatically?: boolean;
                     enableSensitiveMediaDetectionForVideos?: boolean;
+                    sensitiveMediaDetectionApiUrl?: string | null;
+                    sensitiveMediaDetectionApiKey?: string | null;
+                    sensitiveMediaDetectionTimeout?: number;
+                    sensitiveMediaDetectionMaxImagesPerRequest?: number;
                     maintainerName?: string | null;
                     maintainerEmail?: string | null;
                     langs?: string[];
@@ -13245,6 +13326,7 @@ export interface operations {
                     urlPreviewRequireContentLength?: boolean;
                     urlPreviewUserAgent?: string | null;
                     urlPreviewSummaryProxyUrl?: string | null;
+                    urlPreviewSensitiveList?: string[] | null;
                     /** @enum {string} */
                     federation?: 'all' | 'none' | 'specified';
                     federationHosts?: string[];
@@ -34534,6 +34616,7 @@ export interface operations {
                         originalNotesCount: number;
                         usersCount: number;
                         originalUsersCount: number;
+                        reactionsCount: number;
                         instances: number;
                         driveUsageLocal: number;
                         driveUsageRemote: number;
