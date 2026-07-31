@@ -103,7 +103,10 @@ type GridItem = {
 	aliases: string;
 	license: string;
 	isSensitive: boolean;
+	// #region shrimpia
 	isHarmful: boolean;
+	isHidden: boolean;
+	// #endregion
 	localOnly: boolean;
 	roleIdsThatCanBeUsedThisEmojiAsReaction: { id: string, name: string }[];
 	type: string | null;
@@ -166,7 +169,10 @@ function setupGrid(): GridSetting {
 			{ bindTo: 'aliases', title: 'aliases', type: 'text', editable: true, width: 140 },
 			{ bindTo: 'license', title: 'license', type: 'text', editable: true, width: 140 },
 			{ bindTo: 'isSensitive', title: 'sensitive', type: 'boolean', editable: true, width: 90 },
+			// #region shrimpia
 			{ bindTo: 'isHarmful', title: 'harmful', type: 'boolean', editable: true, width: 90 },
+			{ bindTo: 'isHidden', title: 'hidden', type: 'boolean', editable: true, width: 90 },
+			// #endregion
 			{ bindTo: 'localOnly', title: 'localOnly', type: 'boolean', editable: true, width: 90 },
 			{
 				bindTo: 'roleIdsThatCanBeUsedThisEmojiAsReaction', title: 'role', type: 'text', editable: true, width: 140,
@@ -261,7 +267,10 @@ async function onRegistryClicked() {
 						aliases: emptyStrToEmptyArray(item.aliases),
 						license: emptyStrToNull(item.license),
 						isSensitive: item.isSensitive,
+						// #region shrimpia
 						isHarmful: item.isHarmful,
+						isHidden: item.isHidden,
+						// #endregion
 						localOnly: item.localOnly,
 						roleIdsThatCanBeUsedThisEmojiAsReaction: item.roleIdsThatCanBeUsedThisEmojiAsReaction.map(it => it.id),
 						fileId: item.fileId!,
@@ -355,7 +364,10 @@ function fromDriveFile(it: Misskey.entities.DriveFile): GridItem {
 		aliases: '',
 		license: '',
 		isSensitive: it.isSensitive,
-		isHarmful: it.isHarmful,
+		// #region shrimpia ドライブファイルには対応する属性が無いので既定値
+		isHarmful: false,
+		isHidden: false,
+		// #endregion
 		localOnly: false,
 		roleIdsThatCanBeUsedThisEmojiAsReaction: [],
 		type: it.type,

@@ -35,7 +35,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			v-for="child in customEmojiTree"
 			:key="`custom:${child.value}`"
 			:initialShown="initialShown"
-			:emojis="computed(() => customEmojis.filter(e => e.category === child.category).map(e => `:${e.name}:`))"
+			:emojis="computed(() => searchableCustomEmojis.filter(e => e.category === child.category).map(e => `:${e.name}:`))"
 			:hasChildSection="child.children.length !== 0"
 			:customEmojiTree="child.children"
 			@chosen="nestedChosen"
@@ -66,7 +66,7 @@ import { getEmojiName } from '@@/js/emojilist.js';
 import type { Ref } from 'vue';
 import type { CustomEmojiFolderTree } from '@@/js/emojilist.js';
 import { i18n } from '@/i18n.js';
-import { customEmojis } from '@/custom-emojis.js';
+import { searchableCustomEmojis } from '@/custom-emojis.js';
 import MkEmojiPickerSection from '@/components/MkEmojiPicker.section.vue';
 
 const props = defineProps<{

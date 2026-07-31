@@ -50,6 +50,12 @@ export const fetchEmojisSortKeys = [
 	'-license',
 	'+isSensitive',
 	'-isSensitive',
+	// #region shrimpia
+	'+isHarmful',
+	'-isHarmful',
+	'+isHidden',
+	'-isHidden',
+	// #endregion
 	'+localOnly',
 	'-localOnly',
 	'+roleIdsThatCanBeUsedThisEmojiAsReaction',
@@ -103,7 +109,8 @@ export class CustomEmojiService implements OnApplicationShutdown {
 		localOnly: boolean;
 		roleIdsThatCanBeUsedThisEmojiAsReaction: MiRole['id'][];
 		// #region shrimpia
-		isHarmful: boolean;
+		isHarmful?: boolean;
+		isHidden?: boolean;
 		// #endregion
 	}, moderator?: MiUser): Promise<MiEmoji> {
 		const emoji = await this.emojisRepository.insertOne({
@@ -121,7 +128,8 @@ export class CustomEmojiService implements OnApplicationShutdown {
 			localOnly: data.localOnly,
 			roleIdsThatCanBeUsedThisEmojiAsReaction: data.roleIdsThatCanBeUsedThisEmojiAsReaction,
 			// #region shrimpia
-			isHarmful: data.isHarmful,
+			isHarmful: data.isHarmful ?? false,
+			isHidden: data.isHidden ?? false,
 			// #endregion
 		});
 
@@ -158,6 +166,7 @@ export class CustomEmojiService implements OnApplicationShutdown {
 			roleIdsThatCanBeUsedThisEmojiAsReaction?: MiRole['id'][];
 			// #region shrimpia
 			isHarmful?: boolean;
+			isHidden?: boolean;
 			// #endregion
 		}, moderator?: MiUser): Promise<
 		null
@@ -191,6 +200,7 @@ export class CustomEmojiService implements OnApplicationShutdown {
 			roleIdsThatCanBeUsedThisEmojiAsReaction: data.roleIdsThatCanBeUsedThisEmojiAsReaction ?? undefined,
 			// #region shrimpia
 			isHarmful: data.isHarmful,
+			isHidden: data.isHidden,
 			// #endregion
 		});
 
@@ -483,6 +493,10 @@ export class CustomEmojiService implements OnApplicationShutdown {
 				category?: string;
 				license?: string;
 				isSensitive?: boolean;
+				// #region shrimpia
+				isHarmful?: boolean;
+				isHidden?: boolean;
+				// #endregion
 				localOnly?: boolean;
 				hostType?: FetchEmojisHostTypes;
 				roleIds?: string[];
@@ -570,6 +584,16 @@ export class CustomEmojiService implements OnApplicationShutdown {
 				// noIndexScan
 				builder.andWhere('emoji.isSensitive = :isSensitive', { isSensitive: q.isSensitive });
 			}
+			// #region shrimpia
+			if (q.isHarmful != null) {
+				// noIndexScan
+				builder.andWhere('emoji.isHarmful = :isHarmful', { isHarmful: q.isHarmful });
+			}
+			if (q.isHidden != null) {
+				// noIndexScan
+				builder.andWhere('emoji.isHidden = :isHidden', { isHidden: q.isHidden });
+			}
+			// #endregion
 			if (q.localOnly != null) {
 				// noIndexScan
 				builder.andWhere('emoji.localOnly = :localOnly', { localOnly: q.localOnly });

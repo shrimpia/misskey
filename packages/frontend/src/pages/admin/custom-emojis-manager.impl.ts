@@ -20,6 +20,10 @@ export const gridSortOrderKeys = [
 	'uri',
 	'publicUrl',
 	'isSensitive',
+	// #region shrimpia
+	'isHarmful',
+	'isHidden',
+	// #endregion
 	'localOnly',
 	'updatedAt',
 ] as const satisfies string[];

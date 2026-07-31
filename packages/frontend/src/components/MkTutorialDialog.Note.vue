@@ -62,6 +62,9 @@ const exampleNote = reactive<Misskey.entities.Note>({
 	visibility: 'public',
 	localOnly: false,
 	reactionAcceptance: null,
+	// #region shrimpia
+	allowHarmfulReaction: true,
+	// #endregion
 	renoteCount: 0,
 	repliesCount: 1,
 	reactionCount: 0,

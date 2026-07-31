@@ -5216,6 +5216,7 @@ export type components = {
             localOnly?: boolean;
             isSensitive?: boolean;
             isHarmful?: boolean;
+            isHidden?: boolean;
             roleIdsThatCanBeUsedThisEmojiAsReaction?: string[];
         };
         EmojiDetailed: {
@@ -5231,6 +5232,7 @@ export type components = {
             isSensitive: boolean;
             localOnly: boolean;
             isHarmful: boolean;
+            isHidden: boolean;
             roleIdsThatCanBeUsedThisEmojiAsReaction: string[];
         };
         EmojiDetailedAdmin: {
@@ -5251,6 +5253,7 @@ export type components = {
             localOnly: boolean;
             isSensitive: boolean;
             isHarmful: boolean;
+            isHidden: boolean;
             roleIdsThatCanBeUsedThisEmojiAsReaction: {
                 /** Format: misskey:id */
                 id: string;
@@ -8137,6 +8140,7 @@ export interface operations {
                     isSensitive?: boolean;
                     localOnly?: boolean;
                     isHarmful?: boolean;
+                    isHidden?: boolean;
                     roleIdsThatCanBeUsedThisEmojiAsReaction?: string[];
                 };
             };
@@ -8943,6 +8947,7 @@ export interface operations {
                     isSensitive?: boolean;
                     localOnly?: boolean;
                     isHarmful?: boolean;
+                    isHidden?: boolean;
                     roleIdsThatCanBeUsedThisEmojiAsReaction?: string[];
                 };
             };
@@ -37273,6 +37278,8 @@ export interface operations {
                         category?: string;
                         license?: string;
                         isSensitive?: boolean;
+                        isHarmful?: boolean;
+                        isHidden?: boolean;
                         localOnly?: boolean;
                         /**
                          * @default all
@@ -37295,7 +37302,7 @@ export interface operations {
                      *       "-id"
                      *     ]
                      */
-                    sortKeys?: ('+id' | '-id' | '+updatedAt' | '-updatedAt' | '+name' | '-name' | '+host' | '-host' | '+uri' | '-uri' | '+publicUrl' | '-publicUrl' | '+type' | '-type' | '+aliases' | '-aliases' | '+category' | '-category' | '+license' | '-license' | '+isSensitive' | '-isSensitive' | '+localOnly' | '-localOnly' | '+roleIdsThatCanBeUsedThisEmojiAsReaction' | '-roleIdsThatCanBeUsedThisEmojiAsReaction')[];
+                    sortKeys?: ('+id' | '-id' | '+updatedAt' | '-updatedAt' | '+name' | '-name' | '+host' | '-host' | '+uri' | '-uri' | '+publicUrl' | '-publicUrl' | '+type' | '-type' | '+aliases' | '-aliases' | '+category' | '-category' | '+license' | '-license' | '+isSensitive' | '-isSensitive' | '+isHarmful' | '-isHarmful' | '+isHidden' | '-isHidden' | '+localOnly' | '-localOnly' | '+roleIdsThatCanBeUsedThisEmojiAsReaction' | '-roleIdsThatCanBeUsedThisEmojiAsReaction')[];
                 };
             };
         };

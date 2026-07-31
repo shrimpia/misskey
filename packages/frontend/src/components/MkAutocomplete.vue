@@ -58,7 +58,7 @@ import { misskeyApi } from '@/utility/misskey-api.js';
 import { store } from '@/store.js';
 import { i18n } from '@/i18n.js';
 import { miLocalStorage } from '@/local-storage.js';
-import { customEmojis } from '@/custom-emojis.js';
+import { customEmojisMap, searchableCustomEmojis } from '@/custom-emojis.js';
 import { searchEmoji, searchEmojiExact } from '@/utility/search-emoji.js';
 import { prefer } from '@/preferences.js';
 
@@ -131,7 +131,9 @@ const emojiDb = computed(() => {
 	//#region Custom Emoji
 	const customEmojiDB: EmojiDef[] = [];
 
-	for (const x of customEmojis.value) {
+	// #region shrimpia 隠し絵文字は候補列挙から除く (名前完全一致のときのみ exec() で差し込む)
+	for (const x of searchableCustomEmojis.value) {
+	// #endregion
 		customEmojiDB.push({
 			name: x.name,
 			emoji: `:${x.name}:`,
@@ -292,6 +294,13 @@ function exec() {
 		}
 
 		emojis.value = searchEmoji(props.q, emojiDb.value);
+
+		// #region shrimpia 隠し絵文字は名前を完全一致で打ったときのみ候補に出す
+		const hiddenExactMatch = customEmojisMap.get(props.q);
+		if (hiddenExactMatch?.isHidden) {
+			emojis.value = [{ name: hiddenExactMatch.name, emoji: `:${hiddenExactMatch.name}:`, isCustomEmoji: true }, ...emojis.value];
+		}
+		// #endregion
 	} else if (props.type === 'emojiComplete') {
 		emojis.value = searchEmojiExact(props.q, unicodeEmojiDB.value);
 	} else if (props.type === 'mfmTag') {

@@ -952,6 +952,9 @@ type StoredDrafts = {
 			visibleUserIds?: string[];
 			quoteId: string | null;
 			reactionAcceptance: 'likeOnly' | 'likeOnlyForRemote' | 'nonSensitiveOnly' | 'nonSensitiveOnlyForLocalLikeOnlyForRemote' | null;
+			// #region shrimpia
+			allowHarmfulReaction?: boolean;
+			// #endregion
 			scheduledAt: number | null;
 		};
 	};
@@ -1011,7 +1014,7 @@ async function saveServerDraft(options: {
 		channelId: targetChannel.value ? targetChannel.value.id : null,
 		reactionAcceptance: reactionAcceptance.value,
 		// #region shrimpia
-		allowHarmfulReaction: allowHarmfulReaction.value,
+		// note_draft 側に allowHarmfulReaction のカラムが無いためサーバー下書きには保存されない
 		// #endregion
 		scheduledAt: scheduledAt.value,
 		isActuallyScheduled: options.isActuallyScheduled ?? false,
@@ -1561,6 +1564,9 @@ onMounted(() => {
 				}
 				quoteId.value = draft.data.quoteId;
 				reactionAcceptance.value = draft.data.reactionAcceptance;
+				// #region shrimpia
+				allowHarmfulReaction.value = draft.data.allowHarmfulReaction ?? store.s.allowHarmfulReaction;
+				// #endregion
 				scheduledAt.value = draft.data.scheduledAt ?? null;
 			}
 		}

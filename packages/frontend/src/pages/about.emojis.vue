@@ -23,7 +23,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<MkFoldableSection v-for="category in customEmojiCategories" v-once :key="category ?? '___root___'" :expanded="false">
 		<template #header>{{ category || i18n.ts.other }}</template>
 		<div :class="$style.emojis">
-			<XEmoji v-for="emoji in customEmojis.filter(e => e.category === category)" :key="emoji.name" :emoji="emoji"/>
+			<XEmoji v-for="emoji in searchableCustomEmojis.filter(e => e.category === category)" :key="emoji.name" :emoji="emoji"/>
 		</div>
 	</MkFoldableSection>
 </div>
@@ -36,7 +36,7 @@ import XEmoji from './emojis.emoji.vue';
 import MkButton from '@/components/MkButton.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkFoldableSection from '@/components/MkFoldableSection.vue';
-import { customEmojis, customEmojiCategories } from '@/custom-emojis.js';
+import { customEmojis, customEmojiCategories, customEmojisMap, searchableCustomEmojis } from '@/custom-emojis.js';
 import { i18n } from '@/i18n.js';
 import { $i } from '@/i.js';
 
@@ -52,11 +52,19 @@ function search() {
 	const queryarry = q.value.match(/\:([a-z0-9_]*)\:/g);
 
 	if (queryarry) {
+		// #region shrimpia `:name:` 形式は完全一致なので隠し絵文字も対象にする
 		searchEmojis.value = customEmojis.value.filter(emoji =>
 			queryarry.includes(`:${emoji.name}:`),
 		);
+		// #endregion
 	} else {
-		searchEmojis.value = customEmojis.value.filter(emoji => emoji.name.includes(q.value) || emoji.aliases.includes(q.value));
+		// #region shrimpia 部分一致では隠し絵文字を出さないが、名前の完全一致なら出す
+		const exactMatch = customEmojisMap.get(q.value);
+		searchEmojis.value = [
+			...(exactMatch?.isHidden ? [exactMatch] : []),
+			...searchableCustomEmojis.value.filter(emoji => emoji.name.includes(q.value) || emoji.aliases.includes(q.value)),
+		];
+		// #endregion
 	}
 }
 

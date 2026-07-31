@@ -83,6 +83,12 @@ export class MiEmoji {
 		default: false,
 	})
 	public isHarmful: boolean;
+
+	/** 絵文字ピッカーや入力補完の候補に出さない (表示・使用自体は可能) */
+	@Column('boolean', {
+		default: false,
+	})
+	public isHidden: boolean;
 	// #endregion
 
 	// TODO: 定期ジョブで存在しなくなったロールIDを除去するようにする

@@ -132,7 +132,11 @@ pinned: "ピン留め"
 you: "あなた"
 clickToShow: "クリックして表示"
 sensitive: "センシティブ"
+# region shrimpia
 harmfulReaction: "トゲのあるリアクション"
+hiddenEmoji: "隠し絵文字"
+hiddenEmojiDescription: "オンにすると、絵文字ピッカーや入力補完などの候補に表示されなくなります。絵文字自体は今まで通り表示され、名前を完全に入力すれば使用できます。"
+# endregion
 add: "追加"
 reaction: "リアクション"
 reactions: "リアクション"

@@ -37,6 +37,7 @@ export class EmojiEntityService {
 			isSensitive: emoji.isSensitive ? true : undefined,
 			// #region shrimpia
 			isHarmful: emoji.isHarmful ? true : undefined,
+			isHidden: emoji.isHidden ? true : undefined,
 			// #endregion
 			roleIdsThatCanBeUsedThisEmojiAsReaction: emoji.roleIdsThatCanBeUsedThisEmojiAsReaction.length > 0 ? emoji.roleIdsThatCanBeUsedThisEmojiAsReaction : undefined,
 		};
@@ -69,6 +70,7 @@ export class EmojiEntityService {
 			roleIdsThatCanBeUsedThisEmojiAsReaction: emoji.roleIdsThatCanBeUsedThisEmojiAsReaction,
 			// #region shrimpia
 			isHarmful: emoji.isHarmful,
+			isHidden: emoji.isHidden,
 			// #endregion
 		};
 	}
@@ -129,6 +131,7 @@ export class EmojiEntityService {
 			isSensitive: emoji.isSensitive,
 			// #region shrimpia
 			isHarmful: emoji.isHarmful,
+			isHidden: emoji.isHidden,
 			// #endregion
 			roleIdsThatCanBeUsedThisEmojiAsReaction: roles.map(it => ({ id: it.id, name: it.name })),
 		};

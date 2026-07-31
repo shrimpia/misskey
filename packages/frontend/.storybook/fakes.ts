@@ -105,6 +105,10 @@ export function emojiDetailed(id = 'someemojiid', name = 'some_emoji'): entities
 		license: null,
 		isSensitive: false,
 		localOnly: false,
+		// #region shrimpia
+		isHarmful: false,
+		isHidden: false,
+		// #endregion
 		roleIdsThatCanBeUsedThisEmojiAsReaction: ['roleId1', 'roleId2'],
 	};
 }
@@ -236,6 +240,9 @@ export function note(id = 'somenoteid'): entities.Note {
 		user: userLite(),
 		visibility: 'public',
 		reactionAcceptance: 'nonSensitiveOnly',
+		// #region shrimpia
+		allowHarmfulReaction: true,
+		// #endregion
 		reactionEmojis: {},
 		reactions: {},
 		myReaction: null,
@@ -405,6 +412,10 @@ export function emoji(params?: {
 	license?: string,
 	isSensitive?: boolean,
 	localOnly?: boolean,
+	// #region shrimpia
+	isHarmful?: boolean,
+	isHidden?: boolean,
+	// #endregion
 	roleIdsThatCanBeUsedThisEmojiAsReaction?: {id:string, name:string}[],
 	updatedAt?: string,
 }, seed?: string): entities.EmojiDetailedAdmin {
@@ -428,6 +439,10 @@ export function emoji(params?: {
 		license: params?.license ?? null,
 		isSensitive: params?.isSensitive ?? false,
 		localOnly: params?.localOnly ?? false,
+		// #region shrimpia
+		isHarmful: params?.isHarmful ?? false,
+		isHidden: params?.isHidden ?? false,
+		// #endregion
 		roleIdsThatCanBeUsedThisEmojiAsReaction: params?.roleIdsThatCanBeUsedThisEmojiAsReaction ?? [],
 		updatedAt: updatedAt,
 	}

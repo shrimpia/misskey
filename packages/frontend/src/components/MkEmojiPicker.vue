@@ -92,8 +92,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 				v-for="child in customEmojiFolderRoot.children"
 				:key="`custom:${child.value}`"
 				:initialShown="false"
-				:emojis="computed(() => customEmojis.filter(e => filterCategory(e, child.value)).map(e => `:${e.name}:`))"
-				:disabledEmojis="computed(() => customEmojis.filter(e => filterCategory(e, child.value)).filter(e => !canReact(e)).map(e => `:${e.name}:`))"
+				:emojis="computed(() => searchableCustomEmojis.filter(e => filterCategory(e, child.value)).map(e => `:${e.name}:`))"
+				:disabledEmojis="computed(() => searchableCustomEmojis.filter(e => filterCategory(e, child.value)).filter(e => !canReact(e)).map(e => `:${e.name}:`))"
 				:hasChildSection="child.children.length !== 0"
 				:customEmojiTree="child.children"
 				@chosen="chosen"
@@ -136,7 +136,7 @@ import { isTouchUsing } from '@/utility/touch.js';
 import { deviceKind } from '@/utility/device-kind.js';
 import { i18n } from '@/i18n.js';
 import { store } from '@/store.js';
-import { customEmojiCategories, customEmojis, customEmojisMap } from '@/custom-emojis.js';
+import { customEmojiCategories, customEmojisMap, searchableCustomEmojis } from '@/custom-emojis.js';
 import { $i } from '@/i.js';
 import { checkReactionPermissions } from '@/utility/check-reaction-permissions.js';
 import { prefer } from '@/preferences.js';
@@ -174,7 +174,9 @@ const {
 const recentlyUsedEmojis = store.r.recentlyUsedEmojis;
 
 const recentlyUsedEmojisDef = computed(() => {
-	return recentlyUsedEmojis.value.map(getDef);
+	// #region shrimpia 隠し絵文字は「最近使った絵文字」にも出さない
+	return recentlyUsedEmojis.value.map(getDef).filter(it => typeof it === 'string' || !('isHidden' in it && it.isHidden));
+	// #endregion
 });
 const pinnedEmojisDef = computed(() => {
 	return pinned.value?.map(getDef);
@@ -231,10 +233,12 @@ watch(q, () => {
 
 	const searchCustom = () => {
 		const max = 100;
-		const emojis = customEmojis.value;
+		// #region shrimpia 部分一致では隠し絵文字を候補にしない (完全一致は下の customEmojisMap 経由で拾う)
+		const emojis = searchableCustomEmojis.value;
+		// #endregion
 		const matches = new Set<Misskey.entities.EmojiSimple>();
 
-		const exactMatch = emojis.find(emoji => emoji.name === newQ);
+		const exactMatch = customEmojisMap.get(newQ);
 		if (exactMatch) matches.add(exactMatch);
 
 		if (newQ.includes(' ')) { // AND検索
@@ -378,13 +382,6 @@ watch(q, () => {
 function canReact(emoji: Misskey.entities.EmojiSimple | UnicodeEmojiDef | string): boolean {
 	return !props.targetNote || checkReactionPermissions($i!, props.targetNote, emoji);
 }
-
-// #region shrimpia
-function isHarmfulBlocked(emoji: Misskey.entities.EmojiSimple | UnicodeEmojiDef | string): boolean {
-	if (typeof emoji === 'string' || 'char' in emoji) return false;
-	return !!(emoji.isHarmful && !(props.targetNote?.allowHarmfulReaction ?? true));
-}
-// #endregion
 
 function filterCategory(emoji: Misskey.entities.EmojiSimple, category: string): boolean {
 	return category === '' ? (emoji.category === 'null' || !emoji.category) : emoji.category === category;

@@ -69,6 +69,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkSwitch v-model="isSensitive">{{ i18n.ts.sensitive }}</MkSwitch>
 				<!-- #region shrimpia -->
 				<MkSwitch v-model="isHarmful">{{ i18n.ts.harmfulReaction }}</MkSwitch>
+				<MkSwitch v-model="isHidden">
+					{{ i18n.ts.hiddenEmoji }}
+					<template #caption>{{ i18n.ts.hiddenEmojiDescription }}</template>
+				</MkSwitch>
 				<!-- #endregion -->
 				<MkSwitch v-model="localOnly">{{ i18n.ts.localOnly }}</MkSwitch>
 				<MkButton v-if="emoji" danger @click="del()"><i class="ti ti-trash"></i> {{ i18n.ts.delete }}</MkButton>
@@ -114,6 +118,7 @@ const license = ref<string>(props.emoji?.license ? props.emoji.license : '');
 const isSensitive = ref(props.emoji ? props.emoji.isSensitive : false);
 // #region shrimpia
 const isHarmful = ref(props.emoji ? (props.emoji.isHarmful ?? false) : false);
+const isHidden = ref(props.emoji ? (props.emoji.isHidden ?? false) : false);
 // #endregion
 const localOnly = ref(props.emoji ? props.emoji.localOnly : false);
 const roleIdsThatCanBeUsedThisEmojiAsReaction = ref(props.emoji ? props.emoji.roleIdsThatCanBeUsedThisEmojiAsReaction : []);
@@ -162,6 +167,7 @@ async function done() {
 		isSensitive: isSensitive.value,
 		// #region shrimpia
 		isHarmful: isHarmful.value,
+		isHidden: isHidden.value,
 		// #endregion
 		localOnly: localOnly.value,
 		roleIdsThatCanBeUsedThisEmojiAsReaction: rolesThatCanBeUsedThisEmojiAsReaction.value.map(x => x.id),
@@ -179,6 +185,10 @@ async function done() {
 			license: params.license,
 			isSensitive: params.isSensitive,
 			localOnly: params.localOnly,
+			// #region shrimpia
+			isHarmful: params.isHarmful,
+			isHidden: params.isHidden,
+			// #endregion
 			roleIdsThatCanBeUsedThisEmojiAsReaction: params.roleIdsThatCanBeUsedThisEmojiAsReaction,
 		} satisfies Misskey.entities.EmojiDetailed;
 

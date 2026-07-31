@@ -52,6 +52,10 @@ export const paramDef = {
 				category: { type: 'string' },
 				license: { type: 'string' },
 				isSensitive: { type: 'boolean' },
+				// #region shrimpia
+				isHarmful: { type: 'boolean' },
+				isHidden: { type: 'boolean' },
+				// #endregion
 				localOnly: { type: 'boolean' },
 				hostType: {
 					type: 'string',
@@ -108,6 +112,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 						category: q?.category,
 						license: q?.license,
 						isSensitive: q?.isSensitive,
+						// #region shrimpia
+						isHarmful: q?.isHarmful,
+						isHidden: q?.isHidden,
+						// #endregion
 						localOnly: q?.localOnly,
 						hostType: q?.hostType,
 						roleIds: q?.roleIds,

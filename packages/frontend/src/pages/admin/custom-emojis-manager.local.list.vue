@@ -62,6 +62,10 @@ export type EmojiSearchQuery = {
 	updatedAtFrom: string | null;
 	updatedAtTo: string | null;
 	sensitive: string | null;
+	// #region shrimpia
+	harmful: string | null;
+	hidden: string | null;
+	// #endregion
 	localOnly: string | null;
 	roles: { id: string, name: string }[];
 	sortOrders: SortOrder<GridSortOrderKey>[];
@@ -102,7 +106,10 @@ type GridItem = {
 	aliases: string;
 	license: string;
 	isSensitive: boolean;
+	// #region shrimpia
 	isHarmful: boolean;
+	isHidden: boolean;
+	// #endregion
 	localOnly: boolean;
 	roleIdsThatCanBeUsedThisEmojiAsReaction: { id: string, name: string }[];
 	fileId?: string;
@@ -194,7 +201,10 @@ function setupGrid(): GridSetting {
 			{ bindTo: 'aliases', title: 'aliases', type: 'text', editable: true, width: 140 },
 			{ bindTo: 'license', title: 'license', type: 'text', editable: true, width: 140 },
 			{ bindTo: 'isSensitive', title: 'sensitive', type: 'boolean', editable: true, width: 90 },
+			// #region shrimpia
 			{ bindTo: 'isHarmful', title: 'harmful', type: 'boolean', editable: true, width: 90 },
+			{ bindTo: 'isHidden', title: 'hidden', type: 'boolean', editable: true, width: 90 },
+			// #endregion
 			{ bindTo: 'localOnly', title: 'localOnly', type: 'boolean', editable: true, width: 90 },
 			{
 				bindTo: 'roleIdsThatCanBeUsedThisEmojiAsReaction', title: 'role', type: 'text', editable: true, width: 140,
@@ -288,6 +298,10 @@ const searchQuery = ref<EmojiSearchQuery>({
 	updatedAtFrom: null,
 	updatedAtTo: null,
 	sensitive: null,
+	// #region shrimpia
+	harmful: null,
+	hidden: null,
+	// #endregion
 	localOnly: null,
 	roles: [],
 	sortOrders: [],
@@ -344,7 +358,10 @@ async function onUpdateButtonClicked() {
 					aliases: emptyStrToEmptyArray(item.aliases),
 					license: emptyStrToNull(item.license),
 					isSensitive: item.isSensitive,
+					// #region shrimpia
 					isHarmful: item.isHarmful,
+					isHidden: item.isHidden,
+					// #endregion
 					localOnly: item.localOnly,
 					roleIdsThatCanBeUsedThisEmojiAsReaction: item.roleIdsThatCanBeUsedThisEmojiAsReaction.map(it => it.id),
 					fileId: item.fileId,
@@ -472,7 +489,10 @@ async function refreshCustomEmojis() {
 		category: emptyStrToUndefined(searchQuery.value.category),
 		license: emptyStrToUndefined(searchQuery.value.license),
 		isSensitive: searchQuery.value.sensitive != null ? Boolean(searchQuery.value.sensitive).valueOf() : undefined,
-		isHarmful: searchQuery.value.harmful != null ? Boolean(searchQuery.value.harmful).valueOf() : undefined,
+		// #region shrimpia
+		isHarmful: searchQuery.value.harmful != null ? searchQuery.value.harmful === 'true' : undefined,
+		isHidden: searchQuery.value.hidden != null ? searchQuery.value.hidden === 'true' : undefined,
+		// #endregion
 		localOnly: searchQuery.value.localOnly != null ? Boolean(searchQuery.value.localOnly).valueOf() : undefined,
 		updatedAtFrom: emptyStrToUndefined(searchQuery.value.updatedAtFrom),
 		updatedAtTo: emptyStrToUndefined(searchQuery.value.updatedAtTo),
@@ -511,7 +531,10 @@ function refreshGridItems() {
 		aliases: it.aliases.join(' '),
 		license: it.license ?? '',
 		isSensitive: it.isSensitive,
+		// #region shrimpia
 		isHarmful: it.isHarmful,
+		isHidden: it.isHidden,
+		// #endregion
 		localOnly: it.localOnly,
 		roleIdsThatCanBeUsedThisEmojiAsReaction: it.roleIdsThatCanBeUsedThisEmojiAsReaction,
 		updatedAt: it.updatedAt,

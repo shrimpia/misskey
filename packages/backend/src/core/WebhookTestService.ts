@@ -107,6 +107,9 @@ function generateDummyNote(override?: Partial<MiNote>): MiNote {
 		renoteUserId: null,
 		renoteUserHost: null,
 		renoteChannelId: null,
+		// #region shrimpia
+		allowHarmfulReaction: true,
+		// #endregion
 		...override,
 	};
 }
@@ -394,6 +397,9 @@ export class WebhookTestService {
 			uri: note.uri ?? undefined,
 			url: note.url ?? undefined,
 			reactionAndUserPairCache: note.reactionAndUserPairCache,
+			// #region shrimpia
+			allowHarmfulReaction: note.allowHarmfulReaction,
+			// #endregion
 			...(detail ? {
 				clippedCount: note.clippedCount,
 				reply: note.reply ? await this.toPackedNote(note.reply, false) : null,

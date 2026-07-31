@@ -20,6 +20,15 @@ export const customEmojiCategories = computed<[ ...string[], null ]>(() => {
 	return markRaw([...Array.from(categories), null]);
 });
 
+// #region shrimpia
+/**
+ * 隠し絵文字 (`isHidden`) を除いた一覧。
+ * 絵文字を「探す」UI (絵文字ピッカー / 入力補完 / 絵文字一覧ページ) の候補列挙はこちらを使う。
+ * 表示や名前解決には隠し絵文字も必要なので、`customEmojis` / `customEmojisMap` は絞り込まないこと。
+ */
+export const searchableCustomEmojis = computed<Misskey.entities.EmojiSimple[]>(() => customEmojis.value.filter(it => !it.isHidden));
+// #endregion
+
 export const customEmojisMap = new Map<string, Misskey.entities.EmojiSimple>();
 watch(customEmojis, emojis => {
 	customEmojisMap.clear();

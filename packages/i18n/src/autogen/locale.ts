@@ -537,6 +537,14 @@ export interface Locale extends ILocale {
      */
     "harmfulReaction": string;
     /**
+     * 隠し絵文字
+     */
+    "hiddenEmoji": string;
+    /**
+     * オンにすると、絵文字ピッカーや入力補完などの候補に表示されなくなります。絵文字自体は今まで通り表示され、名前を完全に入力すれば使用できます。
+     */
+    "hiddenEmojiDescription": string;
+    /**
      * 追加
      */
     "add": string;

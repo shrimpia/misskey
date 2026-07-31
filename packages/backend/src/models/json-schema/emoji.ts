@@ -40,6 +40,10 @@ export const packedEmojiSimpleSchema = {
 			type: 'boolean',
 			optional: true, nullable: false,
 		},
+		isHidden: {
+			type: 'boolean',
+			optional: true, nullable: false,
+		},
 		// #endregion
 		roleIdsThatCanBeUsedThisEmojiAsReaction: {
 			type: 'array',
@@ -101,6 +105,10 @@ export const packedEmojiDetailedSchema = {
 		},
 		// #region shrimpia
 		isHarmful: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		isHidden: {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
@@ -182,6 +190,10 @@ export const packedEmojiDetailedAdminSchema = {
 		},
 		// #region shrimpia
 		isHarmful: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		isHidden: {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},

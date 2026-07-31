@@ -73,6 +73,7 @@ export const paramDef = {
 				localOnly: { type: 'boolean' },
 				// #region shrimpia
 				isHarmful: { type: 'boolean' },
+				isHidden: { type: 'boolean' },
 				// #endregion
 				roleIdsThatCanBeUsedThisEmojiAsReaction: { type: 'array', items: {
 					type: 'string',
@@ -113,6 +114,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				localOnly: ps.localOnly,
 				// #region shrimpia
 				isHarmful: ps.isHarmful,
+				isHidden: ps.isHidden,
 				// #endregion
 				roleIdsThatCanBeUsedThisEmojiAsReaction: ps.roleIdsThatCanBeUsedThisEmojiAsReaction,
 			}, me);

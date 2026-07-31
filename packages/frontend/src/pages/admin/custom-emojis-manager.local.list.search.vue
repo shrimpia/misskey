@@ -65,6 +65,30 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #label>sensitive</template>
 					</MkSelect>
 
+					<!-- #region shrimpia -->
+					<MkSelect
+						v-model="model.harmful"
+						:items="[
+							{ label: '-', value: null },
+							{ label: 'true', value: 'true' },
+							{ label: 'false', value: 'false' },
+						]"
+					>
+						<template #label>harmful</template>
+					</MkSelect>
+
+					<MkSelect
+						v-model="model.hidden"
+						:items="[
+							{ label: '-', value: null },
+							{ label: 'true', value: 'true' },
+							{ label: 'false', value: 'false' },
+						]"
+					>
+						<template #label>hidden</template>
+					</MkSelect>
+					<!-- #endregion -->
+
 					<MkSelect
 						v-model="model.localOnly"
 						:items="[
@@ -180,6 +204,10 @@ function onQueryResetButtonClicked() {
 	model.value.type = '';
 	model.value.license = '';
 	model.value.sensitive = null;
+	// #region shrimpia
+	model.value.harmful = null;
+	model.value.hidden = null;
+	// #endregion
 	model.value.localOnly = null;
 	model.value.updatedAtFrom = '';
 	model.value.updatedAtTo = '';
