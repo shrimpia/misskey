@@ -11,7 +11,7 @@ Misskey backend は TypeORM 1 + PostgreSQL。エンティティ定義と migrati
 
 ## migration ファイルの構造
 
-各ファイル `packages/backend/migration/{unixMs}-{descriptive-name}.js` は ESM JS。最小形 (フォーク独自の新規ファイルでは `SPDX-FileCopyrightText` を `Ebise Lutica and GitHub Contributors` にする。詳細は ルート [CLAUDE.md](../../../../../CLAUDE.md) 参照):
+各ファイル `packages/backend/migration/{unixMs}-{descriptive-name}.js` は ESM JS。最小形 (フォーク独自の新規ファイルでは `SPDX-FileCopyrightText` を `shrimpia and misskey-project` にする。詳細は ルート [CLAUDE.md](../../../../../CLAUDE.md) 参照):
 
 ```js
 /*

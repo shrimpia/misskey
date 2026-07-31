@@ -17,7 +17,7 @@ Misskey の Vue 3 SFC 規約と、新規 `Mk*` コンポーネント / 既存コ
 
 Composition API + `<script setup lang="ts">` を基本とする (Options API は新規導入しない)。型宣言や module スコープのユーティリティを置きたい時は、setup ブロックと **併用** する形で追加の `<script lang="ts">` ブロックを置いて構わない (例: [MkInput.vue](../../../../../packages/frontend/src/components/MkInput.vue) は `SupportedTypes` 型を別ブロックで宣言してから setup を書いている)。SCSS は **CSS Modules** で書き、`<style lang="scss" module>` を使う。
 
-> **SPDX のフォーク例外:** 以下の例では `SPDX-FileCopyrightText: syuilo and misskey-project` を載せているが、シュリンピアフォークで **新規作成する** ファイル (本家に存在しないファイル) は `Ebise Lutica and GitHub Contributors` にする (ライセンスは `AGPL-3.0-only` のまま)。本家由来ファイルの改変は維持。詳細は ルート [CLAUDE.md](../../../../../CLAUDE.md) 参照。
+> **SPDX のフォーク例外:** 以下の例では `SPDX-FileCopyrightText: syuilo and misskey-project` を載せているが、シュリンピアフォークで **新規作成する** ファイル (本家に存在しないファイル) は `shrimpia and misskey-project` にする (ライセンスは `AGPL-3.0-only` のまま)。本家由来ファイルの改変は維持。詳細は ルート [CLAUDE.md](../../../../../CLAUDE.md) 参照。
 
 ```vue
 <!--

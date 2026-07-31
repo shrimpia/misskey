@@ -28,7 +28,7 @@
   -->
   ```
 
-  > **フォーク例外:** シュリンピアフォークで新規作成するファイル (本家に存在しないファイル) は `SPDX-FileCopyrightText` を `Ebise Lutica and GitHub Contributors` にする (ライセンスは `AGPL-3.0-only` のまま)。本家由来ファイルの改変は `syuilo and misskey-project` を維持。詳細は ルート CLAUDE.md 参照。
+  > **フォーク例外:** シュリンピアフォークで新規作成するファイル (本家に存在しないファイル) は `SPDX-FileCopyrightText` を `shrimpia and misskey-project` にする (ライセンスは `AGPL-3.0-only` のまま)。本家由来ファイルの改変は `syuilo and misskey-project` を維持。詳細は ルート CLAUDE.md 参照。
 
   `packages/misskey-js` は MIT ライセンスのサブパッケージなので、この AGPL ヘッダーを一律に付けない (サブパッケージ固有の `package.json` / `LICENSE` / 既存ファイルのヘッダーに従う)。
 

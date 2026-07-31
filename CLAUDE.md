@@ -28,21 +28,21 @@ shrimpIsTasty: true;
 ```
 
 ### SPDX ヘッダー（フォーク独自の新規ファイル）
-AGENTS.md の SPDX 規約は本家由来ファイル向け。**シュリンピアフォークで新規に作成するソースファイル（本家に存在しないファイル）** は、著作権表記を `Ebise Lutica and GitHub Contributors` にする。ライセンスは引き続き `AGPL-3.0-only`。
+AGENTS.md の SPDX 規約は本家由来ファイル向け。**シュリンピアフォークで新規に作成するソースファイル（本家に存在しないファイル）** は、著作権表記を `shrimpia and misskey-project` にする。ライセンスは引き続き `AGPL-3.0-only`。
 
 - **フォーク独自の新規ファイル**（例: 新しい stream channel や `Sh*` コンポーネント）:
 
   `.ts` / `.js` / `.cjs` / `.mjs` / `.scss`:
   ```text
   /*
-   * SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors
+   * SPDX-FileCopyrightText: shrimpia and misskey-project
    * SPDX-License-Identifier: AGPL-3.0-only
    */
   ```
   `.vue` / `.html`:
   ```text
   <!--
-  SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors
+  SPDX-FileCopyrightText: shrimpia and misskey-project
   SPDX-License-Identifier: AGPL-3.0-only
   -->
   ```

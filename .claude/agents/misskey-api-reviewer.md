@@ -49,7 +49,7 @@ BASE=$(git merge-base origin/develop HEAD)
 
 欠落すると CI の `spdx` ジョブが落ちる。
 
-> **フォーク例外:** シュリンピアフォークで新規作成するファイル (本家に存在しないファイル) は `SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors` が正。これを `syuilo and misskey-project` への修正として指摘しないこと。本家由来ファイルの改変は `syuilo and misskey-project` を維持。詳細は ルート [CLAUDE.md](../../CLAUDE.md) 参照。
+> **フォーク例外:** シュリンピアフォークで新規作成するファイル (本家に存在しないファイル) は `SPDX-FileCopyrightText: shrimpia and misskey-project` が正。これを `syuilo and misskey-project` への修正として指摘しないこと。本家由来ファイルの改変は `syuilo and misskey-project` を維持。詳細は ルート [CLAUDE.md](../../CLAUDE.md) 参照。
 
 ### 2. `meta` の必須・推奨フィールド (Major)
 

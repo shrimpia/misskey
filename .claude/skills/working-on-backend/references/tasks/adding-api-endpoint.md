@@ -50,7 +50,7 @@
  */
 ```
 
-> **フォーク例外:** シュリンピアフォークで新規作成するファイル (本家に存在しないファイル) は `SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors` にする (ライセンスは `AGPL-3.0-only` のまま)。本家由来ファイルの改変は `syuilo and misskey-project` を維持。詳細は ルート [CLAUDE.md](../../../../../CLAUDE.md) 参照。
+> **フォーク例外:** シュリンピアフォークで新規作成するファイル (本家に存在しないファイル) は `SPDX-FileCopyrightText: shrimpia and misskey-project` にする (ライセンスは `AGPL-3.0-only` のまま)。本家由来ファイルの改変は `syuilo and misskey-project` を維持。詳細は ルート [CLAUDE.md](../../../../../CLAUDE.md) 参照。
 
 **注:** `packages/misskey-js/src/autogen/` 配下にも diff が出るが、**misskey-js は MIT ライセンス** で別管理 (`packages/misskey-js/package.json:license` = MIT) なので SPDX ヘッダーは付けない / 不要。
 
