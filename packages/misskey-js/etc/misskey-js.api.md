@@ -950,6 +950,21 @@ export type Channels = {
             };
         };
     };
+    headPat: {
+        params: null;
+        events: {
+            pat: (payload: {
+                noteId: string;
+                clientId: string;
+            }) => void;
+        };
+        receives: {
+            pat: {
+                noteId: string;
+                clientId: string;
+            };
+        };
+    };
 };
 
 // @public (undocumented)
