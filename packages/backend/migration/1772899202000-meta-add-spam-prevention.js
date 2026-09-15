@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 export class MetaAddSpamPrevention1772899202000 {
 	name = 'MetaAddSpamPrevention1772899202000';
 

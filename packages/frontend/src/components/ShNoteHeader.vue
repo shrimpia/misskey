@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 <template>
 <header :class="$style.root">
 	<MkAvatar :class="$style.avatar" :user="note.user" link preview/>

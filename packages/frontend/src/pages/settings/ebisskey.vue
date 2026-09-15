@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 <template>
 <SearchMarker path="/settings/ebisskey" label="独自機能" :keywords="['ebisskey']" icon="ti ti-bulb-filled">
 	<div class="_gaps_m">

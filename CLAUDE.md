@@ -48,6 +48,7 @@ AGENTS.md の SPDX 規約は本家由来ファイル向け。**シュリンピ�
   ```
 - **本家由来ファイルの改変**: 既存ヘッダー（`syuilo and misskey-project`）はそのまま維持する。書き換えない。
 - 既存のシュリンピア独自ファイルの遡及修正は不要（今後の新規ファイルから適用）。
+- この使い分けは `scripts/check-spdx.mjs`（`// #region shrimpia` でマーク済）が自動で行う。`--fix` は本家 ref（`SPDX_UPSTREAM_REF` / `upstream/develop` / `upstream/master`）にそのファイルが存在するかで名義を選び、存在しなければフォーク名義を挿入する。本家 ref を解決できない環境ではフォーク名義が既定。`--fix --fork` / `--fix --upstream` で明示指定も可能。検査側は両方の名義を正として受理する。
 
 ### 本家との互換性
 - このフォークは本家 `misskey-dev/misskey` を追従
