@@ -11,7 +11,7 @@
 			"version": "10.10.0"
 		}
 	},
-	"forwardPorts": [3000],
+	"forwardPorts": [3000,5173],
 	"postCreateCommand": "/bin/bash .devcontainer/init.sh",
 	"customizations": {
 		"vscode": {
