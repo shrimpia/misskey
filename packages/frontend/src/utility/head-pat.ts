@@ -12,11 +12,19 @@ import { useStream } from '@/stream.js';
 import ShHeadPatEffect from '@/components/ShHeadPatEffect.vue';
 
 /**
+ * このクライアント（タブ）を識別するためのランダム ID を生成する。
+ */
+function genClientId(): string {
+	if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+	return Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
  * このクライアント（タブ）を識別するためのランダム ID。
  * 自分が送信したなでなでがストリームからエコーバックされた際、ローカルの即時再生と
  * 二重再生にならないよう、受信側で自分の送信を判別して無視するために使う。
  */
-const clientId = crypto.randomUUID();
+const clientId = genClientId();
 
 /**
  * noteId → アバター要素 の登録簿。
