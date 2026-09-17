@@ -686,6 +686,16 @@ function openFilterDialog() {
 }
 // #endregion
 
+// #region shrimpia お絵かき
+function openDrawing() {
+	const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/ShDrawingDialog.vue')), {
+		folderId: folder.value?.id ?? null,
+	}, {
+		closed: () => dispose(),
+	});
+}
+// #endregion
+
 function getMenu() {
 	const menu: MenuItem[] = [];
 
@@ -705,7 +715,15 @@ function getMenu() {
 		text: i18n.ts.fromUrl,
 		icon: 'ti ti-link',
 		action: () => { urlUpload(); },
-	}, { type: 'divider' }, {
+	},
+	// #region shrimpia お絵かき
+	{
+		text: i18n.ts._shDrawing.title,
+		icon: 'ti ti-brush',
+		action: () => { openDrawing(); },
+	},
+	// #endregion
+	{ type: 'divider' }, {
 		text: folder.value ? folder.value.name : i18n.ts.drive,
 		type: 'label',
 	});

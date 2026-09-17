@@ -3603,3 +3603,33 @@ _qr:
   scanFile: "端末の画像をスキャン"
   raw: "テキスト"
   mfm: "MFM"
+# region shrimpia
+_shDrawing:
+  title: "お絵かき"
+  toolbar: "ツール"
+  propertyBar: "ツールの設定"
+  _tools:
+    hand: "手"
+    pen: "ペン"
+    eraser: "消しゴム"
+    fill: "塗りつぶし"
+    shape: "図形"
+    eyedropper: "スポイト"
+  thickness: "太さ"
+  color: "色"
+  shapeKind: "図形の種類"
+  _shapes:
+    rect: "矩形"
+    ellipse: "楕円"
+    line: "直線"
+  mode: "モード"
+  _modes:
+    stroke: "線のみ"
+    fill: "塗りつぶしのみ"
+    strokeAndFill: "線と塗りつぶし"
+  strokeColor: "線の色"
+  fillColor: "塗りつぶしの色"
+  undo: "元に戻す"
+  redo: "やり直す"
+  canvas: "キャンバス"
+# endregion

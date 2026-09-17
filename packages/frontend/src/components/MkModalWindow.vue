@@ -12,7 +12,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<slot name="header"></slot>
 			</span>
 			<div v-if="withOkButton" style="padding: 0 16px; place-content: center;">
-				<MkButton primary gradate small rounded :disabled="okButtonDisabled" @click="emit('ok')">{{ i18n.ts.done }} <i class="ti ti-check"></i></MkButton>
+				<!-- #region shrimpia OKボタンの文言を差し替え可能に -->
+				<MkButton primary gradate small rounded :disabled="okButtonDisabled" @click="emit('ok')">{{ okButtonText ?? i18n.ts.done }} <i class="ti ti-check"></i></MkButton>
+				<!-- #endregion -->
 			</div>
 		</div>
 		<div :class="$style.body">
@@ -38,6 +40,9 @@ const props = withDefaults(defineProps<{
 	okButtonDisabled?: boolean;
 	width?: number;
 	height?: number;
+	// #region shrimpia
+	okButtonText?: string;
+	// #endregion
 }>(), {
 	withOkButton: false,
 	withCloseButton: true,

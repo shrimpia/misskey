@@ -467,6 +467,9 @@ function toStories(component: string): Promise<string> {
 		globSync('src/pages/admin/overview.ap-requests.vue'),
 		globSync('src/pages/user/home.vue'),
 		globSync('src/pages/search.vue'),
+		// #region shrimpia
+		globSync('src/components/ShDrawingDialog.vue'),
+		// #endregion
 	].flat();
 	await Promise.all(components.map(async (component) => {
 		const stories = component.replace(/\.vue$/, '.stories.ts');

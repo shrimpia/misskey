@@ -13440,4 +13440,108 @@ export interface Locale extends ILocale {
          */
         "mfm": string;
     };
+    "_shDrawing": {
+        /**
+         * お絵かき
+         */
+        "title": string;
+        /**
+         * ツール
+         */
+        "toolbar": string;
+        /**
+         * ツールの設定
+         */
+        "propertyBar": string;
+        "_tools": {
+            /**
+             * 手
+             */
+            "hand": string;
+            /**
+             * ペン
+             */
+            "pen": string;
+            /**
+             * 消しゴム
+             */
+            "eraser": string;
+            /**
+             * 塗りつぶし
+             */
+            "fill": string;
+            /**
+             * 図形
+             */
+            "shape": string;
+            /**
+             * スポイト
+             */
+            "eyedropper": string;
+        };
+        /**
+         * 太さ
+         */
+        "thickness": string;
+        /**
+         * 色
+         */
+        "color": string;
+        /**
+         * 図形の種類
+         */
+        "shapeKind": string;
+        "_shapes": {
+            /**
+             * 矩形
+             */
+            "rect": string;
+            /**
+             * 楕円
+             */
+            "ellipse": string;
+            /**
+             * 直線
+             */
+            "line": string;
+        };
+        /**
+         * モード
+         */
+        "mode": string;
+        "_modes": {
+            /**
+             * 線のみ
+             */
+            "stroke": string;
+            /**
+             * 塗りつぶしのみ
+             */
+            "fill": string;
+            /**
+             * 線と塗りつぶし
+             */
+            "strokeAndFill": string;
+        };
+        /**
+         * 線の色
+         */
+        "strokeColor": string;
+        /**
+         * 塗りつぶしの色
+         */
+        "fillColor": string;
+        /**
+         * 元に戻す
+         */
+        "undo": string;
+        /**
+         * やり直す
+         */
+        "redo": string;
+        /**
+         * キャンバス
+         */
+        "canvas": string;
+    };
 }
