@@ -94,7 +94,11 @@ class StrokeTool implements DrawingTool {
 class FillTool implements DrawingTool {
 	constructor(private readonly c: DrawingToolContext) {}
 
-	public down(p: Point) {
+	// ピンチ操作の開始で意図せず塗られないよう、押下時ではなく離した時点で塗る
+	public down() { /* noop */ }
+	public move() { /* noop */ }
+
+	public up(p: Point) {
 		const { ctx } = this.c;
 		const color = hexToRgba(this.c.getSettings().penColor);
 		if (color == null) return;
@@ -105,8 +109,6 @@ class FillTool implements DrawingTool {
 		}
 	}
 
-	public move() { /* noop */ }
-	public up() { /* noop */ }
 	public cancel() { /* noop */ }
 }
 
