@@ -30,6 +30,20 @@ export type Box = {
 	height: number;
 };
 
+/** 2 つの矩形を含む最小の矩形。空の矩形は無視する */
+export function unionBox(a: Box | null, b: Box | null): Box | null {
+	if (a == null || a.width <= 0 || a.height <= 0) return b;
+	if (b == null || b.width <= 0 || b.height <= 0) return a;
+	const x = Math.min(a.x, b.x);
+	const y = Math.min(a.y, b.y);
+	return {
+		x,
+		y,
+		width: Math.max(a.x + a.width, b.x + b.width) - x,
+		height: Math.max(a.y + a.height, b.y + b.height) - y,
+	};
+}
+
 /**
  * 2 点を結ぶ線が太さ込みで収まる整数の矩形を、キャンバス内に収めて返す
  */

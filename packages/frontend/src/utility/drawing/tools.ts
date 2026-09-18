@@ -5,7 +5,7 @@
 
 import { hexToRgba, rgbaToHex } from './color.js';
 import { floodFill } from './flood-fill.js';
-import { hardenAlpha, strokeBox } from './harden.js';
+import { hardenAlpha, strokeBox, unionBox } from './harden.js';
 import { drawShape } from './shape.js';
 import { smoothPressure, stampCount, widthForPressure } from './pressure.js';
 import type { DrawingSettings, DrawingToolKind, Point, StrokePoint } from './types.js';
@@ -73,6 +73,9 @@ function commitOverlay(c: DrawingToolContext, composite: GlobalCompositeOperatio
  */
 class StrokeTool implements DrawingTool {
 	private last: StrokePoint | null = null;
+	/** まだ二値化していない範囲 */
+	private pendingBox: Box | null = null;
+	private hardenFrame: number | null = null;
 
 	constructor(
 		private readonly c: DrawingToolContext,
@@ -80,6 +83,31 @@ class StrokeTool implements DrawingTool {
 		/** 焼き付け方。消しゴムは下地が透明なら destination-out で削り取る */
 		private readonly getComposite: () => GlobalCompositeOperation = () => 'source-over',
 	) {}
+
+	/**
+	 * 二値化はフレームに 1 回にまとめる。
+	 *
+	 * getImageData / putImageData は呼ぶだけで高くつく。Apple Pencil のように 1 フレームへ
+	 * 十数個のサンプルが届く環境では、サンプルごとに呼ぶと目に見えて詰まる
+	 */
+	private queueHarden(box: Box) {
+		this.pendingBox = unionBox(this.pendingBox, box);
+		if (this.hardenFrame != null) return;
+		this.hardenFrame = window.requestAnimationFrame(() => {
+			this.hardenFrame = null;
+			this.flushHarden();
+		});
+	}
+
+	private flushHarden() {
+		if (this.hardenFrame != null) {
+			window.cancelAnimationFrame(this.hardenFrame);
+			this.hardenFrame = null;
+		}
+		if (this.pendingBox == null) return;
+		hardenRegion(this.c.overlayCtx, this.pendingBox);
+		this.pendingBox = null;
+	}
 
 	public down(p: StrokePoint) {
 		const { overlayCtx } = this.c;
@@ -94,7 +122,7 @@ class StrokeTool implements DrawingTool {
 		overlayCtx.arc(p.x, p.y, radius, 0, Math.PI * 2);
 		overlayCtx.fill();
 		overlayCtx.restore();
-		hardenRegion(overlayCtx, strokeBox(p, p, radius * 2, overlayCtx.canvas.width, overlayCtx.canvas.height));
+		this.queueHarden(strokeBox(p, p, radius * 2, overlayCtx.canvas.width, overlayCtx.canvas.height));
 	}
 
 	public move(p: StrokePoint) {
@@ -140,7 +168,7 @@ class StrokeTool implements DrawingTool {
 		}
 
 		overlayCtx.restore();
-		hardenRegion(overlayCtx, strokeBox(from, to, Math.max(fromWidth, toWidth), overlayCtx.canvas.width, overlayCtx.canvas.height));
+		this.queueHarden(strokeBox(from, to, Math.max(fromWidth, toWidth), overlayCtx.canvas.width, overlayCtx.canvas.height));
 		this.last = to;
 	}
 
@@ -149,10 +177,17 @@ class StrokeTool implements DrawingTool {
 		// 離す瞬間の筆圧は当てにならないので、最後に取れていた値のまま閉じる
 		this.move({ x: p.x, y: p.y, pressure: this.last.pressure });
 		this.last = null;
+		// 焼き付ける前に、残っている範囲を二値化しきる
+		this.flushHarden();
 		commitOverlay(this.c, this.getComposite());
 	}
 
 	public cancel() {
+		if (this.hardenFrame != null) {
+			window.cancelAnimationFrame(this.hardenFrame);
+			this.hardenFrame = null;
+		}
+		this.pendingBox = null;
 		clearCanvas(this.c.overlayCtx);
 		this.last = null;
 	}

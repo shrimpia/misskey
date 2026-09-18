@@ -6,6 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div
 	ref="rootEl"
+	class="_noSelect"
 	:class="[$style.root, { [$style.hand]: tool === 'hand', [$style.panning]: gesture?.type === 'pan' }]"
 	@pointerdown="onPointerDown"
 	@pointermove="onPointerMove"
@@ -325,8 +326,20 @@ function cloneCanvas(): HTMLCanvasElement {
 	return clone;
 }
 
-function toDataUrl(): string {
-	return canvasEl.value!.toDataURL('image/png');
+/**
+ * PNG の dataURL を作る。
+ *
+ * `toDataURL` は同期で PNG を書き出すため、大きなキャンバスではその間 UI が止まる。
+ * `toBlob` は非同期なのでそちらを使う
+ */
+async function toDataUrl(): Promise<string> {
+	const blob = await toBlob();
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => resolve(reader.result as string);
+		reader.onerror = () => reject(reader.error ?? new Error('Failed to read blob'));
+		reader.readAsDataURL(blob);
+	});
 }
 
 function toBlob(): Promise<Blob> {
@@ -373,7 +386,6 @@ defineExpose({
 	inset: 0;
 	overflow: hidden;
 	touch-action: none;
-	user-select: none;
 	cursor: crosshair;
 	background: var(--MI_THEME-bg);
 

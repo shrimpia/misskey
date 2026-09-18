@@ -18,7 +18,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 >
 	<template #header><i class="ti ti-brush"></i> {{ i18n.ts._shDrawing.title }} (Beta)</template>
 
-	<div v-hotkey.global="keymap" :class="$style.root">
+	<!-- _noSelect: iPad の Apple Pencil がテキスト選択のジェスチャを始めてしまい、描画やタップが吸われるのを防ぐ -->
+	<div v-hotkey.global="keymap" class="_noSelect" :class="$style.root">
 		<XViewport
 			ref="viewport"
 			:tool="tool"
@@ -157,7 +158,7 @@ let draftFailureNotified = false;
 async function flushDraft() {
 	if (viewport.value == null || !ready.value) return;
 	const saved = await saveDrawingDraft($i.id, {
-		dataUrl: viewport.value.toDataUrl(),
+		dataUrl: await viewport.value.toDataUrl(),
 		settings: settings.value,
 		spec: spec.value,
 		updatedAt: Date.now(),

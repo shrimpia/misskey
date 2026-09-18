@@ -4,7 +4,7 @@
  */
 
 import { assert, describe, test } from 'vitest';
-import { ALPHA_THRESHOLD, hardenAlpha, strokeBox } from '@/utility/drawing/harden.js';
+import { ALPHA_THRESHOLD, hardenAlpha, strokeBox, unionBox } from '@/utility/drawing/harden.js';
 import { floodFill } from '@/utility/drawing/flood-fill.js';
 import type { PixelBuffer } from '@/utility/drawing/flood-fill.js';
 
@@ -81,5 +81,26 @@ describe('二値化した線は塗りつぶしを止める', () => {
 		assert.deepEqual(pixelAt(0), [255, 0, 0, 255], '左側は塗られる');
 		assert.deepEqual(pixelAt(2), [0, 0, 0, 255], '線は残る');
 		assert.deepEqual(pixelAt(4), [255, 255, 255, 255], '線の向こう側は塗られない');
+	});
+});
+
+describe('unionBox', () => {
+	test('2つを含む最小の矩形になる', () => {
+		const a = { x: 10, y: 10, width: 10, height: 10 };
+		const b = { x: 30, y: 5, width: 10, height: 10 };
+		assert.deepEqual(unionBox(a, b), { x: 10, y: 5, width: 30, height: 15 });
+	});
+
+	test('片方が空なら もう片方をそのまま返す', () => {
+		const a = { x: 10, y: 10, width: 10, height: 10 };
+		assert.deepEqual(unionBox(a, null), a);
+		assert.deepEqual(unionBox(null, a), a);
+		assert.deepEqual(unionBox(a, { x: 0, y: 0, width: 0, height: 0 }), a);
+		assert.isNull(unionBox(null, null));
+	});
+
+	test('内側に収まる矩形を足しても広がらない', () => {
+		const outer = { x: 0, y: 0, width: 100, height: 100 };
+		assert.deepEqual(unionBox(outer, { x: 10, y: 10, width: 5, height: 5 }), outer);
 	});
 });
