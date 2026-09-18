@@ -5,6 +5,7 @@
 
 import { assert, describe, test } from 'vitest';
 import { DrawingHistory } from '@/utility/drawing/history.js';
+import { specForImage } from '@/utility/drawing/types.js';
 
 describe('DrawingHistory', () => {
 	test('初期状態では undo/redo できず、未変更扱い', () => {
@@ -69,5 +70,24 @@ describe('DrawingHistory#setLimit', () => {
 		assert.equal(h.current, 4);
 		assert.equal(h.undo(), 3);
 		assert.isFalse(h.canUndo);
+	});
+});
+
+describe('specForImage', () => {
+	test('上限内の画像はそのままの大きさ', () => {
+		assert.deepEqual(specForImage(1200, 800, '#ffffff'), { width: 1200, height: 800, background: '#ffffff' });
+	});
+
+	test('上限を超える画像は縦横比を保って縮む', () => {
+		const spec = specForImage(4096, 2048, null);
+		assert.equal(spec.width, 2048);
+		assert.equal(spec.height, 1024);
+		assert.isNull(spec.background);
+	});
+
+	test('極端に小さい画像も最小サイズまでは確保する', () => {
+		const spec = specForImage(1, 1, '#ffffff');
+		assert.equal(spec.width, 8);
+		assert.equal(spec.height, 8);
 	});
 });

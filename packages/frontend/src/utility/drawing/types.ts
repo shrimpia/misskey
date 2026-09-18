@@ -70,6 +70,21 @@ export function clampCanvasSize(value: number): number {
 }
 
 /**
+ * 画像を読み込むときのキャンバス仕様を決める。
+ * 上限を超える画像は縦横比を保ったまま縮める
+ */
+export function specForImage(imageWidth: number, imageHeight: number, background: string | null): DrawingCanvasSpec {
+	const width = Math.max(1, Math.round(imageWidth));
+	const height = Math.max(1, Math.round(imageHeight));
+	const scale = Math.min(1, MAX_CANVAS_SIZE / Math.max(width, height));
+	return {
+		width: clampCanvasSize(width * scale),
+		height: clampCanvasSize(height * scale),
+		background,
+	};
+}
+
+/**
  * 履歴 1 件は幅 × 高さ × 4 バイト。大きなキャンバスで持ちすぎないよう件数を絞る
  */
 export function historyLimitFor(spec: { width: number; height: number; }): number {

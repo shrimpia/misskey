@@ -45,13 +45,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<i class="ti ti-arrow-forward-up"></i>
 		</button>
 		<button
-			v-tooltip="i18n.ts._shDrawing.newCanvas"
+			v-tooltip="i18n.ts.menu"
 			class="_button"
 			:class="$style.button"
-			:aria-label="i18n.ts._shDrawing.newCanvas"
-			@click="emit('clear')"
+			:aria-label="i18n.ts.menu"
+			aria-haspopup="menu"
+			@click="emit('menu', $event)"
 		>
-			<i class="ti ti-file-plus"></i>
+			<i class="ti ti-dots"></i>
 		</button>
 	</div>
 </div>
@@ -71,7 +72,7 @@ defineProps<{
 const emit = defineEmits<{
 	(ev: 'undo'): void;
 	(ev: 'redo'): void;
-	(ev: 'clear'): void;
+	(ev: 'menu', payload: MouseEvent): void;
 }>();
 
 const tools: { kind: DrawingToolKind; icon: string; label: string; }[] = [

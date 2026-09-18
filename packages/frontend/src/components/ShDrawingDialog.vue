@@ -35,7 +35,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:canRedo="canRedo"
 			@undo="undo"
 			@redo="redo"
-			@clear="openNewCanvasDialog"
+			@menu="showMenu"
 		/>
 	</div>
 </MkModalWindow>
@@ -50,13 +50,14 @@ import XToolbar from './ShDrawingDialog.Toolbar.vue';
 import XPropertyBar from './ShDrawingDialog.PropertyBar.vue';
 import type { DrawingCanvasSpec, DrawingToolKind } from '@/utility/drawing/types.js';
 import type { Keymap } from '@/utility/hotkey.js';
-import { DEFAULT_CANVAS_SPEC, createDefaultDrawingSettings, historyLimitFor } from '@/utility/drawing/types.js';
+import { DEFAULT_CANVAS_SPEC, createDefaultDrawingSettings, historyLimitFor, specForImage } from '@/utility/drawing/types.js';
 import { DrawingHistory } from '@/utility/drawing/history.js';
 import { deleteDrawingDraft, loadDrawingDraft, saveDrawingDraft } from '@/utility/drawing/draft.js';
 import { ensureSignin } from '@/i.js';
 import MkModalWindow from '@/components/MkModalWindow.vue';
 import { useBeforeUnloadGuard } from '@/composables/use-before-unload-guard.js';
-import { uploadFile } from '@/utility/drive.js';
+import { uploadFile, chooseDriveFile } from '@/utility/drive.js';
+import { getProxiedImageUrl } from '@/utility/media-proxy.js';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
 
@@ -174,6 +175,76 @@ function openNewCanvasDialog() {
 			newCanvas(next).catch(err => console.error(err));
 		},
 		closed: () => dispose(),
+	});
+}
+
+function showMenu(ev: MouseEvent) {
+	if (saving.value) return;
+
+	os.popupMenu([{
+		text: i18n.ts._shDrawing.newCanvas,
+		icon: 'ti ti-file-plus',
+		action: () => openNewCanvasDialog(),
+	}, {
+		text: i18n.ts._shDrawing.loadFromDrive,
+		icon: 'ti ti-cloud-download',
+		action: () => {
+			loadFromDrive().catch(err => console.error(err));
+		},
+	}], ev.currentTarget ?? ev.target);
+}
+
+/** 今の内容を捨ててよいか確認する (描き始めていなければ聞かない) */
+async function confirmDiscard(): Promise<boolean> {
+	if (!isDirty.value) return true;
+
+	const { canceled } = await os.confirm({
+		type: 'warning',
+		text: i18n.ts._shDrawing.replaceCanvasConfirm,
+	});
+	return !canceled;
+}
+
+/** ドライブの画像を読み込んで、その大きさのキャンバスにする */
+async function loadFromDrive() {
+	if (saving.value) return;
+
+	const [driveFile] = await chooseDriveFile({ multiple: false });
+	if (driveFile == null) return;
+
+	if (!await confirmDiscard()) return;
+
+	const done = os.waiting();
+	try {
+		const image = await loadImage(getProxiedImageUrl(driveFile.url, undefined, true));
+		// 透過を保てる形式なら下地も透明にして、元画像の透明部分をそのまま活かす
+		const background = /^image\/(png|webp|gif|avif)$/.test(driveFile.type) ? null : '#ffffff';
+		await applySpec(specForImage(image.naturalWidth, image.naturalHeight, background));
+		if (viewport.value == null) return;
+
+		history.reset(viewport.value.drawImage(image));
+		historyVersion.value++;
+		saveDraftDebounced();
+		done();
+		os.toast(i18n.ts._shDrawing.imageLoaded);
+	} catch (err) {
+		console.error(err);
+		done();
+		os.alert({
+			type: 'error',
+			text: i18n.ts._shDrawing.failedToLoadImage,
+		});
+	}
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+	return new Promise((resolve, reject) => {
+		const image = new Image();
+		// キャンバスが汚染されると getImageData / toDataURL が使えなくなるため、CORS 付きで読む
+		image.crossOrigin = 'anonymous';
+		image.onload = () => resolve(image);
+		image.onerror = () => reject(new Error('Failed to load image'));
+		image.src = src;
 	});
 }
 

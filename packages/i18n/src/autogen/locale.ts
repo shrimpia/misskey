@@ -13564,6 +13564,22 @@ export interface Locale extends ILocale {
          */
         "newCanvasDiscardsCurrent": string;
         /**
+         * ドライブから読み込む
+         */
+        "loadFromDrive": string;
+        /**
+         * 今のキャンバスの内容は破棄されます。よろしいですか？
+         */
+        "replaceCanvasConfirm": string;
+        /**
+         * 画像を読み込めませんでした
+         */
+        "failedToLoadImage": string;
+        /**
+         * 画像を読み込みました
+         */
+        "imageLoaded": string;
+        /**
          * サイズ
          */
         "size": string;

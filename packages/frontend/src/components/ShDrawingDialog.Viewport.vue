@@ -275,6 +275,13 @@ function drawImageFromDataUrl(dataUrl: string): Promise<ImageData> {
 	});
 }
 
+/** 画像をキャンバス全面に描き、その状態を返す */
+function drawImage(image: CanvasImageSource): ImageData {
+	clearToBackground();
+	ctx!.drawImage(image, 0, 0, props.spec.width, props.spec.height);
+	return snapshot();
+}
+
 function toDataUrl(): string {
 	return canvasEl.value!.toDataURL('image/png');
 }
@@ -307,6 +314,7 @@ onMounted(() => {
 defineExpose({
 	restore,
 	clearToBackground,
+	drawImage,
 	drawImageFromDataUrl,
 	toDataUrl,
 	toBlob,
