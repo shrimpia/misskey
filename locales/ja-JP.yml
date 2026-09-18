@@ -3632,4 +3632,9 @@ _shDrawing:
   undo: "元に戻す"
   redo: "やり直す"
   canvas: "キャンバス"
+  newCanvas: "新規キャンバス"
+  clearCanvasConfirm: "キャンバスを白紙に戻します。よろしいですか？"
+  draftRestored: "下書きを復元しました"
+  draftSaveFailed: "下書きを保存できませんでした"
+  leaveWithDraftConfirm: "編集中の内容は下書きとして保存されます。閉じますか？"
 # endregion

@@ -5,12 +5,17 @@
 
 import { hexToRgba, rgbaToHex } from './color.js';
 import { floodFill } from './flood-fill.js';
+import { hardenAlpha, strokeBox } from './harden.js';
 import { drawShape } from './shape.js';
 import { DRAWING_BACKGROUND_COLOR } from './types.js';
 import type { DrawingSettings, DrawingToolKind, Point } from './types.js';
+import type { Box } from './harden.js';
 
-/** 塗りつぶし時にアンチエイリアスの縁も同じ領域とみなすための許容差 */
-const FILL_TOLERANCE = 48;
+/**
+ * 塗りつぶしの許容差。
+ * 線は二値化して重ねるので縁がぼけない。わずかな誤差だけ拾えれば足りる
+ */
+const FILL_TOLERANCE = 8;
 
 export type DrawingToolContext = {
 	/** 確定描画先 */
@@ -37,9 +42,32 @@ function clearCanvas(ctx: CanvasRenderingContext2D) {
 	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
+/** 指定範囲のアンチエイリアスの縁を落とす */
+function hardenRegion(ctx: CanvasRenderingContext2D, box: Box) {
+	if (box.width <= 0 || box.height <= 0) return;
+	const imageData = ctx.getImageData(box.x, box.y, box.width, box.height);
+	hardenAlpha(imageData);
+	ctx.putImageData(imageData, box.x, box.y);
+}
+
+/**
+ * 作業レイヤーの内容を確定レイヤーへ焼き付ける。
+ * 作業レイヤーは二値化済みなので、重ねた結果も縁がぼけない
+ */
+function commitOverlay(c: DrawingToolContext) {
+	c.ctx.drawImage(c.overlayCtx.canvas, 0, 0);
+	clearCanvas(c.overlayCtx);
+	c.commit();
+}
+
+/**
+ * ペン / 消しゴム。
+ *
+ * 描いている間は作業レイヤーに描いて都度二値化し、離した時点で確定レイヤーへ焼き付ける。
+ * 確定レイヤーは背景色で埋まっていて α が常に 255 なので、そちらへ直接描くと二値化できない
+ */
 class StrokeTool implements DrawingTool {
 	private last: Point | null = null;
-	private snapshot: ImageData | null = null;
 
 	constructor(
 		private readonly c: DrawingToolContext,
@@ -47,32 +75,34 @@ class StrokeTool implements DrawingTool {
 	) {}
 
 	public down(p: Point) {
-		const { ctx } = this.c;
+		const { overlayCtx } = this.c;
 		const { color, width } = this.getStyle(this.c.getSettings());
-		this.snapshot = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 		this.last = p;
-		ctx.save();
-		ctx.fillStyle = color;
-		ctx.beginPath();
-		ctx.arc(p.x, p.y, width / 2, 0, Math.PI * 2);
-		ctx.fill();
-		ctx.restore();
+		overlayCtx.save();
+		overlayCtx.fillStyle = color;
+		overlayCtx.beginPath();
+		overlayCtx.arc(p.x, p.y, width / 2, 0, Math.PI * 2);
+		overlayCtx.fill();
+		overlayCtx.restore();
+		hardenRegion(overlayCtx, strokeBox(p, p, width, overlayCtx.canvas.width, overlayCtx.canvas.height));
 	}
 
 	public move(p: Point) {
 		if (this.last == null) return;
-		const { ctx } = this.c;
+		const { overlayCtx } = this.c;
 		const { color, width } = this.getStyle(this.c.getSettings());
-		ctx.save();
-		ctx.strokeStyle = color;
-		ctx.lineWidth = width;
-		ctx.lineCap = 'round';
-		ctx.lineJoin = 'round';
-		ctx.beginPath();
-		ctx.moveTo(this.last.x, this.last.y);
-		ctx.lineTo(p.x, p.y);
-		ctx.stroke();
-		ctx.restore();
+		const from = this.last;
+		overlayCtx.save();
+		overlayCtx.strokeStyle = color;
+		overlayCtx.lineWidth = width;
+		overlayCtx.lineCap = 'round';
+		overlayCtx.lineJoin = 'round';
+		overlayCtx.beginPath();
+		overlayCtx.moveTo(from.x, from.y);
+		overlayCtx.lineTo(p.x, p.y);
+		overlayCtx.stroke();
+		overlayCtx.restore();
+		hardenRegion(overlayCtx, strokeBox(from, p, width, overlayCtx.canvas.width, overlayCtx.canvas.height));
 		this.last = p;
 	}
 
@@ -80,14 +110,12 @@ class StrokeTool implements DrawingTool {
 		if (this.last == null) return;
 		this.move(p);
 		this.last = null;
-		this.snapshot = null;
-		this.c.commit();
+		commitOverlay(this.c);
 	}
 
 	public cancel() {
-		if (this.snapshot != null) this.c.ctx.putImageData(this.snapshot, 0, 0);
+		clearCanvas(this.c.overlayCtx);
 		this.last = null;
-		this.snapshot = null;
 	}
 }
 
@@ -139,12 +167,15 @@ class ShapeTool implements DrawingTool {
 
 	public up(p: Point) {
 		if (this.from == null) return;
-		clearCanvas(this.c.overlayCtx);
 		const from = this.from;
 		this.from = null;
+		clearCanvas(this.c.overlayCtx);
 		if (from.x === p.x && from.y === p.y) return;
-		drawShape(this.c.ctx, from, p, this.styleOf(this.c.getSettings()));
-		this.c.commit();
+		// 確定形をもう一度作業レイヤーに描いてから二値化して焼き付ける
+		drawShape(this.c.overlayCtx, from, p, this.styleOf(this.c.getSettings()));
+		const { overlayCtx } = this.c;
+		hardenRegion(overlayCtx, { x: 0, y: 0, width: overlayCtx.canvas.width, height: overlayCtx.canvas.height });
+		commitOverlay(this.c);
 	}
 
 	public cancel() {

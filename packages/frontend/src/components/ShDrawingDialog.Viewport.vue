@@ -243,6 +243,33 @@ function restore(imageData: ImageData) {
 	ctx?.putImageData(imageData, 0, 0);
 }
 
+/** キャンバスを背景色で塗り直し、その状態を返す */
+function clearToBackground(): ImageData {
+	activeTool?.cancel();
+	gesture.value = null;
+	ctx!.fillStyle = DRAWING_BACKGROUND_COLOR;
+	ctx!.fillRect(0, 0, DRAWING_CANVAS_WIDTH, DRAWING_CANVAS_HEIGHT);
+	return snapshot();
+}
+
+/** dataURL の画像を背景色の上に描き、その状態を返す */
+function drawImageFromDataUrl(dataUrl: string): Promise<ImageData> {
+	return new Promise((resolve, reject) => {
+		const image = new Image();
+		image.onload = () => {
+			clearToBackground();
+			ctx!.drawImage(image, 0, 0, DRAWING_CANVAS_WIDTH, DRAWING_CANVAS_HEIGHT);
+			resolve(snapshot());
+		};
+		image.onerror = () => reject(new Error('Failed to load image'));
+		image.src = dataUrl;
+	});
+}
+
+function toDataUrl(): string {
+	return canvasEl.value!.toDataURL('image/png');
+}
+
 function toBlob(): Promise<Blob> {
 	return new Promise((resolve, reject) => {
 		canvasEl.value!.toBlob(blob => {
@@ -257,7 +284,8 @@ function toBlob(): Promise<Blob> {
 
 onMounted(() => {
 	ctx = canvasEl.value!.getContext('2d', { willReadFrequently: true });
-	overlayCtx = overlayEl.value!.getContext('2d');
+	// 線の二値化で毎フレーム読み出すため
+	overlayCtx = overlayEl.value!.getContext('2d', { willReadFrequently: true });
 	if (ctx == null || overlayCtx == null) return;
 
 	ctx.fillStyle = DRAWING_BACKGROUND_COLOR;
@@ -270,6 +298,9 @@ onMounted(() => {
 
 defineExpose({
 	restore,
+	clearToBackground,
+	drawImageFromDataUrl,
+	toDataUrl,
 	toBlob,
 	resetView,
 });

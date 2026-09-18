@@ -34,6 +34,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:canRedo="canRedo"
 			@undo="undo"
 			@redo="redo"
+			@clear="clearCanvas"
 		/>
 	</div>
 </MkModalWindow>
@@ -42,6 +43,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { computed, markRaw, ref, useTemplateRef, watch } from 'vue';
 import * as Misskey from 'misskey-js';
+import { debounce } from 'throttle-debounce';
 import XViewport from './ShDrawingDialog.Viewport.vue';
 import XToolbar from './ShDrawingDialog.Toolbar.vue';
 import XPropertyBar from './ShDrawingDialog.PropertyBar.vue';
@@ -49,11 +51,15 @@ import type { DrawingToolKind } from '@/utility/drawing/types.js';
 import type { Keymap } from '@/utility/hotkey.js';
 import { createDefaultDrawingSettings } from '@/utility/drawing/types.js';
 import { DrawingHistory } from '@/utility/drawing/history.js';
+import { deleteDrawingDraft, loadDrawingDraft, saveDrawingDraft } from '@/utility/drawing/draft.js';
+import { ensureSignin } from '@/i.js';
 import MkModalWindow from '@/components/MkModalWindow.vue';
 import { useBeforeUnloadGuard } from '@/composables/use-before-unload-guard.js';
 import { uploadFile } from '@/utility/drive.js';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
+
+const $i = ensureSignin();
 
 const props = defineProps<{
 	/** アップロード先のドライブフォルダ */
@@ -91,10 +97,69 @@ watch(tool, (_, prev) => {
 	if (prev !== 'eyedropper') toolBeforeEyedropper = prev;
 });
 
-function onReady(snapshot: ImageData) {
-	history.reset(snapshot);
+async function onReady(snapshot: ImageData) {
+	const draft = await loadDrawingDraft($i.id);
+
+	if (draft != null && viewport.value != null) {
+		try {
+			const restored = await viewport.value.drawImageFromDataUrl(draft.dataUrl);
+			settings.value = draft.settings;
+			history.reset(restored);
+			os.toast(i18n.ts._shDrawing.draftRestored);
+		} catch (err) {
+			// 下書きが壊れていても白紙で始められるようにする
+			console.error(err);
+			history.reset(viewport.value.clearToBackground());
+		}
+	} else {
+		history.reset(snapshot);
+	}
+
 	historyVersion.value++;
 	ready.value = true;
+}
+
+/** 下書きの保存失敗を知らせたか (毎回出すと煩いので一度だけ) */
+let draftFailureNotified = false;
+
+/** 現在のキャンバスを下書きとして保存する */
+async function flushDraft() {
+	if (viewport.value == null || !ready.value) return;
+	const saved = await saveDrawingDraft($i.id, {
+		dataUrl: viewport.value.toDataUrl(),
+		settings: settings.value,
+		updatedAt: Date.now(),
+	});
+
+	// 保存できていないことに気付けないと、閉じた後に下書きが無いことで初めて分かってしまう
+	if (!saved && !draftFailureNotified) {
+		draftFailureNotified = true;
+		os.toast(i18n.ts._shDrawing.draftSaveFailed);
+	}
+}
+
+// 描くたびに書き込むと重いので、少し落ち着いてから保存する
+const saveDraftDebounced = debounce(800, () => {
+	flushDraft().catch(err => console.error(err));
+});
+
+watch([historyVersion, settings], () => {
+	if (ready.value) saveDraftDebounced();
+});
+
+async function clearCanvas() {
+	if (viewport.value == null || saving.value) return;
+
+	const { canceled } = await os.confirm({
+		type: 'warning',
+		text: i18n.ts._shDrawing.clearCanvasConfirm,
+	});
+	if (canceled) return;
+
+	history.reset(viewport.value.clearToBackground());
+	historyVersion.value++;
+	saveDraftDebounced.cancel();
+	await deleteDrawingDraft($i.id);
 }
 
 function onCommit(snapshot: ImageData) {
@@ -143,13 +208,17 @@ async function tryClose() {
 		confirmingClose = true;
 		try {
 			const { canceled } = await os.confirm({
-				type: 'warning',
-				text: i18n.ts.leaveConfirm,
+				type: 'question',
+				text: i18n.ts._shDrawing.leaveWithDraftConfirm,
 			});
 			if (canceled) return;
 		} finally {
 			confirmingClose = false;
 		}
+
+		// 閉じる前に、待機中の下書き保存を確実に書き切る
+		saveDraftDebounced.cancel();
+		await flushDraft();
 	}
 
 	dialog.value?.close();
@@ -175,6 +244,9 @@ async function save() {
 
 		history.markSaved();
 		historyVersion.value++;
+		// アップロードできたので下書きは不要
+		saveDraftDebounced.cancel();
+		await deleteDrawingDraft($i.id);
 		done({ success: true });
 		emit('saved', file);
 		dialog.value?.close();

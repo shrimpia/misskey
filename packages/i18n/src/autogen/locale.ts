@@ -13543,5 +13543,25 @@ export interface Locale extends ILocale {
          * キャンバス
          */
         "canvas": string;
+        /**
+         * 新規キャンバス
+         */
+        "newCanvas": string;
+        /**
+         * キャンバスを白紙に戻します。よろしいですか？
+         */
+        "clearCanvasConfirm": string;
+        /**
+         * 下書きを復元しました
+         */
+        "draftRestored": string;
+        /**
+         * 下書きを保存できませんでした
+         */
+        "draftSaveFailed": string;
+        /**
+         * 編集中の内容は下書きとして保存されます。閉じますか？
+         */
+        "leaveWithDraftConfirm": string;
     };
 }
