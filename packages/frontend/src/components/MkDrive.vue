@@ -718,7 +718,7 @@ function getMenu() {
 	},
 	// #region shrimpia お絵かき
 	{
-		text: i18n.ts._shDrawing.title,
+		text: i18n.ts._shDrawing.title + '(Beta)',
 		icon: 'ti ti-brush',
 		action: () => { openDrawing(); },
 	},

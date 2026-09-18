@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	@ok="save"
 	@closed="emit('closed')"
 >
-	<template #header><i class="ti ti-brush"></i> {{ i18n.ts._shDrawing.title }}</template>
+	<template #header><i class="ti ti-brush"></i> {{ i18n.ts._shDrawing.title }} (Beta)</template>
 
 	<div v-hotkey.global="keymap" :class="$style.root">
 		<XViewport
