@@ -19,9 +19,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<template #header><i class="ti ti-file-plus"></i> {{ i18n.ts._shDrawing.newCanvas }}</template>
 
 	<div class="_spacer _gaps">
-		<MkRadios v-model="sizeKey" :options="sizeOptions" vertical>
+		<MkSelect v-model="sizeKey" :items="sizeOptions" vertical>
 			<template #label>{{ i18n.ts._shDrawing.size }}</template>
-		</MkRadios>
+		</MkSelect>
 
 		<div v-if="sizeKey === 'custom'" :class="$style.customSize">
 			<MkInput v-model="customWidth" type="number" :min="MIN_CANVAS_SIZE" :max="MAX_CANVAS_SIZE">
@@ -48,9 +48,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { computed, ref, useTemplateRef } from 'vue';
 import type { CanvasSizePresetKey, DrawingCanvasSpec } from '@/utility/drawing/types.js';
-import { CANVAS_SIZE_PRESETS, MAX_CANVAS_SIZE, MIN_CANVAS_SIZE, clampCanvasSize } from '@/utility/drawing/types.js';
+import type { ItemOption } from '@/components/MkSelect.vue';
 import type { MkRadiosOption } from '@/components/MkRadios.vue';
+import { CANVAS_SIZE_PRESETS, MAX_CANVAS_SIZE, MIN_CANVAS_SIZE, clampCanvasSize } from '@/utility/drawing/types.js';
 import MkModalWindow from '@/components/MkModalWindow.vue';
+import MkSelect from '@/components/MkSelect.vue';
 import MkRadios from '@/components/MkRadios.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkColorInput from '@/components/MkColorInput.vue';
@@ -72,7 +74,7 @@ const dialog = useTemplateRef('dialog');
 type SizeKey = CanvasSizePresetKey | 'custom';
 type BackgroundKey = 'white' | 'black' | 'transparent' | 'custom';
 
-const sizeOptions: MkRadiosOption<SizeKey>[] = [
+const sizeOptions: ItemOption<SizeKey>[] = [
 	...CANVAS_SIZE_PRESETS.map(preset => ({
 		value: preset.key,
 		label: `${i18n.ts._shDrawing._sizes[preset.key]} (${preset.width}×${preset.height})`,
