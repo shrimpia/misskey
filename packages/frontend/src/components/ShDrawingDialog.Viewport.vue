@@ -36,11 +36,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { computed, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue';
-import type { DrawingCanvasSpec, DrawingSettings, DrawingToolKind, Point } from '@/utility/drawing/types.js';
+import type { DrawingCanvasSpec, DrawingSettings, DrawingToolKind, Point, StrokePoint } from '@/utility/drawing/types.js';
 import type { DrawingTool } from '@/utility/drawing/tools.js';
 import type { ViewportState } from '@/utility/drawing/viewport.js';
 import { createDrawingTool } from '@/utility/drawing/tools.js';
 import { clientToCanvas, fitZoom, zoomAt } from '@/utility/drawing/viewport.js';
+import { isPressureCapable, resolvePressure } from '@/utility/drawing/pressure.js';
 import { i18n } from '@/i18n.js';
 
 const props = defineProps<{
@@ -56,7 +57,7 @@ const emit = defineEmits<{
 }>();
 
 type Gesture =
-	| { type: 'draw'; pointerId: number; }
+	| { type: 'draw'; pointerId: number; pressureCapable: boolean; }
 	| { type: 'pan'; pointerId: number; last: Point; }
 	| { type: 'pinch'; startDistance: number; startMid: Point; startView: ViewportState; };
 
@@ -118,6 +119,28 @@ function toCanvasPoint(client: Point): Point {
 	return clientToCanvas(client, canvasEl.value!.getBoundingClientRect(), props.spec.width, props.spec.height);
 }
 
+/**
+ * ポインタの位置と筆圧を、描画ツールに渡す形にする。
+ *
+ * 筆圧を取れているかはストローク単位で覚える (draw ジェスチャの pressureCapable)。
+ * ペンを離す瞬間は 0 が飛んでくるので、サンプル単位で判定してはいけない
+ */
+function toStrokePoint(ev: { clientX: number; clientY: number; pressure: number; pointerType: string; }): StrokePoint {
+	const g = gesture.value;
+	if (g?.type === 'draw' && !g.pressureCapable && isPressureCapable(ev.pointerType, ev.pressure)) {
+		g.pressureCapable = true;
+	}
+
+	return {
+		...toCanvasPoint({ x: ev.clientX, y: ev.clientY }),
+		pressure: resolvePressure({
+			pressure: ev.pressure,
+			enabled: props.settings.pressureSensitivity,
+			capable: g?.type === 'draw' ? g.pressureCapable : false,
+		}),
+	};
+}
+
 function distance(a: Point, b: Point): number {
 	return Math.hypot(a.x - b.x, a.y - b.y);
 }
@@ -150,8 +173,8 @@ function onPointerDown(ev: PointerEvent) {
 	if (props.tool === 'hand' || ev.button === 1) {
 		gesture.value = { type: 'pan', pointerId: ev.pointerId, last: client };
 	} else if (activeTool != null) {
-		gesture.value = { type: 'draw', pointerId: ev.pointerId };
-		activeTool.down(toCanvasPoint(client));
+		gesture.value = { type: 'draw', pointerId: ev.pointerId, pressureCapable: isPressureCapable(ev.pointerType, ev.pressure) };
+		activeTool.down(toStrokePoint(ev));
 	}
 }
 
@@ -169,7 +192,7 @@ function onPointerMove(ev: PointerEvent) {
 			// 高頻度入力をまとめて受け取れる環境では取りこぼしなく線を引く
 			const events = ev.getCoalescedEvents?.() ?? [];
 			for (const e of events.length > 0 ? events : [ev]) {
-				activeTool?.move(toCanvasPoint({ x: e.clientX, y: e.clientY }));
+				activeTool?.move(toStrokePoint(e));
 			}
 			break;
 		}
@@ -206,7 +229,7 @@ function releasePointer(ev: PointerEvent, commit: boolean) {
 
 	if (g.type === 'draw' && g.pointerId === ev.pointerId) {
 		if (commit) {
-			activeTool?.up(toCanvasPoint({ x: ev.clientX, y: ev.clientY }));
+			activeTool?.up(toStrokePoint(ev));
 		} else {
 			activeTool?.cancel();
 		}

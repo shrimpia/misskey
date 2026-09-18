@@ -3617,6 +3617,7 @@ _shDrawing:
     eyedropper: "スポイト"
   thickness: "太さ"
   color: "色"
+  pressure: "筆圧"
   shapeKind: "図形の種類"
   _shapes:
     rect: "矩形"

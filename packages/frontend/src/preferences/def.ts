@@ -634,6 +634,9 @@ export const PREF_DEF = definePreferences({
 	'shrimpia.isGrayscaleMode': {
 		default: false,
 	},
+	'shrimpia.drawingPressureSensitivity': {
+		default: false,
+	},
 	'shrimpia.headPattingEnabled': {
 		default: false,
 	},

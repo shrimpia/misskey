@@ -17,6 +17,11 @@ export type Point = {
 	y: number;
 };
 
+/** 描画に使う点。pressure は太さに掛ける 0〜1 の値 (筆圧が使えない場合は 1) */
+export type StrokePoint = Point & {
+	pressure: number;
+};
+
 export type Rgba = {
 	r: number;
 	g: number;
@@ -36,6 +41,8 @@ export type DrawingSettings = {
 	shapeStrokeColor: string;
 	/** #rrggbb */
 	shapeFillColor: string;
+	/** ペン / 消しゴムで筆圧を使うか */
+	pressureSensitivity: boolean;
 };
 
 /** キャンバスの大きさと下地。背景が null なら透明 */
@@ -103,5 +110,6 @@ export function createDefaultDrawingSettings(): DrawingSettings {
 		shapeWidth: 4,
 		shapeStrokeColor: '#000000',
 		shapeFillColor: '#ffffff',
+		pressureSensitivity: false,
 	};
 }

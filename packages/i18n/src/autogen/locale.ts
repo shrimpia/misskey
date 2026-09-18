@@ -13488,6 +13488,10 @@ export interface Locale extends ILocale {
          */
         "color": string;
         /**
+         * 筆圧
+         */
+        "pressure": string;
+        /**
          * 図形の種類
          */
         "shapeKind": string;

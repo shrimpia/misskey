@@ -15,6 +15,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</MkRange>
 		</div>
 		<XColorButton v-if="tool === 'pen'" v-model="penColor" :label="i18n.ts._shDrawing.color"/>
+		<MkSwitch v-model="pressureSensitivity" :class="$style.switch">
+			<template #label>{{ i18n.ts._shDrawing.pressure }}</template>
+		</MkSwitch>
 	</template>
 
 	<template v-else-if="tool === 'fill'">
@@ -71,6 +74,7 @@ import { computed } from 'vue';
 import XColorButton from './ShDrawingDialog.ColorButton.vue';
 import type { DrawingSettings, DrawingToolKind, ShapeFillMode, ShapeKind } from '@/utility/drawing/types.js';
 import MkRange from '@/components/MkRange.vue';
+import MkSwitch from '@/components/MkSwitch.vue';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
 
@@ -98,6 +102,7 @@ const shapeMode = useSetting('shapeMode');
 const shapeWidth = useSetting('shapeWidth');
 const shapeStrokeColor = useSetting('shapeStrokeColor');
 const shapeFillColor = useSetting('shapeFillColor');
+const pressureSensitivity = useSetting('pressureSensitivity');
 
 const hasProperties = computed(() => props.tool !== 'hand' && props.tool !== 'eyedropper');
 
@@ -164,6 +169,13 @@ const shapeModeItems: { value: ShapeFillMode; label: string; }[] = [
 
 .rangeIcon {
 	opacity: 0.7;
+}
+
+// バーの高さ (44px) に収めるため、余白と文字を詰める
+.switch {
+	flex-shrink: 0;
+	margin: 0;
+	font-size: 0.9em;
 }
 
 .dropdown {

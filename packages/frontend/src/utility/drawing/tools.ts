@@ -7,7 +7,8 @@ import { hexToRgba, rgbaToHex } from './color.js';
 import { floodFill } from './flood-fill.js';
 import { hardenAlpha, strokeBox } from './harden.js';
 import { drawShape } from './shape.js';
-import type { DrawingSettings, DrawingToolKind, Point } from './types.js';
+import { smoothPressure, stampCount, widthForPressure } from './pressure.js';
+import type { DrawingSettings, DrawingToolKind, Point, StrokePoint } from './types.js';
 import type { Box } from './harden.js';
 
 /**
@@ -32,9 +33,9 @@ export type DrawingToolContext = {
 };
 
 export interface DrawingTool {
-	down(p: Point): void;
-	move(p: Point): void;
-	up(p: Point): void;
+	down(p: StrokePoint): void;
+	move(p: StrokePoint): void;
+	up(p: StrokePoint): void;
 	/** 操作の中断 (マルチタッチへの切り替えなど)。確定前の状態を破棄する */
 	cancel(): void;
 }
@@ -71,7 +72,7 @@ function commitOverlay(c: DrawingToolContext, composite: GlobalCompositeOperatio
  * 確定レイヤーは背景色で埋まっていて α が常に 255 なので、そちらへ直接描くと二値化できない
  */
 class StrokeTool implements DrawingTool {
-	private last: Point | null = null;
+	private last: StrokePoint | null = null;
 
 	constructor(
 		private readonly c: DrawingToolContext,
@@ -80,41 +81,73 @@ class StrokeTool implements DrawingTool {
 		private readonly getComposite: () => GlobalCompositeOperation = () => 'source-over',
 	) {}
 
-	public down(p: Point) {
+	public down(p: StrokePoint) {
 		const { overlayCtx } = this.c;
 		const { color, width } = this.getStyle(this.c.getSettings());
+		// ストロークの最初のサンプルが平滑化の起点になる
 		this.last = p;
+		const radius = widthForPressure(width, p.pressure) / 2;
+
 		overlayCtx.save();
 		overlayCtx.fillStyle = color;
 		overlayCtx.beginPath();
-		overlayCtx.arc(p.x, p.y, width / 2, 0, Math.PI * 2);
+		overlayCtx.arc(p.x, p.y, radius, 0, Math.PI * 2);
 		overlayCtx.fill();
 		overlayCtx.restore();
-		hardenRegion(overlayCtx, strokeBox(p, p, width, overlayCtx.canvas.width, overlayCtx.canvas.height));
+		hardenRegion(overlayCtx, strokeBox(p, p, radius * 2, overlayCtx.canvas.width, overlayCtx.canvas.height));
 	}
 
-	public move(p: Point) {
+	public move(p: StrokePoint) {
 		if (this.last == null) return;
 		const { overlayCtx } = this.c;
 		const { color, width } = this.getStyle(this.c.getSettings());
 		const from = this.last;
+		// 生の筆圧は細かく揺れるので、均してから太さに使う
+		const to: StrokePoint = { x: p.x, y: p.y, pressure: smoothPressure(from.pressure, p.pressure) };
+
+		const fromWidth = widthForPressure(width, from.pressure);
+		const toWidth = widthForPressure(width, to.pressure);
+
 		overlayCtx.save();
+		overlayCtx.fillStyle = color;
 		overlayCtx.strokeStyle = color;
-		overlayCtx.lineWidth = width;
-		overlayCtx.lineCap = 'round';
-		overlayCtx.lineJoin = 'round';
-		overlayCtx.beginPath();
-		overlayCtx.moveTo(from.x, from.y);
-		overlayCtx.lineTo(p.x, p.y);
-		overlayCtx.stroke();
+
+		if (fromWidth === toWidth) {
+			// 太さが変わらないなら 1 本の線で引くほうが速い (筆圧オフのときは常にこちら)
+			overlayCtx.lineWidth = fromWidth;
+			overlayCtx.lineCap = 'round';
+			overlayCtx.lineJoin = 'round';
+			overlayCtx.beginPath();
+			overlayCtx.moveTo(from.x, from.y);
+			overlayCtx.lineTo(to.x, to.y);
+			overlayCtx.stroke();
+		} else {
+			// 線分の中でも太さを変えるため、円を並べて埋める
+			const distance = Math.hypot(to.x - from.x, to.y - from.y);
+			const steps = stampCount(distance, Math.max(fromWidth, toWidth) / 2);
+			for (let i = 1; i <= steps; i++) {
+				const t = i / steps;
+				overlayCtx.beginPath();
+				overlayCtx.arc(
+					from.x + (to.x - from.x) * t,
+					from.y + (to.y - from.y) * t,
+					(fromWidth + (toWidth - fromWidth) * t) / 2,
+					0,
+					Math.PI * 2,
+				);
+				overlayCtx.fill();
+			}
+		}
+
 		overlayCtx.restore();
-		hardenRegion(overlayCtx, strokeBox(from, p, width, overlayCtx.canvas.width, overlayCtx.canvas.height));
-		this.last = p;
+		hardenRegion(overlayCtx, strokeBox(from, to, Math.max(fromWidth, toWidth), overlayCtx.canvas.width, overlayCtx.canvas.height));
+		this.last = to;
 	}
 
-	public up(p: Point) {
+	public up(p: StrokePoint) {
 		if (this.last == null) return;
-		this.move(p);
+		// 離す瞬間の筆圧は当てにならないので、最後に取れていた値のまま閉じる
+		this.move({ x: p.x, y: p.y, pressure: this.last.pressure });
 		this.last = null;
 		commitOverlay(this.c, this.getComposite());
 	}
@@ -132,7 +165,7 @@ class FillTool implements DrawingTool {
 	public down() { /* noop */ }
 	public move() { /* noop */ }
 
-	public up(p: Point) {
+	public up(p: StrokePoint) {
 		const { ctx } = this.c;
 		const color = hexToRgba(this.c.getSettings().penColor);
 		if (color == null) return;
@@ -147,7 +180,7 @@ class FillTool implements DrawingTool {
 }
 
 class ShapeTool implements DrawingTool {
-	private from: Point | null = null;
+	private from: StrokePoint | null = null;
 
 	constructor(private readonly c: DrawingToolContext) {}
 
@@ -161,17 +194,17 @@ class ShapeTool implements DrawingTool {
 		};
 	}
 
-	public down(p: Point) {
+	public down(p: StrokePoint) {
 		this.from = p;
 	}
 
-	public move(p: Point) {
+	public move(p: StrokePoint) {
 		if (this.from == null) return;
 		clearCanvas(this.c.overlayCtx);
 		drawShape(this.c.overlayCtx, this.from, p, this.styleOf(this.c.getSettings()));
 	}
 
-	public up(p: Point) {
+	public up(p: StrokePoint) {
 		if (this.from == null) return;
 		const from = this.from;
 		this.from = null;
@@ -196,7 +229,7 @@ class EyedropperTool implements DrawingTool {
 	public down() { /* noop */ }
 	public move() { /* noop */ }
 
-	public up(p: Point) {
+	public up(p: StrokePoint) {
 		const { ctx } = this.c;
 		const x = Math.floor(p.x);
 		const y = Math.floor(p.y);

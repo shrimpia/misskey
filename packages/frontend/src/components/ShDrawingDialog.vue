@@ -48,7 +48,7 @@ import { debounce } from 'throttle-debounce';
 import XViewport from './ShDrawingDialog.Viewport.vue';
 import XToolbar from './ShDrawingDialog.Toolbar.vue';
 import XPropertyBar from './ShDrawingDialog.PropertyBar.vue';
-import type { DrawingCanvasSpec, DrawingToolKind } from '@/utility/drawing/types.js';
+import type { DrawingCanvasSpec, DrawingSettings, DrawingToolKind } from '@/utility/drawing/types.js';
 import type { DrawingResizeResult } from '@/components/ShDrawingResizeDialog.vue';
 import { offsetForAnchor } from '@/utility/drawing/resize.js';
 import type { Keymap } from '@/utility/hotkey.js';
@@ -61,6 +61,7 @@ import { useBeforeUnloadGuard } from '@/composables/use-before-unload-guard.js';
 import { uploadFile, chooseDriveFile } from '@/utility/drive.js';
 import { getProxiedImageUrl } from '@/utility/media-proxy.js';
 import { i18n } from '@/i18n.js';
+import { prefer } from '@/preferences.js';
 import * as os from '@/os.js';
 
 const $i = ensureSignin();
@@ -79,7 +80,15 @@ const dialog = useTemplateRef('dialog');
 const viewport = useTemplateRef('viewport');
 
 const tool = ref<DrawingToolKind>('pen');
-const settings = ref(createDefaultDrawingSettings());
+const settings = ref<DrawingSettings>({
+	...createDefaultDrawingSettings(),
+	// 筆圧の使用は端末をまたいで覚えておきたいので preference に持たせる
+	pressureSensitivity: prefer.s['shrimpia.drawingPressureSensitivity'],
+});
+
+watch(() => settings.value.pressureSensitivity, (value) => {
+	prefer.commit('shrimpia.drawingPressureSensitivity', value);
+});
 const spec = ref<DrawingCanvasSpec>({ ...DEFAULT_CANVAS_SPEC });
 
 const history = markRaw(new DrawingHistory<ImageData>(historyLimitFor(spec.value)));
@@ -121,7 +130,11 @@ async function onReady(snapshot: ImageData) {
 		try {
 			await applySpec(draft.spec);
 			const restored = await viewport.value.drawImageFromDataUrl(draft.dataUrl);
-			settings.value = draft.settings;
+			// 筆圧の設定は preference が正なので、下書き側の値では上書きしない
+			settings.value = {
+				...draft.settings,
+				pressureSensitivity: settings.value.pressureSensitivity,
+			};
 			history.reset(restored);
 			os.toast(i18n.ts._shDrawing.draftRestored);
 		} catch (err) {
