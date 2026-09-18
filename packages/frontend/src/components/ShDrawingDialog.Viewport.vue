@@ -275,11 +275,31 @@ function drawImageFromDataUrl(dataUrl: string): Promise<ImageData> {
 	});
 }
 
-/** 画像をキャンバス全面に描き、その状態を返す */
-function drawImage(image: CanvasImageSource): ImageData {
+/** 画像をキャンバス全面に引き伸ばして描き、その状態を返す */
+function drawImage(image: CanvasImageSource, options: { smooth?: boolean; } = {}): ImageData {
 	clearToBackground();
+	ctx!.save();
+	ctx!.imageSmoothingEnabled = options.smooth ?? true;
+	ctx!.imageSmoothingQuality = 'high';
 	ctx!.drawImage(image, 0, 0, props.spec.width, props.spec.height);
+	ctx!.restore();
 	return snapshot();
+}
+
+/** 画像を拡縮せず、指定位置に描き、その状態を返す */
+function drawImageAt(image: CanvasImageSource, x: number, y: number): ImageData {
+	clearToBackground();
+	ctx!.drawImage(image, Math.round(x), Math.round(y));
+	return snapshot();
+}
+
+/** 今のキャンバスの内容を別の canvas に写して返す (大きさを変える前の退避用) */
+function cloneCanvas(): HTMLCanvasElement {
+	const clone = window.document.createElement('canvas');
+	clone.width = props.spec.width;
+	clone.height = props.spec.height;
+	clone.getContext('2d')!.drawImage(canvasEl.value!, 0, 0);
+	return clone;
 }
 
 function toDataUrl(): string {
@@ -315,6 +335,8 @@ defineExpose({
 	restore,
 	clearToBackground,
 	drawImage,
+	drawImageAt,
+	cloneCanvas,
 	drawImageFromDataUrl,
 	toDataUrl,
 	toBlob,

@@ -13580,6 +13580,76 @@ export interface Locale extends ILocale {
          */
         "imageLoaded": string;
         /**
+         * キャンバスサイズの変更
+         */
+        "resizeCanvas": string;
+        /**
+         * 画像は拡大縮小されません。はみ出す部分は切り取られ、広がった部分は余白になります。
+         */
+        "resizeCanvasInfo": string;
+        /**
+         * リサイズ
+         */
+        "resizeImage": string;
+        /**
+         * 画像を新しい大きさに合わせて再サンプリングします。
+         */
+        "resizeImageInfo": string;
+        /**
+         * 基準位置
+         */
+        "anchor": string;
+        /**
+         * 縦横比を保つ
+         */
+        "keepAspectRatio": string;
+        /**
+         * なめらかに拡大縮小する
+         */
+        "smoothResize": string;
+        /**
+         * 元に戻す履歴は消えます。
+         */
+        "resizeResetsHistory": string;
+        "_anchors": {
+            /**
+             * 左上
+             */
+            "topLeft": string;
+            /**
+             * 上
+             */
+            "top": string;
+            /**
+             * 右上
+             */
+            "topRight": string;
+            /**
+             * 左
+             */
+            "left": string;
+            /**
+             * 中央
+             */
+            "center": string;
+            /**
+             * 右
+             */
+            "right": string;
+            /**
+             * 左下
+             */
+            "bottomLeft": string;
+            /**
+             * 下
+             */
+            "bottom": string;
+            /**
+             * 右下
+             */
+            "bottomRight": string;
+        };
+        /**
          * サイズ
          */
         "size": string;

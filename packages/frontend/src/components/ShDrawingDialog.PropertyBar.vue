@@ -59,6 +59,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #prefix><i class="ti ti-line-height" :class="$style.rangeIcon"></i></template>
 			</MkRange>
 		</div>
+		<i class="ti ti-line-height" :class="$style.rangeIcon"></i>
 		<XColorButton v-if="showShapeStroke" v-model="shapeStrokeColor" :label="i18n.ts._shDrawing.strokeColor"/>
 		<XColorButton v-if="showShapeFill" v-model="shapeFillColor" :label="i18n.ts._shDrawing.fillColor"/>
 	</template>

@@ -49,6 +49,8 @@ import XViewport from './ShDrawingDialog.Viewport.vue';
 import XToolbar from './ShDrawingDialog.Toolbar.vue';
 import XPropertyBar from './ShDrawingDialog.PropertyBar.vue';
 import type { DrawingCanvasSpec, DrawingToolKind } from '@/utility/drawing/types.js';
+import type { DrawingResizeResult } from '@/components/ShDrawingResizeDialog.vue';
+import { offsetForAnchor } from '@/utility/drawing/resize.js';
 import type { Keymap } from '@/utility/hotkey.js';
 import { DEFAULT_CANVAS_SPEC, createDefaultDrawingSettings, historyLimitFor, specForImage } from '@/utility/drawing/types.js';
 import { DrawingHistory } from '@/utility/drawing/history.js';
@@ -191,7 +193,55 @@ function showMenu(ev: MouseEvent) {
 		action: () => {
 			loadFromDrive().catch(err => console.error(err));
 		},
+	}, { type: 'divider' }, {
+		text: i18n.ts._shDrawing.resizeCanvas,
+		icon: 'ti ti-crop',
+		action: () => openResizeDialog('canvas'),
+	}, {
+		text: i18n.ts._shDrawing.resizeImage,
+		icon: 'ti ti-arrows-diagonal',
+		action: () => openResizeDialog('image'),
 	}], ev.currentTarget ?? ev.target);
+}
+
+/** キャンバスの大きさを変える。canvas は拡縮せず切り抜き / 余白、image は再サンプリング */
+function openResizeDialog(mode: 'canvas' | 'image') {
+	if (saving.value || !ready.value) return;
+
+	const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/ShDrawingResizeDialog.vue')), {
+		mode,
+		current: spec.value,
+	}, {
+		done: (result) => {
+			applyResize(mode, result).catch(err => console.error(err));
+		},
+		closed: () => dispose(),
+	});
+}
+
+async function applyResize(mode: 'canvas' | 'image', result: DrawingResizeResult) {
+	if (viewport.value == null) return;
+
+	// 大きさを変えると canvas の内容は失われるので、先に写しておく
+	const source = viewport.value.cloneCanvas();
+	const from = { width: spec.value.width, height: spec.value.height };
+	const to = { width: result.width, height: result.height };
+
+	await applySpec({ ...spec.value, ...to });
+	if (viewport.value == null) return;
+
+	let snapshot: ImageData;
+	if (mode === 'canvas') {
+		const offset = offsetForAnchor(result.anchor, from, to);
+		snapshot = viewport.value.drawImageAt(source, offset.x, offset.y);
+	} else {
+		snapshot = viewport.value.drawImage(source, { smooth: result.smooth });
+	}
+
+	// 大きさの違うスナップショットは復元できないため、履歴はここで作り直す
+	history.reset(snapshot);
+	historyVersion.value++;
+	saveDraftDebounced();
 }
 
 /** 今の内容を捨ててよいか確認する (描き始めていなければ聞かない) */
