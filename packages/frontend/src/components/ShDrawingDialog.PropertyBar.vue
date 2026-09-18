@@ -148,15 +148,17 @@ const shapeModeItems: { value: ShapeFillMode; label: string; }[] = [
 	border-radius: 12px;
 	box-shadow: 0 4px 24px var(--MI_THEME-shadow);
 	white-space: nowrap;
+
+	// 画面が狭いときはバーを横いっぱいに広げて、トラックバーに幅を回す
+	@container (max-width: 500px) {
+		width: calc(100% - 24px);
+	}
 }
 
 .range {
-	flex-shrink: 0;
-	width: 140px;
-
-	@container (max-width: 500px) {
-		width: 110px;
-	}
+	flex: 1 1 auto;
+	width: 220px;
+	min-width: 120px;
 }
 
 .rangeIcon {

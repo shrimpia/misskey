@@ -5,49 +5,55 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div class="_acrylic" :class="$style.root" role="group" :aria-label="i18n.ts._shDrawing.toolbar">
-	<button
-		v-for="item in tools"
-		:key="item.kind"
-		v-tooltip="item.label"
-		class="_button"
-		:class="[$style.button, { [$style.active]: tool === item.kind }]"
-		:aria-label="item.label"
-		:aria-pressed="tool === item.kind"
-		@click="tool = item.kind"
-	>
-		<i :class="item.icon"></i>
-	</button>
+	<div :class="$style.tools">
+		<button
+			v-for="item in tools"
+			:key="item.kind"
+			v-tooltip="item.label"
+			class="_button"
+			:class="[$style.button, { [$style.active]: tool === item.kind }]"
+			:aria-label="item.label"
+			:aria-pressed="tool === item.kind"
+			@click="tool = item.kind"
+		>
+			<i :class="item.icon"></i>
+		</button>
+	</div>
+
 	<div :class="$style.divider"></div>
-	<button
-		v-tooltip="i18n.ts._shDrawing.undo"
-		class="_button"
-		:class="$style.button"
-		:disabled="!canUndo"
-		:aria-label="i18n.ts._shDrawing.undo"
-		@click="emit('undo')"
-	>
-		<i class="ti ti-arrow-back-up"></i>
-	</button>
-	<button
-		v-tooltip="i18n.ts._shDrawing.redo"
-		class="_button"
-		:class="$style.button"
-		:disabled="!canRedo"
-		:aria-label="i18n.ts._shDrawing.redo"
-		@click="emit('redo')"
-	>
-		<i class="ti ti-arrow-forward-up"></i>
-	</button>
-	<div :class="$style.divider"></div>
-	<button
-		v-tooltip="i18n.ts._shDrawing.newCanvas"
-		class="_button"
-		:class="$style.button"
-		:aria-label="i18n.ts._shDrawing.newCanvas"
-		@click="emit('clear')"
-	>
-		<i class="ti ti-file-plus"></i>
-	</button>
+
+	<!-- ツールが増えてもここは流れないよう、操作系は端に固定する -->
+	<div :class="$style.actions">
+		<button
+			v-tooltip="i18n.ts._shDrawing.undo"
+			class="_button"
+			:class="$style.button"
+			:disabled="!canUndo"
+			:aria-label="i18n.ts._shDrawing.undo"
+			@click="emit('undo')"
+		>
+			<i class="ti ti-arrow-back-up"></i>
+		</button>
+		<button
+			v-tooltip="i18n.ts._shDrawing.redo"
+			class="_button"
+			:class="$style.button"
+			:disabled="!canRedo"
+			:aria-label="i18n.ts._shDrawing.redo"
+			@click="emit('redo')"
+		>
+			<i class="ti ti-arrow-forward-up"></i>
+		</button>
+		<button
+			v-tooltip="i18n.ts._shDrawing.newCanvas"
+			class="_button"
+			:class="$style.button"
+			:aria-label="i18n.ts._shDrawing.newCanvas"
+			@click="emit('clear')"
+		>
+			<i class="ti ti-file-plus"></i>
+		</button>
+	</div>
 </div>
 </template>
 
@@ -90,7 +96,6 @@ const tools: { kind: DrawingToolKind; icon: string; label: string; }[] = [
 	gap: 4px;
 	padding: 6px;
 	max-height: calc(100% - 24px);
-	overflow-y: auto;
 	box-sizing: border-box;
 	border-radius: 16px;
 	box-shadow: 0 4px 24px var(--MI_THEME-shadow);
@@ -104,8 +109,42 @@ const tools: { kind: DrawingToolKind; icon: string; label: string; }[] = [
 		flex-direction: row;
 		max-height: none;
 		max-width: calc(100% - 24px);
+	}
+}
+
+// ツール選択はここだけが流れる
+.tools {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	min-height: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	scrollbar-width: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+
+	@container (max-width: 500px) {
+		flex-direction: row;
+		min-height: auto;
+		min-width: 0;
 		overflow-x: auto;
 		overflow-y: hidden;
+	}
+}
+
+.actions {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	flex-shrink: 0;
+
+	@container (max-width: 500px) {
+		flex-direction: row;
 	}
 }
 
