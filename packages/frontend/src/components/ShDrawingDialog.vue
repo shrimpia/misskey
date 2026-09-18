@@ -23,6 +23,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			ref="viewport"
 			:tool="tool"
 			:settings="settings"
+			:spec="spec"
 			@ready="onReady"
 			@commit="onCommit"
 			@pickColor="onPickColor"
@@ -34,22 +35,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:canRedo="canRedo"
 			@undo="undo"
 			@redo="redo"
-			@clear="clearCanvas"
+			@clear="openNewCanvasDialog"
 		/>
 	</div>
 </MkModalWindow>
 </template>
 
 <script lang="ts" setup>
-import { computed, markRaw, ref, useTemplateRef, watch } from 'vue';
+import { computed, defineAsyncComponent, markRaw, nextTick, ref, useTemplateRef, watch } from 'vue';
 import * as Misskey from 'misskey-js';
 import { debounce } from 'throttle-debounce';
 import XViewport from './ShDrawingDialog.Viewport.vue';
 import XToolbar from './ShDrawingDialog.Toolbar.vue';
 import XPropertyBar from './ShDrawingDialog.PropertyBar.vue';
-import type { DrawingToolKind } from '@/utility/drawing/types.js';
+import type { DrawingCanvasSpec, DrawingToolKind } from '@/utility/drawing/types.js';
 import type { Keymap } from '@/utility/hotkey.js';
-import { createDefaultDrawingSettings } from '@/utility/drawing/types.js';
+import { DEFAULT_CANVAS_SPEC, createDefaultDrawingSettings, historyLimitFor } from '@/utility/drawing/types.js';
 import { DrawingHistory } from '@/utility/drawing/history.js';
 import { deleteDrawingDraft, loadDrawingDraft, saveDrawingDraft } from '@/utility/drawing/draft.js';
 import { ensureSignin } from '@/i.js';
@@ -76,8 +77,9 @@ const viewport = useTemplateRef('viewport');
 
 const tool = ref<DrawingToolKind>('pen');
 const settings = ref(createDefaultDrawingSettings());
+const spec = ref<DrawingCanvasSpec>({ ...DEFAULT_CANVAS_SPEC });
 
-const history = markRaw(new DrawingHistory<ImageData>());
+const history = markRaw(new DrawingHistory<ImageData>(historyLimitFor(spec.value)));
 // DrawingHistory 自体はリアクティブではないため、変更のたびに更新して算出プロパティを再評価させる
 const historyVersion = ref(0);
 const canUndo = computed(() => historyVersion.value >= 0 && history.canUndo);
@@ -97,11 +99,24 @@ watch(tool, (_, prev) => {
 	if (prev !== 'eyedropper') toolBeforeEyedropper = prev;
 });
 
+/** キャンバスの仕様を差し替え、まっさらな状態にして、その内容を返す */
+async function applySpec(next: DrawingCanvasSpec): Promise<ImageData | null> {
+	spec.value = next;
+	history.setLimit(historyLimitFor(next));
+	// canvas の width / height 属性が反映されるのを待つ (属性が変わると内容は破棄される)
+	await nextTick();
+	if (viewport.value == null) return null;
+	const snapshot = viewport.value.clearToBackground();
+	viewport.value.resetView();
+	return snapshot;
+}
+
 async function onReady(snapshot: ImageData) {
 	const draft = await loadDrawingDraft($i.id);
 
 	if (draft != null && viewport.value != null) {
 		try {
+			await applySpec(draft.spec);
 			const restored = await viewport.value.drawImageFromDataUrl(draft.dataUrl);
 			settings.value = draft.settings;
 			history.reset(restored);
@@ -128,6 +143,7 @@ async function flushDraft() {
 	const saved = await saveDrawingDraft($i.id, {
 		dataUrl: viewport.value.toDataUrl(),
 		settings: settings.value,
+		spec: spec.value,
 		updatedAt: Date.now(),
 	});
 
@@ -147,16 +163,25 @@ watch([historyVersion, settings], () => {
 	if (ready.value) saveDraftDebounced();
 });
 
-async function clearCanvas() {
-	if (viewport.value == null || saving.value) return;
+/** 新しいキャンバスの大きさと下地を選んでもらい、その内容で作り直す */
+function openNewCanvasDialog() {
+	if (saving.value) return;
 
-	const { canceled } = await os.confirm({
-		type: 'warning',
-		text: i18n.ts._shDrawing.clearCanvasConfirm,
+	const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/ShDrawingNewCanvasDialog.vue')), {
+		current: spec.value,
+	}, {
+		done: (next) => {
+			newCanvas(next).catch(err => console.error(err));
+		},
+		closed: () => dispose(),
 	});
-	if (canceled) return;
+}
 
-	history.reset(viewport.value.clearToBackground());
+async function newCanvas(next: DrawingCanvasSpec) {
+	const snapshot = await applySpec(next);
+	if (snapshot == null) return;
+
+	history.reset(snapshot);
 	historyVersion.value++;
 	saveDraftDebounced.cancel();
 	await deleteDrawingDraft($i.id);

@@ -7,7 +7,6 @@ import { hexToRgba, rgbaToHex } from './color.js';
 import { floodFill } from './flood-fill.js';
 import { hardenAlpha, strokeBox } from './harden.js';
 import { drawShape } from './shape.js';
-import { DRAWING_BACKGROUND_COLOR } from './types.js';
 import type { DrawingSettings, DrawingToolKind, Point } from './types.js';
 import type { Box } from './harden.js';
 
@@ -24,6 +23,8 @@ export type DrawingToolContext = {
 	overlayCtx: CanvasRenderingContext2D;
 	/** 呼び出し時点の最新設定を返す */
 	getSettings: () => DrawingSettings;
+	/** キャンバスの下地の色。null なら透明 */
+	getBackground: () => string | null;
 	/** 確定描画が行われたときに呼ぶ (履歴への記録など) */
 	commit: () => void;
 	/** スポイトで色が取得されたときに呼ぶ */
@@ -54,8 +55,11 @@ function hardenRegion(ctx: CanvasRenderingContext2D, box: Box) {
  * 作業レイヤーの内容を確定レイヤーへ焼き付ける。
  * 作業レイヤーは二値化済みなので、重ねた結果も縁がぼけない
  */
-function commitOverlay(c: DrawingToolContext) {
+function commitOverlay(c: DrawingToolContext, composite: GlobalCompositeOperation = 'source-over') {
+	c.ctx.save();
+	c.ctx.globalCompositeOperation = composite;
 	c.ctx.drawImage(c.overlayCtx.canvas, 0, 0);
+	c.ctx.restore();
 	clearCanvas(c.overlayCtx);
 	c.commit();
 }
@@ -72,6 +76,8 @@ class StrokeTool implements DrawingTool {
 	constructor(
 		private readonly c: DrawingToolContext,
 		private readonly getStyle: (settings: DrawingSettings) => { color: string; width: number; },
+		/** 焼き付け方。消しゴムは下地が透明なら destination-out で削り取る */
+		private readonly getComposite: () => GlobalCompositeOperation = () => 'source-over',
 	) {}
 
 	public down(p: Point) {
@@ -110,7 +116,7 @@ class StrokeTool implements DrawingTool {
 		if (this.last == null) return;
 		this.move(p);
 		this.last = null;
-		commitOverlay(this.c);
+		commitOverlay(this.c, this.getComposite());
 	}
 
 	public cancel() {
@@ -196,6 +202,8 @@ class EyedropperTool implements DrawingTool {
 		const y = Math.floor(p.y);
 		if (x < 0 || y < 0 || x >= ctx.canvas.width || y >= ctx.canvas.height) return;
 		const [r, g, b, a] = ctx.getImageData(x, y, 1, 1).data;
+		// 透明な部分には色が無いので拾わない (黒を拾ったように見えてしまう)
+		if (a === 0) return;
 		this.c.pickColor(rgbaToHex({ r, g, b, a }));
 	}
 
@@ -209,7 +217,11 @@ export function createDrawingTool(kind: DrawingToolKind, context: DrawingToolCon
 	switch (kind) {
 		case 'hand': return null;
 		case 'pen': return new StrokeTool(context, s => ({ color: s.penColor, width: s.penWidth }));
-		case 'eraser': return new StrokeTool(context, s => ({ color: DRAWING_BACKGROUND_COLOR, width: s.eraserWidth }));
+		case 'eraser': return new StrokeTool(
+			context,
+			s => ({ color: context.getBackground() ?? '#000000', width: s.eraserWidth }),
+			() => context.getBackground() == null ? 'destination-out' : 'source-over',
+		);
 		case 'fill': return new FillTool(context);
 		case 'shape': return new ShapeTool(context);
 		case 'eyedropper': return new EyedropperTool(context);

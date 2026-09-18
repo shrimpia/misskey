@@ -14,8 +14,19 @@ export class DrawingHistory<T> {
 	/** 最後に保存(または初期化)した時点のスナップショット */
 	private savedSnapshot: T | null = null;
 
-	constructor(private readonly limit = 30) {
+	constructor(private limit = 30) {
 		if (limit < 1) throw new Error('limit must be >= 1');
+	}
+
+	/** 保持件数を変える。キャンバスの大きさが変わったときに使う */
+	public setLimit(limit: number): void {
+		if (limit < 1) throw new Error('limit must be >= 1');
+		this.limit = limit;
+		if (this.stack.length > limit) {
+			const removed = this.stack.length - limit;
+			this.stack.splice(0, removed);
+			this.index = Math.max(0, this.index - removed);
+		}
 	}
 
 	/** 初期状態を設定し、履歴をリセットする */

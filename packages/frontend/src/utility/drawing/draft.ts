@@ -4,8 +4,8 @@
  */
 
 import { del, get, set } from '@/utility/idb-proxy.js';
-import { createDefaultDrawingSettings } from './types.js';
-import type { DrawingSettings } from './types.js';
+import { DEFAULT_CANVAS_SPEC, clampCanvasSize, createDefaultDrawingSettings } from './types.js';
+import type { DrawingCanvasSpec, DrawingSettings } from './types.js';
 
 /**
  * 作業途中のキャンバス (下書き)
@@ -17,6 +17,7 @@ export type DrawingDraft = {
 	/** PNG の dataURL */
 	dataUrl: string;
 	settings: DrawingSettings;
+	spec: DrawingCanvasSpec;
 	updatedAt: number;
 };
 
@@ -28,15 +29,27 @@ function keyOf(accountId: string): string {
 /**
  * ストレージから読んだ値を検証して下書きに変換する。壊れていれば null
  */
+function parseSpec(value: unknown): DrawingCanvasSpec {
+	if (typeof value !== 'object' || value == null) return { ...DEFAULT_CANVAS_SPEC };
+	const { width, height, background } = value as Partial<DrawingCanvasSpec>;
+	if (typeof width !== 'number' || typeof height !== 'number') return { ...DEFAULT_CANVAS_SPEC };
+	return {
+		width: clampCanvasSize(width),
+		height: clampCanvasSize(height),
+		background: typeof background === 'string' ? background : null,
+	};
+}
+
 export function parseDrawingDraft(value: unknown): DrawingDraft | null {
 	if (typeof value !== 'object' || value == null) return null;
-	const { dataUrl, settings, updatedAt } = value as Partial<DrawingDraft>;
+	const { dataUrl, settings, spec, updatedAt } = value as Partial<DrawingDraft>;
 	if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/png')) return null;
 	if (typeof updatedAt !== 'number' || !Number.isFinite(updatedAt)) return null;
 	return {
 		dataUrl,
 		// 設定項目が増えた後でも古い下書きを読めるように、既定値で埋める
 		settings: { ...createDefaultDrawingSettings(), ...(typeof settings === 'object' && settings != null ? settings : {}) },
+		spec: parseSpec(spec),
 		updatedAt,
 	};
 }
@@ -51,6 +64,7 @@ export function toPlainDraft(draft: DrawingDraft): DrawingDraft {
 	return {
 		dataUrl: draft.dataUrl,
 		settings: { ...draft.settings },
+		spec: { ...draft.spec },
 		updatedAt: draft.updatedAt,
 	};
 }

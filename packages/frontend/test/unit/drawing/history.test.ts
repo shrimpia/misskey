@@ -59,3 +59,15 @@ describe('DrawingHistory', () => {
 		assert.isTrue(h.isDirty);
 	});
 });
+
+describe('DrawingHistory#setLimit', () => {
+	test('件数を減らすと古いものから捨てられ、現在位置も追従する', () => {
+		const h = new DrawingHistory<number>(10);
+		h.reset(0);
+		for (const v of [1, 2, 3, 4]) h.push(v);
+		h.setLimit(2);
+		assert.equal(h.current, 4);
+		assert.equal(h.undo(), 3);
+		assert.isFalse(h.canUndo);
+	});
+});

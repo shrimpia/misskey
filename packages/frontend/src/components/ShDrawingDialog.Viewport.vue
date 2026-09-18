@@ -15,20 +15,20 @@ SPDX-License-Identifier: AGPL-3.0-only
 	@wheel.prevent="onWheel"
 	@contextmenu.prevent
 >
-	<div :class="$style.stage" :style="stageStyle">
+	<div :class="[$style.stage, { [$style.checkered]: spec.background == null }]" :style="stageStyle">
 		<canvas
 			ref="canvasEl"
 			:class="[$style.canvas, { [$style.pixelated]: view.zoom >= 1 }]"
-			:width="DRAWING_CANVAS_WIDTH"
-			:height="DRAWING_CANVAS_HEIGHT"
+			:width="spec.width"
+			:height="spec.height"
 			role="img"
 			:aria-label="i18n.ts._shDrawing.canvas"
 		></canvas>
 		<canvas
 			ref="overlayEl"
 			:class="[$style.canvas, $style.overlay, { [$style.pixelated]: view.zoom >= 1 }]"
-			:width="DRAWING_CANVAS_WIDTH"
-			:height="DRAWING_CANVAS_HEIGHT"
+			:width="spec.width"
+			:height="spec.height"
 		></canvas>
 	</div>
 </div>
@@ -36,10 +36,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { computed, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue';
-import type { DrawingSettings, DrawingToolKind, Point } from '@/utility/drawing/types.js';
+import type { DrawingCanvasSpec, DrawingSettings, DrawingToolKind, Point } from '@/utility/drawing/types.js';
 import type { DrawingTool } from '@/utility/drawing/tools.js';
 import type { ViewportState } from '@/utility/drawing/viewport.js';
-import { DRAWING_BACKGROUND_COLOR, DRAWING_CANVAS_HEIGHT, DRAWING_CANVAS_WIDTH } from '@/utility/drawing/types.js';
 import { createDrawingTool } from '@/utility/drawing/tools.js';
 import { clientToCanvas, fitZoom, zoomAt } from '@/utility/drawing/viewport.js';
 import { i18n } from '@/i18n.js';
@@ -47,6 +46,7 @@ import { i18n } from '@/i18n.js';
 const props = defineProps<{
 	tool: DrawingToolKind;
 	settings: DrawingSettings;
+	spec: DrawingCanvasSpec;
 }>();
 
 const emit = defineEmits<{
@@ -74,13 +74,17 @@ let overlayCtx: CanvasRenderingContext2D | null = null;
 let activeTool: DrawingTool | null = null;
 
 const stageStyle = computed(() => ({
-	width: `${DRAWING_CANVAS_WIDTH}px`,
-	height: `${DRAWING_CANVAS_HEIGHT}px`,
+	width: `${props.spec.width}px`,
+	height: `${props.spec.height}px`,
 	transform: `translate(-50%, -50%) translate(${view.value.panX}px, ${view.value.panY}px) scale(${view.value.zoom})`,
 }));
 
+function clearCanvas(target: CanvasRenderingContext2D) {
+	target.clearRect(0, 0, target.canvas.width, target.canvas.height);
+}
+
 function snapshot(): ImageData {
-	return ctx!.getImageData(0, 0, DRAWING_CANVAS_WIDTH, DRAWING_CANVAS_HEIGHT);
+	return ctx!.getImageData(0, 0, props.spec.width, props.spec.height);
 }
 
 function rebuildTool() {
@@ -90,6 +94,7 @@ function rebuildTool() {
 		ctx,
 		overlayCtx,
 		getSettings: () => props.settings,
+		getBackground: () => props.spec.background,
 		commit: () => emit('commit', snapshot()),
 		pickColor: hex => emit('pickColor', hex),
 	});
@@ -110,7 +115,7 @@ function toViewportCentered(client: Point): Point {
 }
 
 function toCanvasPoint(client: Point): Point {
-	return clientToCanvas(client, canvasEl.value!.getBoundingClientRect(), DRAWING_CANVAS_WIDTH, DRAWING_CANVAS_HEIGHT);
+	return clientToCanvas(client, canvasEl.value!.getBoundingClientRect(), props.spec.width, props.spec.height);
 }
 
 function distance(a: Point, b: Point): number {
@@ -230,7 +235,7 @@ function onWheel(ev: WheelEvent) {
 function resetView() {
 	const rect = rootEl.value?.getBoundingClientRect();
 	view.value = {
-		zoom: rect ? fitZoom(rect.width, rect.height, DRAWING_CANVAS_WIDTH, DRAWING_CANVAS_HEIGHT, 72) : 1,
+		zoom: rect ? fitZoom(rect.width, rect.height, props.spec.width, props.spec.height, 72) : 1,
 		panX: 0,
 		panY: 0,
 	};
@@ -243,12 +248,16 @@ function restore(imageData: ImageData) {
 	ctx?.putImageData(imageData, 0, 0);
 }
 
-/** キャンバスを背景色で塗り直し、その状態を返す */
+/** キャンバスを下地で塗り直し (透明ならすべて消して) その状態を返す */
 function clearToBackground(): ImageData {
 	activeTool?.cancel();
 	gesture.value = null;
-	ctx!.fillStyle = DRAWING_BACKGROUND_COLOR;
-	ctx!.fillRect(0, 0, DRAWING_CANVAS_WIDTH, DRAWING_CANVAS_HEIGHT);
+	clearCanvas(overlayCtx!);
+	ctx!.clearRect(0, 0, props.spec.width, props.spec.height);
+	if (props.spec.background != null) {
+		ctx!.fillStyle = props.spec.background;
+		ctx!.fillRect(0, 0, props.spec.width, props.spec.height);
+	}
 	return snapshot();
 }
 
@@ -258,7 +267,7 @@ function drawImageFromDataUrl(dataUrl: string): Promise<ImageData> {
 		const image = new Image();
 		image.onload = () => {
 			clearToBackground();
-			ctx!.drawImage(image, 0, 0, DRAWING_CANVAS_WIDTH, DRAWING_CANVAS_HEIGHT);
+			ctx!.drawImage(image, 0, 0);
 			resolve(snapshot());
 		};
 		image.onerror = () => reject(new Error('Failed to load image'));
@@ -288,8 +297,7 @@ onMounted(() => {
 	overlayCtx = overlayEl.value!.getContext('2d', { willReadFrequently: true });
 	if (ctx == null || overlayCtx == null) return;
 
-	ctx.fillStyle = DRAWING_BACKGROUND_COLOR;
-	ctx.fillRect(0, 0, DRAWING_CANVAS_WIDTH, DRAWING_CANVAS_HEIGHT);
+	clearToBackground();
 
 	rebuildTool();
 	resetView();
@@ -331,6 +339,16 @@ defineExpose({
 	left: 50%;
 	transform-origin: center;
 	box-shadow: 0 2px 16px var(--MI_THEME-shadow);
+	background: var(--MI_THEME-panel);
+
+	// 透明なキャンバスは市松模様を下に敷いて、透けていることが分かるようにする
+	&.checkered {
+		background-image:
+			linear-gradient(45deg, var(--MI_THEME-bg) 25%, transparent 25%, transparent 75%, var(--MI_THEME-bg) 75%),
+			linear-gradient(45deg, var(--MI_THEME-bg) 25%, transparent 25%, transparent 75%, var(--MI_THEME-bg) 75%);
+		background-size: 16px 16px;
+		background-position: 0 0, 8px 8px;
+	}
 }
 
 .canvas {

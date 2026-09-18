@@ -13548,10 +13548,6 @@ export interface Locale extends ILocale {
          */
         "newCanvas": string;
         /**
-         * キャンバスを白紙に戻します。よろしいですか？
-         */
-        "clearCanvasConfirm": string;
-        /**
          * 下書きを復元しました
          */
         "draftRestored": string;
@@ -13559,6 +13555,70 @@ export interface Locale extends ILocale {
          * 下書きを保存できませんでした
          */
         "draftSaveFailed": string;
+        /**
+         * 作成
+         */
+        "create": string;
+        /**
+         * 今のキャンバスの内容は破棄されます。
+         */
+        "newCanvasDiscardsCurrent": string;
+        /**
+         * サイズ
+         */
+        "size": string;
+        /**
+         * 幅
+         */
+        "width": string;
+        /**
+         * 高さ
+         */
+        "height": string;
+        /**
+         * キャンバスの色
+         */
+        "background": string;
+        "_sizes": {
+            /**
+             * 正方形
+             */
+            "square": string;
+            /**
+             * 横長
+             */
+            "landscape": string;
+            /**
+             * 縦長
+             */
+            "portrait": string;
+            /**
+             * 絵文字申請用
+             */
+            "emoji": string;
+            /**
+             * カスタム
+             */
+            "custom": string;
+        };
+        "_backgrounds": {
+            /**
+             * 白
+             */
+            "white": string;
+            /**
+             * 黒
+             */
+            "black": string;
+            /**
+             * 透明
+             */
+            "transparent": string;
+            /**
+             * カスタム
+             */
+            "custom": string;
+        };
         /**
          * 編集中の内容は下書きとして保存されます。閉じますか？
          */
