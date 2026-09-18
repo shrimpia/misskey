@@ -118,10 +118,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</div>
 	<footer ref="footerEl" :class="$style.footer">
 		<div :class="$style.footerLeft">
-			<button v-tooltip="i18n.ts.attachFile + ' (' + i18n.ts.upload + ')'" class="_button" :class="$style.footerButton" @click="chooseFileFromPc"><i class="ti ti-photo-plus"></i></button>
-			<button v-tooltip="i18n.ts.attachFile + ' (' + i18n.ts.fromDrive + ')'" class="_button" :class="$style.footerButton" @click="chooseFileFromDrive"><i class="ti ti-cloud-download"></i></button>
-			<!-- #region shrimpia お絵かき -->
-			<button v-tooltip="i18n.ts.attachFile + ' (' + i18n.ts._shDrawing.title + ')'" class="_button" :class="$style.footerButton" @click="openDrawing"><i class="ti ti-brush"></i></button>
+			<!-- #region shrimpia 添付系ボタン (アップロード/ドライブ/お絵かき) をドロップダウンに集約 -->
+			<button
+				v-tooltip="i18n.ts.attachFile"
+				class="_button"
+				:class="$style.footerButton"
+				:aria-label="i18n.ts.attachFile"
+				aria-haspopup="menu"
+				@click="showAttachMenu"
+			>
+				<i class="ti ti-plus"></i>
+			</button>
 			<!-- #endregion -->
 			<button v-tooltip="i18n.ts.poll" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: poll }]" @click="togglePoll"><i class="ti ti-chart-arrows"></i></button>
 			<button v-tooltip="i18n.ts.useCw" class="_button" :class="[$style.footerButton, { [$style.footerButtonActive]: useCw }]" @click="useCw = !useCw"><i class="ti ti-eye-off"></i></button>
@@ -598,7 +605,7 @@ function chooseFileFromDrive(ev: PointerEvent) {
 	});
 }
 
-// #region shrimpia お絵かき
+// #region shrimpia お絵かき + 添付メニュー
 function openDrawing() {
 	if (props.mock) return;
 
@@ -608,6 +615,24 @@ function openDrawing() {
 		},
 		closed: () => dispose(),
 	});
+}
+
+function showAttachMenu(ev: PointerEvent) {
+	if (props.mock) return;
+
+	os.popupMenu([{
+		text: i18n.ts.upload,
+		icon: 'ti ti-photo-plus',
+		action: () => chooseFileFromPc(ev),
+	}, {
+		text: i18n.ts.fromDrive,
+		icon: 'ti ti-cloud-download',
+		action: () => chooseFileFromDrive(ev),
+	}, {
+		text: i18n.ts._shDrawing.title + '(Beta)',
+		icon: 'ti ti-brush',
+		action: () => openDrawing(),
+	}], ev.currentTarget ?? ev.target);
 }
 // #endregion
 
