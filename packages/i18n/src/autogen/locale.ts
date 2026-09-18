@@ -13544,7 +13544,7 @@ export interface Locale extends ILocale {
          */
         "canvas": string;
         /**
-         * 新規キャンバス
+         * 新規キャンバス…
          */
         "newCanvas": string;
         /**
@@ -13564,7 +13564,7 @@ export interface Locale extends ILocale {
          */
         "newCanvasDiscardsCurrent": string;
         /**
-         * ドライブから読み込む
+         * ドライブから…
          */
         "loadFromDrive": string;
         /**
@@ -13580,7 +13580,7 @@ export interface Locale extends ILocale {
          */
         "imageLoaded": string;
         /**
-         * キャンバスサイズの変更
+         * キャンバスサイズの変更…
          */
         "resizeCanvas": string;
         /**
@@ -13588,7 +13588,7 @@ export interface Locale extends ILocale {
          */
         "resizeCanvasInfo": string;
         /**
-         * リサイズ
+         * キャンバスの拡大縮小…
          */
         "resizeImage": string;
         /**
