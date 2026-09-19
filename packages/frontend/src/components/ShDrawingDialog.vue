@@ -55,7 +55,7 @@ import type { ViewportState } from '@/utility/drawing/viewport.js';
 import type { DrawingResizeResult } from '@/components/ShDrawingResizeDialog.vue';
 import { offsetForAnchor } from '@/utility/drawing/resize.js';
 import type { Keymap } from '@/utility/hotkey.js';
-import { DEFAULT_CANVAS_SPEC, createDefaultDrawingSettings, specForImage } from '@/utility/drawing/types.js';
+import { createDefaultDrawingSettings, parseCanvasSpec, specForImage } from '@/utility/drawing/types.js';
 import { DrawingHistory } from '@/utility/drawing/history.js';
 import type { DrawingPatch } from '@/utility/drawing/history.js';
 import { deleteDrawingDraft, loadDrawingDraft, saveDrawingDraft } from '@/utility/drawing/draft.js';
@@ -86,14 +86,35 @@ const viewport = useTemplateRef('viewport');
 const tool = ref<DrawingToolKind>('pen');
 const settings = ref<DrawingSettings>({
 	...createDefaultDrawingSettings(),
-	// 筆圧の使用は端末をまたいで覚えておきたいので preference に持たせる
+	// 太さ・色・筆圧は端末をまたいで覚えておきたいので preference に持たせる
+	penWidth: prefer.s['shrimpia.drawingPenWidth'],
+	eraserWidth: prefer.s['shrimpia.drawingEraserWidth'],
+	shapeWidth: prefer.s['shrimpia.drawingShapeWidth'],
+	penColor: prefer.s['shrimpia.drawingPenColor'],
+	shapeStrokeColor: prefer.s['shrimpia.drawingShapeStrokeColor'],
+	shapeFillColor: prefer.s['shrimpia.drawingShapeFillColor'],
 	pressureSensitivity: prefer.s['shrimpia.drawingPressureSensitivity'],
 });
 
 watch(() => settings.value.pressureSensitivity, (value) => {
 	prefer.commit('shrimpia.drawingPressureSensitivity', value);
 });
-const spec = ref<DrawingCanvasSpec>({ ...DEFAULT_CANVAS_SPEC });
+
+// 太さや色はスライダー / カラーピッカーを操作している間ずっと変わるので、落ち着いてから書き込む
+// (同じ値の commit は prefer 側で弾かれるため、変わった項目だけが保存される)
+const savePreferencesDebounced = debounce(800, () => {
+	prefer.commit('shrimpia.drawingPenWidth', settings.value.penWidth);
+	prefer.commit('shrimpia.drawingEraserWidth', settings.value.eraserWidth);
+	prefer.commit('shrimpia.drawingShapeWidth', settings.value.shapeWidth);
+	prefer.commit('shrimpia.drawingPenColor', settings.value.penColor);
+	prefer.commit('shrimpia.drawingShapeStrokeColor', settings.value.shapeStrokeColor);
+	prefer.commit('shrimpia.drawingShapeFillColor', settings.value.shapeFillColor);
+});
+
+watch(settings, savePreferencesDebounced);
+
+/** 前回使っていたキャンバスの大きさと下地から始める */
+const spec = ref<DrawingCanvasSpec>(parseCanvasSpec(prefer.s['shrimpia.drawingCanvasSpec']));
 /** 表示状態。プロパティバーからも触れるようダイアログ側で持つ (初期値はキャンバスの準備ができた時点で入る) */
 const view = ref<ViewportState>({ zoom: 1, panX: 0, panY: 0, rotation: 0 });
 
@@ -252,6 +273,7 @@ async function applyResize(mode: 'canvas' | 'image', result: DrawingResizeResult
 
 	viewport.value.resizeCanvas(mode, offset, { smooth: result.smooth });
 	viewport.value.resetView();
+	prefer.commit('shrimpia.drawingCanvasSpec', { ...spec.value });
 
 	// 大きさが変わると以前の差分は書き戻せないため、履歴はここで捨てる
 	history.clear();
@@ -316,6 +338,8 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 
 async function newCanvas(next: DrawingCanvasSpec) {
 	await applySpec(next);
+	// 自分で選んだ大きさは次回の既定にする (ドライブから読んだ画像の大きさは対象外)
+	prefer.commit('shrimpia.drawingCanvasSpec', { ...next });
 
 	history.clear();
 	historyVersion.value++;

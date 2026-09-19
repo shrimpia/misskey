@@ -18,6 +18,9 @@ import type { ImageFramePreset } from '@/utility/image-frame-renderer/ImageFrame
 import { genId } from '@/utility/id.js';
 import { DEFAULT_DEVICE_KIND } from '@/utility/device-kind.js';
 import { deepEqual } from '@/utility/deep-equal.js';
+// #region shrimpia
+import { DEFAULT_CANVAS_SPEC, createDefaultDrawingSettings } from '@/utility/drawing/types.js';
+// #endregion
 
 /** サウンド設定 */
 export type SoundStore = {
@@ -53,6 +56,10 @@ export type DataSaverStore = {
 };
 
 type OmitStrict<T, K extends keyof T> = T extends any ? Pick<T, Exclude<keyof T, K>> : never;
+
+// #region shrimpia お絵かきの既定値 (各 preference の初期値として使う)
+const DRAWING_DEFAULTS = createDefaultDrawingSettings();
+// #endregion
 
 // NOTE: デフォルト値は他の設定の状態に依存してはならない(依存していた場合、ユーザーがその設定項目単体で「初期値にリセット」した場合不具合の原因になる)
 
@@ -636,6 +643,27 @@ export const PREF_DEF = definePreferences({
 	},
 	'shrimpia.drawingPressureSensitivity': {
 		default: false,
+	},
+	'shrimpia.drawingCanvasSpec': {
+		default: { ...DEFAULT_CANVAS_SPEC },
+	},
+	'shrimpia.drawingPenWidth': {
+		default: DRAWING_DEFAULTS.penWidth,
+	},
+	'shrimpia.drawingEraserWidth': {
+		default: DRAWING_DEFAULTS.eraserWidth,
+	},
+	'shrimpia.drawingShapeWidth': {
+		default: DRAWING_DEFAULTS.shapeWidth,
+	},
+	'shrimpia.drawingPenColor': {
+		default: DRAWING_DEFAULTS.penColor,
+	},
+	'shrimpia.drawingShapeStrokeColor': {
+		default: DRAWING_DEFAULTS.shapeStrokeColor,
+	},
+	'shrimpia.drawingShapeFillColor': {
+		default: DRAWING_DEFAULTS.shapeFillColor,
 	},
 	'shrimpia.headPattingEnabled': {
 		default: false,

@@ -77,6 +77,20 @@ export function clampCanvasSize(value: number): number {
 }
 
 /**
+ * 保存されていた値をキャンバス仕様として読み直す。壊れていれば既定値に戻す
+ */
+export function parseCanvasSpec(value: unknown): DrawingCanvasSpec {
+	if (typeof value !== 'object' || value == null) return { ...DEFAULT_CANVAS_SPEC };
+	const { width, height, background } = value as Partial<DrawingCanvasSpec>;
+	if (typeof width !== 'number' || typeof height !== 'number') return { ...DEFAULT_CANVAS_SPEC };
+	return {
+		width: clampCanvasSize(width),
+		height: clampCanvasSize(height),
+		background: typeof background === 'string' ? background : null,
+	};
+}
+
+/**
  * 画像を読み込むときのキャンバス仕様を決める。
  * 上限を超える画像は縦横比を保ったまま縮める
  */
