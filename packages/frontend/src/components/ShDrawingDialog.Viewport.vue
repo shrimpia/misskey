@@ -51,7 +51,7 @@ import type { ViewportState } from '@/utility/drawing/viewport.js';
 import { createDrawingTool } from '@/utility/drawing/tools.js';
 import { BASE_LAYER_ID, DrawingLayerStack } from '@/utility/drawing/layers.js';
 import { rgbaToHex } from '@/utility/drawing/color.js';
-import { clientToCanvas, fitZoom, zoomAt } from '@/utility/drawing/viewport.js';
+import { ROTATE_START_THRESHOLD, clientToCanvas, fitZoom, normalizeRotation, snapRotation, transformAt, zoomAt } from '@/utility/drawing/viewport.js';
 import { isPressureCapable, resolvePressure } from '@/utility/drawing/pressure.js';
 import { i18n } from '@/i18n.js';
 
@@ -70,13 +70,13 @@ const emit = defineEmits<{
 type Gesture =
 	| { type: 'draw'; pointerId: number; pressureCapable: boolean; }
 	| { type: 'pan'; pointerId: number; last: Point; }
-	| { type: 'pinch'; startDistance: number; startMid: Point; startView: ViewportState; };
+	| { type: 'pinch'; startDistance: number; startAngle: number; startMid: Point; startView: ViewportState; rotating: boolean; };
 
 const rootEl = useTemplateRef('rootEl');
 const canvasEl = useTemplateRef('canvasEl');
 const overlayEl = useTemplateRef('overlayEl');
 
-const view = ref<ViewportState>({ zoom: 1, panX: 0, panY: 0 });
+const view = defineModel<ViewportState>('view', { required: true });
 const gesture = shallowRef<Gesture | null>(null);
 /** 押下中のポインタのクライアント座標 */
 const pointers = new Map<number, Point>();
@@ -90,7 +90,7 @@ let layers: DrawingLayerStack | null = null;
 const stageStyle = computed(() => ({
 	width: `${props.spec.width}px`,
 	height: `${props.spec.height}px`,
-	transform: `translate(-50%, -50%) translate(${view.value.panX}px, ${view.value.panY}px) scale(${view.value.zoom})`,
+	transform: `translate(-50%, -50%) translate(${view.value.panX}px, ${view.value.panY}px) rotate(${view.value.rotation}rad) scale(${view.value.zoom})`,
 }));
 
 function clearCanvas(target: CanvasRenderingContext2D) {
@@ -157,17 +157,26 @@ watch(() => props.tool, () => {
 	rebuildTool();
 });
 
+/**
+ * ポインタ座標の変換はすべてルート要素の矩形を基準にする。
+ *
+ * 回転が入るとキャンバス要素の外接矩形からは元の座標を求められないため。
+ * 1 回のイベントで何度も変換するときは、読み出した矩形を渡して使い回す
+ */
+function viewportRect(): DOMRect {
+	return rootEl.value!.getBoundingClientRect();
+}
+
 /** ビューポート中心を原点とした座標に変換する */
-function toViewportCentered(client: Point): Point {
-	const rect = rootEl.value!.getBoundingClientRect();
+function toViewportCentered(client: Point, rect = viewportRect()): Point {
 	return {
 		x: client.x - (rect.left + rect.width / 2),
 		y: client.y - (rect.top + rect.height / 2),
 	};
 }
 
-function toCanvasPoint(client: Point): Point {
-	return clientToCanvas(client, canvasEl.value!.getBoundingClientRect(), props.spec.width, props.spec.height);
+function toCanvasPoint(client: Point, rect = viewportRect()): Point {
+	return clientToCanvas(client, rect, view.value, props.spec.width, props.spec.height);
 }
 
 /**
@@ -176,14 +185,14 @@ function toCanvasPoint(client: Point): Point {
  * 筆圧を取れているかはストローク単位で覚える (draw ジェスチャの pressureCapable)。
  * ペンを離す瞬間は 0 が飛んでくるので、サンプル単位で判定してはいけない
  */
-function toStrokePoint(ev: { clientX: number; clientY: number; pressure: number; pointerType: string; }): StrokePoint {
+function toStrokePoint(ev: { clientX: number; clientY: number; pressure: number; pointerType: string; }, rect?: DOMRect): StrokePoint {
 	const g = gesture.value;
 	if (g?.type === 'draw' && !g.pressureCapable && isPressureCapable(ev.pointerType, ev.pressure)) {
 		g.pressureCapable = true;
 	}
 
 	return {
-		...toCanvasPoint({ x: ev.clientX, y: ev.clientY }),
+		...toCanvasPoint({ x: ev.clientX, y: ev.clientY }, rect),
 		pressure: resolvePressure({
 			pressure: ev.pressure,
 			enabled: props.settings.pressureSensitivity,
@@ -196,14 +205,26 @@ function distance(a: Point, b: Point): number {
 	return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
+/** 2 点を結ぶ向き (rad) */
+function pointerAngle(a: Point, b: Point): number {
+	return Math.atan2(b.y - a.y, b.x - a.x);
+}
+
+/**
+ * ピンチの基準を今の 2 点で取り直す。
+ *
+ * 倍率と角度は基準からの差で求めるので、指の組が変わったときも呼ぶ
+ */
 function startPinch() {
 	if (gesture.value?.type === 'draw') activeTool?.cancel();
 	const [a, b] = [...pointers.values()];
 	gesture.value = {
 		type: 'pinch',
 		startDistance: Math.max(1, distance(a, b)),
+		startAngle: pointerAngle(a, b),
 		startMid: toViewportCentered({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }),
 		startView: { ...view.value },
+		rotating: false,
 	};
 }
 
@@ -231,7 +252,8 @@ function onPointerDown(ev: PointerEvent) {
 
 function onPointerMove(ev: PointerEvent) {
 	const rect = rootEl.value?.getBoundingClientRect();
-	if (rect != null) cursor.value = { x: ev.clientX - rect.left, y: ev.clientY - rect.top };
+	if (rect == null) return;
+	cursor.value = { x: ev.clientX - rect.left, y: ev.clientY - rect.top };
 	// キャンバスに戻ってきたら、中央のプレビューは待たずに切り上げる
 	if (showingSizePreview.value) clearSizePreview();
 
@@ -248,7 +270,7 @@ function onPointerMove(ev: PointerEvent) {
 			// 高頻度入力をまとめて受け取れる環境では取りこぼしなく線を引く
 			const events = ev.getCoalescedEvents?.() ?? [];
 			for (const e of events.length > 0 ? events : [ev]) {
-				activeTool?.move(toStrokePoint(e));
+				activeTool?.move(toStrokePoint(e, rect));
 			}
 			break;
 		}
@@ -264,12 +286,21 @@ function onPointerMove(ev: PointerEvent) {
 		}
 		case 'pinch': {
 			const [a, b] = [...pointers.values()];
-			const mid = toViewportCentered({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
-			const zoomed = zoomAt(g.startView, g.startView.zoom * distance(a, b) / g.startDistance, g.startMid);
+			const mid = toViewportCentered({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, rect);
+
+			const angle = pointerAngle(a, b);
+			// 遊びを抜けた時点を新しい基準にする (回転が始まる瞬間に角度が飛ばないように)
+			if (!g.rotating && Math.abs(normalizeRotation(angle - g.startAngle)) > ROTATE_START_THRESHOLD) {
+				g.rotating = true;
+				g.startAngle = angle;
+			}
+			const rotation = g.rotating ? snapRotation(g.startView.rotation + normalizeRotation(angle - g.startAngle)) : g.startView.rotation;
+
+			const moved = transformAt(g.startView, g.startView.zoom * distance(a, b) / g.startDistance, rotation - g.startView.rotation, g.startMid);
 			view.value = {
-				zoom: zoomed.zoom,
-				panX: zoomed.panX + mid.x - g.startMid.x,
-				panY: zoomed.panY + mid.y - g.startMid.y,
+				...moved,
+				panX: moved.panX + mid.x - g.startMid.x,
+				panY: moved.panY + mid.y - g.startMid.y,
 			};
 			break;
 		}
@@ -292,9 +323,14 @@ function releasePointer(ev: PointerEvent, commit: boolean) {
 		gesture.value = null;
 	} else if (g.type === 'pan' && g.pointerId === ev.pointerId) {
 		gesture.value = null;
-	} else if (g.type === 'pinch' && pointers.size < 2) {
-		// ピンチ終了後に残った指で意図しない描画をしないよう、全指が離れるまで何もしない
-		gesture.value = null;
+	} else if (g.type === 'pinch') {
+		if (pointers.size < 2) {
+			// ピンチ終了後に残った指で意図しない描画をしないよう、全指が離れるまで何もしない
+			gesture.value = null;
+		} else {
+			// 3 本目以降が絡んで指の組が変わったときは、基準を取り直して飛びを防ぐ
+			startPinch();
+		}
 	}
 }
 
@@ -372,6 +408,7 @@ function resetView() {
 		zoom: rect ? fitZoom(rect.width, rect.height, props.spec.width, props.spec.height, 72) : 1,
 		panX: 0,
 		panY: 0,
+		rotation: 0,
 	};
 }
 

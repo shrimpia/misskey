@@ -3650,6 +3650,9 @@ _shDrawing:
   keepAspectRatio: "縦横比を保つ"
   smoothResize: "なめらかに拡大縮小する"
   resizeResetsHistory: "元に戻す履歴は消えます。"
+  resetView: "表示をリセット"
+  zoom: "拡大率"
+  rotation: "回転"
   _anchors:
     topLeft: "左上"
     top: "上"

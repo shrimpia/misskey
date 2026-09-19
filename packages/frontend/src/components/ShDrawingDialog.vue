@@ -22,6 +22,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<div v-hotkey.global="keymap" class="_noSelect" :class="$style.root">
 		<XViewport
 			ref="viewport"
+			v-model:view="view"
 			:tool="tool"
 			:settings="settings"
 			:spec="spec"
@@ -29,7 +30,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			@commit="onCommit"
 			@pickColor="onPickColor"
 		/>
-		<XPropertyBar v-model:settings="settings" :tool="tool"/>
+		<XPropertyBar v-model:settings="settings" v-model:view="view" :tool="tool" @resetView="resetView"/>
 		<XToolbar
 			v-model:tool="tool"
 			:canUndo="canUndo"
@@ -50,6 +51,7 @@ import XViewport from './ShDrawingDialog.Viewport.vue';
 import XToolbar from './ShDrawingDialog.Toolbar.vue';
 import XPropertyBar from './ShDrawingDialog.PropertyBar.vue';
 import type { DrawingCanvasSpec, DrawingSettings, DrawingToolKind } from '@/utility/drawing/types.js';
+import type { ViewportState } from '@/utility/drawing/viewport.js';
 import type { DrawingResizeResult } from '@/components/ShDrawingResizeDialog.vue';
 import { offsetForAnchor } from '@/utility/drawing/resize.js';
 import type { Keymap } from '@/utility/hotkey.js';
@@ -92,6 +94,12 @@ watch(() => settings.value.pressureSensitivity, (value) => {
 	prefer.commit('shrimpia.drawingPressureSensitivity', value);
 });
 const spec = ref<DrawingCanvasSpec>({ ...DEFAULT_CANVAS_SPEC });
+/** 表示状態。プロパティバーからも触れるようダイアログ側で持つ (初期値はキャンバスの準備ができた時点で入る) */
+const view = ref<ViewportState>({ zoom: 1, panX: 0, panY: 0, rotation: 0 });
+
+function resetView() {
+	viewport.value?.resetView();
+}
 
 const history = markRaw(new DrawingHistory());
 // DrawingHistory 自体はリアクティブではないため、変更のたびに更新して算出プロパティを再評価させる

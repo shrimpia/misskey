@@ -5,7 +5,47 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div v-if="hasProperties" class="_acrylic" :class="$style.root" role="group" :aria-label="i18n.ts._shDrawing.propertyBar">
-	<template v-if="tool === 'pen' || tool === 'eraser'">
+	<template v-if="tool === 'hand'">
+		<div v-tooltip="i18n.ts._shDrawing.zoom" :class="$style.range">
+			<MkRange
+				v-model="zoomExponent"
+				:min="MIN_ZOOM_EXPONENT"
+				:max="MAX_ZOOM_EXPONENT"
+				:step="0.01"
+				:continuousUpdate="true"
+				:textConverter="zoomText"
+				@thumbDoubleClicked="zoomExponent = 0"
+			>
+				<template #prefix>{{ i18n.ts._shDrawing.zoom }}</template>
+				<template #suffix><span :class="$style.rangeValue">{{ zoomText(zoomExponent) }}</span></template>
+			</MkRange>
+		</div>
+		<div v-tooltip="i18n.ts._shDrawing.rotation" :class="$style.range">
+			<MkRange
+				v-model="rotationDegrees"
+				:min="-180"
+				:max="180"
+				:step="1"
+				:continuousUpdate="true"
+				:textConverter="rotationText"
+				@thumbDoubleClicked="rotationDegrees = 0"
+			>
+				<template #prefix>{{ i18n.ts._shDrawing.rotation }}</template>
+				<template #suffix><span :class="$style.rangeValue">{{ rotationText(rotationDegrees) }}</span></template>
+			</MkRange>
+		</div>
+		<button
+			v-tooltip="i18n.ts._shDrawing.resetView"
+			class="_button"
+			:class="$style.iconButton"
+			:aria-label="i18n.ts._shDrawing.resetView"
+			@click="emit('resetView')"
+		>
+			<i class="ti ti-focus-centered"></i>
+		</button>
+	</template>
+
+	<template v-else-if="tool === 'pen' || tool === 'eraser'">
 		<div v-tooltip="i18n.ts._shDrawing.thickness" :class="$style.range">
 			<MkRange v-if="tool === 'pen'" v-model="penWidth" :min="1" :max="64" :step="1" :continuousUpdate="true">
 				<template #prefix>{{ i18n.ts._shDrawing.thickness }}</template>
@@ -76,15 +116,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { computed } from 'vue';
 import XColorButton from './ShDrawingDialog.ColorButton.vue';
-import type { DrawingSettings, DrawingToolKind, ShapeFillMode, ShapeKind } from '@/utility/drawing/types.js';
+import type { DrawingSettings, DrawingToolKind, Point, ShapeFillMode, ShapeKind } from '@/utility/drawing/types.js';
+import type { ViewportState } from '@/utility/drawing/viewport.js';
+import { MAX_ZOOM, MIN_ZOOM, transformAt, zoomAt } from '@/utility/drawing/viewport.js';
 import MkRange from '@/components/MkRange.vue';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
 
 const settings = defineModel<DrawingSettings>('settings', { required: true });
+const view = defineModel<ViewportState>('view', { required: true });
 
 const props = defineProps<{
 	tool: DrawingToolKind;
+}>();
+
+const emit = defineEmits<{
+	(ev: 'resetView'): void;
 }>();
 
 /** settings の 1 項目を v-model で扱えるようにする */
@@ -107,7 +154,38 @@ const shapeStrokeColor = useSetting('shapeStrokeColor');
 const shapeFillColor = useSetting('shapeFillColor');
 const pressureSensitivity = useSetting('pressureSensitivity');
 
-const hasProperties = computed(() => props.tool !== 'hand' && props.tool !== 'eyedropper');
+const hasProperties = computed(() => props.tool !== 'eyedropper');
+
+// #region 表示 (ハンドツール)
+/** バーからの操作は、画面中央にあるものを動かさずに倍率と角度を変える */
+const VIEW_ANCHOR: Point = { x: 0, y: 0 };
+
+// 倍率はスライダー上では 2 の冪で扱う (等倍がつまみの中央付近に来るように)
+const MIN_ZOOM_EXPONENT = Math.log2(MIN_ZOOM);
+const MAX_ZOOM_EXPONENT = Math.log2(MAX_ZOOM);
+
+const zoomExponent = computed<number>({
+	get: () => Math.log2(view.value.zoom),
+	set: (value) => {
+		view.value = zoomAt(view.value, 2 ** value, VIEW_ANCHOR);
+	},
+});
+
+const rotationDegrees = computed<number>({
+	get: () => Math.round(view.value.rotation * 180 / Math.PI),
+	set: (value) => {
+		view.value = transformAt(view.value, view.value.zoom, value * Math.PI / 180 - view.value.rotation, VIEW_ANCHOR);
+	},
+});
+
+function zoomText(exponent: number): string {
+	return `${Math.round(2 ** exponent * 100)}%`;
+}
+
+function rotationText(degrees: number): string {
+	return `${degrees}°`;
+}
+// #endregion
 
 // 直線は面を持たないため、モードに関わらず線の設定のみ出す
 const showShapeStroke = computed(() => shapeKind.value === 'line' || shapeMode.value !== 'fill');
@@ -174,6 +252,15 @@ const shapeModeItems: { value: ShapeFillMode; label: string; }[] = [
 	opacity: 0.7;
 }
 
+// 値が変わっても幅が動かないよう、桁数ぶんの幅を確保しておく
+.rangeValue {
+	min-width: 3.5em;
+	font-size: 0.9em;
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+	opacity: 0.8;
+}
+
 // バーの高さ (44px) に収めるため、文字を詰める
 .toggle {
 	display: flex;
@@ -220,10 +307,11 @@ const shapeModeItems: { value: ShapeFillMode; label: string; }[] = [
 	gap: 2px;
 }
 
-.segmentButton {
+%iconButton {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	flex-shrink: 0;
 	width: 32px;
 	height: 32px;
 	border-radius: 8px;
@@ -231,6 +319,14 @@ const shapeModeItems: { value: ShapeFillMode; label: string; }[] = [
 	&:hover {
 		background: var(--MI_THEME-buttonHoverBg);
 	}
+}
+
+.iconButton {
+	@extend %iconButton;
+}
+
+.segmentButton {
+	@extend %iconButton;
 
 	&.active {
 		background: var(--MI_THEME-accentedBg);

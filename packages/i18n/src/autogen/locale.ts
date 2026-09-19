@@ -13615,6 +13615,18 @@ export interface Locale extends ILocale {
          * 元に戻す履歴は消えます。
          */
         "resizeResetsHistory": string;
+        /**
+         * 表示をリセット
+         */
+        "resetView": string;
+        /**
+         * 拡大率
+         */
+        "zoom": string;
+        /**
+         * 回転
+         */
+        "rotation": string;
         "_anchors": {
             /**
              * 左上
