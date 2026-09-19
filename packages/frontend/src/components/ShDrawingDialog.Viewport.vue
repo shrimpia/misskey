@@ -90,10 +90,30 @@ function clearCanvas(target: CanvasRenderingContext2D) {
 	target.clearRect(0, 0, target.canvas.width, target.canvas.height);
 }
 
+/**
+ * 消しゴムの作業中か。
+ * この間は現在のレイヤーの内容が作業レイヤー側に出ているので、表示からは外す
+ */
+let directEditing = false;
+
 /** レイヤーを表示用キャンバスへまとめる */
 function composite() {
 	if (ctx == null || layers == null) return;
-	layers.flattenTo(ctx);
+	layers.flattenTo(ctx, { skip: directEditing ? layers.active.id : null });
+}
+
+/** 現在のレイヤーを作業レイヤーへ写し、表示からは外す (消しゴムのプレビュー用) */
+function beginDirectEdit() {
+	if (layers == null || overlayCtx == null) return;
+	clearCanvas(overlayCtx);
+	overlayCtx.drawImage(layers.active.canvas, 0, 0);
+	directEditing = true;
+	composite();
+}
+
+function endDirectEdit() {
+	directEditing = false;
+	composite();
 }
 
 /** 合成後の色を拾う (スポイト用) */
@@ -114,6 +134,8 @@ function rebuildTool() {
 		overlayCtx,
 		getSettings: () => props.settings,
 		sampleColor,
+		beginDirectEdit,
+		endDirectEdit,
 		commit: (patch) => {
 			// 焼き付け先のレイヤーを差分に記録しておく (undo/redo が対象を間違えないように)
 			composite();

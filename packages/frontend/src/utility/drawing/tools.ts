@@ -30,6 +30,13 @@ export type DrawingToolContext = {
 	commit: (patch: { box: Box; before: ImageData; after: ImageData; }) => void;
 	/** スポイトで色が取得されたときに呼ぶ */
 	pickColor: (hex: string) => void;
+	/**
+	 * 消しゴムのプレビュー開始。現在のレイヤーの内容を作業レイヤーへ写し、
+	 * 表示からは現在のレイヤーを外してもらう (削った結果がそのまま見えるようにするため)
+	 */
+	beginDirectEdit: () => void;
+	/** 消しゴムのプレビュー終了 */
+	endDirectEdit: () => void;
 };
 
 export interface DrawingTool {
@@ -98,8 +105,12 @@ class StrokeTool implements DrawingTool {
 	constructor(
 		private readonly c: DrawingToolContext,
 		private readonly getStyle: (settings: DrawingSettings) => { color: string; width: number; },
-		/** 焼き付け方。消しゴムは destination-out で削り取る */
-		private readonly getComposite: () => GlobalCompositeOperation = () => 'source-over',
+		/**
+		 * paint: 作業レイヤーに線を描いて重ねる
+		 * erase: 現在のレイヤーを作業レイヤーへ写し、そこから削って置き換える
+		 *        (描いている最中から、削れた状態がそのまま見える)
+		 */
+		private readonly mode: 'paint' | 'erase' = 'paint',
 	) {}
 
 	/**
@@ -131,11 +142,13 @@ class StrokeTool implements DrawingTool {
 	public down(p: StrokePoint) {
 		const { overlayCtx } = this.c;
 		const { color, width } = this.getStyle(this.c.getSettings());
+		if (this.mode === 'erase') this.c.beginDirectEdit();
 		// ストロークの最初のサンプルが平滑化の起点になる
 		this.last = p;
 		const radius = widthForPressure(width, p.pressure) / 2;
 
 		overlayCtx.save();
+		if (this.mode === 'erase') overlayCtx.globalCompositeOperation = 'destination-out';
 		overlayCtx.fillStyle = color;
 		overlayCtx.beginPath();
 		overlayCtx.arc(p.x, p.y, radius, 0, Math.PI * 2);
@@ -156,6 +169,7 @@ class StrokeTool implements DrawingTool {
 		const toWidth = widthForPressure(width, to.pressure);
 
 		overlayCtx.save();
+		if (this.mode === 'erase') overlayCtx.globalCompositeOperation = 'destination-out';
 		overlayCtx.fillStyle = color;
 		overlayCtx.strokeStyle = color;
 
@@ -200,7 +214,19 @@ class StrokeTool implements DrawingTool {
 		this.flushHarden();
 		const box = this.dirtyBox;
 		this.dirtyBox = null;
-		if (box != null) commitOverlay(this.c, box, this.getComposite());
+		if (box != null) {
+			if (this.mode === 'erase') {
+				// 作業レイヤーが削り終えた姿そのものなので、その範囲を丸ごと置き換える
+				commitRegion(this.c, box, () => {
+					this.c.ctx.clearRect(box.x, box.y, box.width, box.height);
+					this.c.ctx.drawImage(this.c.overlayCtx.canvas, box.x, box.y, box.width, box.height, box.x, box.y, box.width, box.height);
+				});
+				clearCanvas(this.c.overlayCtx);
+			} else {
+				commitOverlay(this.c, box);
+			}
+		}
+		if (this.mode === 'erase') this.c.endDirectEdit();
 	}
 
 	public cancel() {
@@ -208,10 +234,12 @@ class StrokeTool implements DrawingTool {
 			window.cancelAnimationFrame(this.hardenFrame);
 			this.hardenFrame = null;
 		}
+		const wasDrawing = this.last != null;
 		this.pendingBox = null;
 		this.dirtyBox = null;
 		clearCanvas(this.c.overlayCtx);
 		this.last = null;
+		if (this.mode === 'erase' && wasDrawing) this.c.endDirectEdit();
 	}
 }
 
@@ -310,11 +338,11 @@ export function createDrawingTool(kind: DrawingToolKind, context: DrawingToolCon
 	switch (kind) {
 		case 'hand': return null;
 		case 'pen': return new StrokeTool(context, s => ({ color: s.penColor, width: s.penWidth }));
-		// 下地は別レイヤーなので、消しゴムは常に削り取る (下のレイヤーが見える)
+		// 下地は別レイヤーなので、消しゴムは削り取って下を見せる
 		case 'eraser': return new StrokeTool(
 			context,
 			s => ({ color: '#000000', width: s.eraserWidth }),
-			() => 'destination-out',
+			'erase',
 		);
 		case 'fill': return new FillTool(context);
 		case 'shape': return new ShapeTool(context);

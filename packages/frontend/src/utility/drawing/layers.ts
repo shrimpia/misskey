@@ -118,11 +118,16 @@ export class DrawingLayerStack {
 		this.paintBackground();
 	}
 
-	/** 表示用 / 書き出し用に 1 枚へまとめる */
-	public flattenTo(ctx: CanvasRenderingContext2D): void {
+	/**
+	 * 表示用 / 書き出し用に 1 枚へまとめる。
+	 *
+	 * `skip` に指定したレイヤーは含めない (消しゴムの作業中、そのレイヤーは作業レイヤー側に出ているため)
+	 */
+	public flattenTo(ctx: CanvasRenderingContext2D, options: { skip?: string | null; } = {}): void {
 		ctx.clearRect(0, 0, this.spec.width, this.spec.height);
 		for (const layer of this.layers) {
 			if (!layer.visible || layer.opacity <= 0) continue;
+			if (layer.id === options.skip) continue;
 			ctx.save();
 			ctx.globalAlpha = layer.opacity;
 			ctx.drawImage(layer.canvas, 0, 0);
