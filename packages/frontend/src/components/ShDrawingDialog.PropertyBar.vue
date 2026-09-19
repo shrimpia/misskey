@@ -8,16 +8,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<template v-if="tool === 'pen' || tool === 'eraser'">
 		<div v-tooltip="i18n.ts._shDrawing.thickness" :class="$style.range">
 			<MkRange v-if="tool === 'pen'" v-model="penWidth" :min="1" :max="64" :step="1" :continuousUpdate="true">
-				<template #prefix><i class="ti ti-line-height" :class="$style.rangeIcon"></i></template>
+				<template #prefix>{{ i18n.ts._shDrawing.thickness }}</template>
 			</MkRange>
 			<MkRange v-else v-model="eraserWidth" :min="1" :max="64" :step="1" :continuousUpdate="true">
-				<template #prefix><i class="ti ti-line-height" :class="$style.rangeIcon"></i></template>
+				<template #prefix>{{ i18n.ts._shDrawing.thickness }}</template>
 			</MkRange>
 		</div>
 		<XColorButton v-if="tool === 'pen'" v-model="penColor" :label="i18n.ts._shDrawing.color"/>
-		<MkSwitch v-model="pressureSensitivity" :class="$style.switch">
-			<template #label>{{ i18n.ts._shDrawing.pressure }}</template>
-		</MkSwitch>
+		<button
+			class="_button"
+			:class="[$style.toggle, { [$style.active]: pressureSensitivity }]"
+			:aria-pressed="pressureSensitivity"
+			@click="pressureSensitivity = !pressureSensitivity"
+		>
+			<i class="ti ti-brush"></i>
+			<span>{{ i18n.ts._shDrawing.pressure }}</span>
+		</button>
 	</template>
 
 	<template v-else-if="tool === 'fill'">
@@ -59,10 +65,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</div>
 		<div v-if="showShapeStroke" v-tooltip="i18n.ts._shDrawing.thickness" :class="$style.range">
 			<MkRange v-model="shapeWidth" :min="1" :max="64" :step="1" :continuousUpdate="true">
-				<template #prefix><i class="ti ti-line-height" :class="$style.rangeIcon"></i></template>
 			</MkRange>
 		</div>
-		<i class="ti ti-line-height" :class="$style.rangeIcon"></i>
 		<XColorButton v-if="showShapeStroke" v-model="shapeStrokeColor" :label="i18n.ts._shDrawing.strokeColor"/>
 		<XColorButton v-if="showShapeFill" v-model="shapeFillColor" :label="i18n.ts._shDrawing.fillColor"/>
 	</template>
@@ -74,7 +78,6 @@ import { computed } from 'vue';
 import XColorButton from './ShDrawingDialog.ColorButton.vue';
 import type { DrawingSettings, DrawingToolKind, ShapeFillMode, ShapeKind } from '@/utility/drawing/types.js';
 import MkRange from '@/components/MkRange.vue';
-import MkSwitch from '@/components/MkSwitch.vue';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
 
@@ -171,11 +174,25 @@ const shapeModeItems: { value: ShapeFillMode; label: string; }[] = [
 	opacity: 0.7;
 }
 
-// バーの高さ (44px) に収めるため、余白と文字を詰める
-.switch {
+// バーの高さ (44px) に収めるため、文字を詰める
+.toggle {
+	display: flex;
+	align-items: center;
 	flex-shrink: 0;
-	margin: 0;
+	gap: 4px;
+	height: 32px;
+	padding: 0 10px;
+	border-radius: 8px;
 	font-size: 0.9em;
+
+	&:hover {
+		background: var(--MI_THEME-buttonHoverBg);
+	}
+
+	&.active {
+		background: var(--MI_THEME-accentedBg);
+		color: var(--MI_THEME-accent);
+	}
 }
 
 .dropdown {

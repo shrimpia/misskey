@@ -4,7 +4,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<label v-tooltip="label" :class="$style.root">
+<label v-tooltip="label" :class="['_button', $style.root]">
+	{{ label }}
 	<span :class="$style.swatch" :style="{ background: model }"></span>
 	<input v-model="model" type="color" :class="$style.input" :aria-label="label">
 </label>
@@ -25,9 +26,11 @@ defineProps<{
 	align-items: center;
 	justify-content: center;
 	flex-shrink: 0;
-	width: 32px;
+	gap: 4px;
 	height: 32px;
-	border-radius: 999px;
+	padding: 0 10px;
+	border-radius: 8px;
+	font-size: 0.9em;
 	cursor: pointer;
 
 	&:hover {
