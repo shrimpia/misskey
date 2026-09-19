@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import type { Box } from './harden.js';
 import type { Rgba } from './types.js';
 
 /** ImageData と互換のある最小限の構造 (テスト容易性のため) */
@@ -22,13 +23,14 @@ function isSimilar(data: Uint8ClampedArray, offset: number, target: Rgba, tolera
 /**
  * (x, y) と連結する類似色の領域を color で塗りつぶす (スキャンライン方式)
  *
- * buffer を直接書き換える。塗りつぶしが発生した場合 true を返す
+ * buffer を直接書き換える。書き換えた範囲を返す (何も塗らなかった場合は null)。
+ * 範囲は履歴の差分に使う
  */
-export function floodFill(buffer: PixelBuffer, x: number, y: number, color: Rgba, tolerance = 0): boolean {
+export function floodFill(buffer: PixelBuffer, x: number, y: number, color: Rgba, tolerance = 0): Box | null {
 	const { width, height, data } = buffer;
 	x = Math.floor(x);
 	y = Math.floor(y);
-	if (x < 0 || y < 0 || x >= width || y >= height) return false;
+	if (x < 0 || y < 0 || x >= width || y >= height) return null;
 
 	const startOffset = (y * width + x) * 4;
 	const target: Rgba = {
@@ -39,11 +41,15 @@ export function floodFill(buffer: PixelBuffer, x: number, y: number, color: Rgba
 	};
 
 	// 塗る色が対象と同色なら何もしない (無限ループ防止)
-	if (target.r === color.r && target.g === color.g && target.b === color.b && target.a === color.a) return false;
+	if (target.r === color.r && target.g === color.g && target.b === color.b && target.a === color.a) return null;
 
 	const visited = new Uint8Array(width * height);
 	const stack: [number, number][] = [[x, y]];
 	let filled = false;
+	let minX = width;
+	let minY = height;
+	let maxX = -1;
+	let maxY = -1;
 
 	const matches = (px: number, py: number) => {
 		const i = py * width + px;
@@ -70,6 +76,10 @@ export function floodFill(buffer: PixelBuffer, x: number, y: number, color: Rgba
 			data[o + 2] = color.b;
 			data[o + 3] = color.a;
 			filled = true;
+			if (px < minX) minX = px;
+			if (px > maxX) maxX = px;
+			if (sy < minY) minY = sy;
+			if (sy > maxY) maxY = sy;
 
 			if (sy > 0) {
 				if (matches(px, sy - 1)) {
@@ -94,5 +104,12 @@ export function floodFill(buffer: PixelBuffer, x: number, y: number, color: Rgba
 		}
 	}
 
-	return filled;
+	if (!filled) return null;
+
+	return {
+		x: minX,
+		y: minY,
+		width: maxX - minX + 1,
+		height: maxY - minY + 1,
+	};
 }

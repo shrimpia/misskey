@@ -53,8 +53,9 @@ import type { DrawingCanvasSpec, DrawingSettings, DrawingToolKind } from '@/util
 import type { DrawingResizeResult } from '@/components/ShDrawingResizeDialog.vue';
 import { offsetForAnchor } from '@/utility/drawing/resize.js';
 import type { Keymap } from '@/utility/hotkey.js';
-import { DEFAULT_CANVAS_SPEC, createDefaultDrawingSettings, historyLimitFor, specForImage } from '@/utility/drawing/types.js';
+import { DEFAULT_CANVAS_SPEC, createDefaultDrawingSettings, specForImage } from '@/utility/drawing/types.js';
 import { DrawingHistory } from '@/utility/drawing/history.js';
+import type { DrawingPatch } from '@/utility/drawing/history.js';
 import { deleteDrawingDraft, loadDrawingDraft, saveDrawingDraft } from '@/utility/drawing/draft.js';
 import { ensureSignin } from '@/i.js';
 import MkModalWindow from '@/components/MkModalWindow.vue';
@@ -92,7 +93,7 @@ watch(() => settings.value.pressureSensitivity, (value) => {
 });
 const spec = ref<DrawingCanvasSpec>({ ...DEFAULT_CANVAS_SPEC });
 
-const history = markRaw(new DrawingHistory<ImageData>(historyLimitFor(spec.value)));
+const history = markRaw(new DrawingHistory());
 // DrawingHistory 自体はリアクティブではないため、変更のたびに更新して算出プロパティを再評価させる
 const historyVersion = ref(0);
 const canUndo = computed(() => historyVersion.value >= 0 && history.canUndo);
@@ -112,41 +113,37 @@ watch(tool, (_, prev) => {
 	if (prev !== 'eyedropper') toolBeforeEyedropper = prev;
 });
 
-/** キャンバスの仕様を差し替え、まっさらな状態にして、その内容を返す */
-async function applySpec(next: DrawingCanvasSpec): Promise<ImageData | null> {
+/** キャンバスの仕様を差し替え、まっさらな状態にする */
+async function applySpec(next: DrawingCanvasSpec): Promise<void> {
 	spec.value = next;
-	history.setLimit(historyLimitFor(next));
 	// canvas の width / height 属性が反映されるのを待つ (属性が変わると内容は破棄される)
 	await nextTick();
-	if (viewport.value == null) return null;
-	const snapshot = viewport.value.clearToBackground();
+	if (viewport.value == null) return;
+	viewport.value.clearToBackground();
 	viewport.value.resetView();
-	return snapshot;
 }
 
-async function onReady(snapshot: ImageData) {
+async function onReady() {
 	const draft = await loadDrawingDraft($i.id);
 
 	if (draft != null && viewport.value != null) {
 		try {
 			await applySpec(draft.spec);
-			const restored = await viewport.value.drawImageFromDataUrl(draft.dataUrl);
+			await viewport.value.drawImageFromDataUrl(draft.dataUrl);
 			// 筆圧の設定は preference が正なので、下書き側の値では上書きしない
 			settings.value = {
 				...draft.settings,
 				pressureSensitivity: settings.value.pressureSensitivity,
 			};
-			history.reset(restored);
 			os.toast(i18n.ts._shDrawing.draftRestored);
 		} catch (err) {
 			// 下書きが壊れていても白紙で始められるようにする
 			console.error(err);
-			history.reset(viewport.value.clearToBackground());
+			viewport.value.clearToBackground();
 		}
-	} else {
-		history.reset(snapshot);
 	}
 
+	history.clear();
 	historyVersion.value++;
 	ready.value = true;
 }
@@ -244,16 +241,15 @@ async function applyResize(mode: 'canvas' | 'image', result: DrawingResizeResult
 	await applySpec({ ...spec.value, ...to });
 	if (viewport.value == null) return;
 
-	let snapshot: ImageData;
 	if (mode === 'canvas') {
 		const offset = offsetForAnchor(result.anchor, from, to);
-		snapshot = viewport.value.drawImageAt(source, offset.x, offset.y);
+		viewport.value.drawImageAt(source, offset.x, offset.y);
 	} else {
-		snapshot = viewport.value.drawImage(source, { smooth: result.smooth });
+		viewport.value.drawImage(source, { smooth: result.smooth });
 	}
 
-	// 大きさの違うスナップショットは復元できないため、履歴はここで作り直す
-	history.reset(snapshot);
+	// 大きさが変わると以前の差分は書き戻せないため、履歴はここで捨てる
+	history.clear();
 	historyVersion.value++;
 	saveDraftDebounced();
 }
@@ -286,7 +282,8 @@ async function loadFromDrive() {
 		await applySpec(specForImage(image.naturalWidth, image.naturalHeight, background));
 		if (viewport.value == null) return;
 
-		history.reset(viewport.value.drawImage(image));
+		viewport.value.drawImage(image);
+		history.clear();
 		historyVersion.value++;
 		saveDraftDebounced();
 		done();
@@ -313,17 +310,16 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 async function newCanvas(next: DrawingCanvasSpec) {
-	const snapshot = await applySpec(next);
-	if (snapshot == null) return;
+	await applySpec(next);
 
-	history.reset(snapshot);
+	history.clear();
 	historyVersion.value++;
 	saveDraftDebounced.cancel();
 	await deleteDrawingDraft($i.id);
 }
 
-function onCommit(snapshot: ImageData) {
-	history.push(snapshot);
+function onCommit(patch: DrawingPatch) {
+	history.push(patch);
 	historyVersion.value++;
 }
 
@@ -337,16 +333,16 @@ function onPickColor(hex: string) {
 }
 
 function undo() {
-	const snapshot = history.undo();
-	if (snapshot == null) return;
-	viewport.value?.restore(snapshot);
+	const patch = history.undo();
+	if (patch == null) return;
+	viewport.value?.applyPatch(patch, 'before');
 	historyVersion.value++;
 }
 
 function redo() {
-	const snapshot = history.redo();
-	if (snapshot == null) return;
-	viewport.value?.restore(snapshot);
+	const patch = history.redo();
+	if (patch == null) return;
+	viewport.value?.applyPatch(patch, 'after');
 	historyVersion.value++;
 }
 

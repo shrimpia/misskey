@@ -39,6 +39,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { computed, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue';
 import type { DrawingCanvasSpec, DrawingSettings, DrawingToolKind, Point, StrokePoint } from '@/utility/drawing/types.js';
 import type { DrawingTool } from '@/utility/drawing/tools.js';
+import type { DrawingPatch } from '@/utility/drawing/history.js';
 import type { ViewportState } from '@/utility/drawing/viewport.js';
 import { createDrawingTool } from '@/utility/drawing/tools.js';
 import { clientToCanvas, fitZoom, zoomAt } from '@/utility/drawing/viewport.js';
@@ -52,8 +53,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(ev: 'ready', snapshot: ImageData): void;
-	(ev: 'commit', snapshot: ImageData): void;
+	(ev: 'ready'): void;
+	(ev: 'commit', patch: DrawingPatch): void;
 	(ev: 'pickColor', hex: string): void;
 }>();
 
@@ -85,10 +86,6 @@ function clearCanvas(target: CanvasRenderingContext2D) {
 	target.clearRect(0, 0, target.canvas.width, target.canvas.height);
 }
 
-function snapshot(): ImageData {
-	return ctx!.getImageData(0, 0, props.spec.width, props.spec.height);
-}
-
 function rebuildTool() {
 	activeTool?.cancel();
 	if (ctx == null || overlayCtx == null) return;
@@ -97,7 +94,8 @@ function rebuildTool() {
 		overlayCtx,
 		getSettings: () => props.settings,
 		getBackground: () => props.spec.background,
-		commit: () => emit('commit', snapshot()),
+		// 今は 1 枚なので target は 'base' 固定。レイヤーを入れたらここに対象を入れる
+		commit: (patch) => emit('commit', { target: 'base', ...patch }),
 		pickColor: hex => emit('pickColor', hex),
 	});
 }
@@ -265,15 +263,15 @@ function resetView() {
 	};
 }
 
-/** 履歴のスナップショットをキャンバスに復元する */
-function restore(imageData: ImageData) {
+/** 履歴の差分を書き戻す。undo なら before、redo なら after */
+function applyPatch(patch: DrawingPatch, which: 'before' | 'after') {
 	activeTool?.cancel();
 	gesture.value = null;
-	ctx?.putImageData(imageData, 0, 0);
+	ctx?.putImageData(which === 'before' ? patch.before : patch.after, patch.box.x, patch.box.y);
 }
 
-/** キャンバスを下地で塗り直し (透明ならすべて消して) その状態を返す */
-function clearToBackground(): ImageData {
+/** キャンバスを下地で塗り直す (透明ならすべて消す) */
+function clearToBackground(): void {
 	activeTool?.cancel();
 	gesture.value = null;
 	clearCanvas(overlayCtx!);
@@ -282,39 +280,36 @@ function clearToBackground(): ImageData {
 		ctx!.fillStyle = props.spec.background;
 		ctx!.fillRect(0, 0, props.spec.width, props.spec.height);
 	}
-	return snapshot();
 }
 
-/** dataURL の画像を背景色の上に描き、その状態を返す */
-function drawImageFromDataUrl(dataUrl: string): Promise<ImageData> {
+/** dataURL の画像を下地の上に描く */
+function drawImageFromDataUrl(dataUrl: string): Promise<void> {
 	return new Promise((resolve, reject) => {
 		const image = new Image();
 		image.onload = () => {
 			clearToBackground();
 			ctx!.drawImage(image, 0, 0);
-			resolve(snapshot());
+			resolve();
 		};
 		image.onerror = () => reject(new Error('Failed to load image'));
 		image.src = dataUrl;
 	});
 }
 
-/** 画像をキャンバス全面に引き伸ばして描き、その状態を返す */
-function drawImage(image: CanvasImageSource, options: { smooth?: boolean; } = {}): ImageData {
+/** 画像をキャンバス全面に引き伸ばして描く */
+function drawImage(image: CanvasImageSource, options: { smooth?: boolean; } = {}): void {
 	clearToBackground();
 	ctx!.save();
 	ctx!.imageSmoothingEnabled = options.smooth ?? true;
 	ctx!.imageSmoothingQuality = 'high';
 	ctx!.drawImage(image, 0, 0, props.spec.width, props.spec.height);
 	ctx!.restore();
-	return snapshot();
 }
 
-/** 画像を拡縮せず、指定位置に描き、その状態を返す */
-function drawImageAt(image: CanvasImageSource, x: number, y: number): ImageData {
+/** 画像を拡縮せず、指定位置に描く */
+function drawImageAt(image: CanvasImageSource, x: number, y: number): void {
 	clearToBackground();
 	ctx!.drawImage(image, Math.round(x), Math.round(y));
-	return snapshot();
 }
 
 /** 今のキャンバスの内容を別の canvas に写して返す (大きさを変える前の退避用) */
@@ -364,11 +359,11 @@ onMounted(() => {
 
 	rebuildTool();
 	resetView();
-	emit('ready', snapshot());
+	emit('ready');
 });
 
 defineExpose({
-	restore,
+	applyPatch,
 	clearToBackground,
 	drawImage,
 	drawImageAt,

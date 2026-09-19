@@ -3,80 +3,103 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import type { Box } from './harden.js';
+
+/** 履歴に使えるメモリの目安 */
+export const HISTORY_BUDGET_BYTES = 64 * 1024 * 1024;
+
 /**
- * キャンバスのスナップショットによる Undo/Redo 履歴
+ * 1 回の操作で書き換わった範囲と、その前後の中身。
  *
- * ImageData に限らず任意のスナップショットを保持できるようにジェネリックにしている
+ * キャンバス全面ではなく触った矩形だけを持つので、大きなキャンバスでも回数を稼げる。
+ * `target` は将来レイヤーを入れたときのレイヤー ID。今は 1 枚なので 'base' 固定
  */
-export class DrawingHistory<T> {
-	private stack: T[] = [];
-	private index = -1;
-	/** 最後に保存(または初期化)した時点のスナップショット */
-	private savedSnapshot: T | null = null;
+export type DrawingPatch = {
+	target: string;
+	box: Box;
+	before: ImageData;
+	after: ImageData;
+};
 
-	constructor(private limit = 30) {
-		if (limit < 1) throw new Error('limit must be >= 1');
+function bytesOf(patch: DrawingPatch): number {
+	return patch.before.data.byteLength + patch.after.data.byteLength;
+}
+
+/**
+ * 差分による Undo / Redo 履歴。
+ *
+ * 位置は「適用済みの差分の数」で持つ。容量を超えた分は古い側から捨てるため、
+ * 捨てた数 (offset) と合わせて絶対位置で管理する
+ */
+export class DrawingHistory {
+	private patches: DrawingPatch[] = [];
+	/** 容量超過で捨てた差分の数 */
+	private offset = 0;
+	/** 適用済みの差分の数 (絶対位置) */
+	private position = 0;
+	/** 最後に保存した時点の位置 */
+	private savedPosition = 0;
+
+	constructor(private readonly budgetBytes = HISTORY_BUDGET_BYTES) {
+		if (budgetBytes < 1) throw new Error('budgetBytes must be >= 1');
 	}
 
-	/** 保持件数を変える。キャンバスの大きさが変わったときに使う */
-	public setLimit(limit: number): void {
-		if (limit < 1) throw new Error('limit must be >= 1');
-		this.limit = limit;
-		if (this.stack.length > limit) {
-			const removed = this.stack.length - limit;
-			this.stack.splice(0, removed);
-			this.index = Math.max(0, this.index - removed);
+	/** 履歴を捨てて、今の状態を保存済みとして扱う (キャンバスを作り直したときなど) */
+	public clear(): void {
+		this.patches = [];
+		this.offset = 0;
+		this.position = 0;
+		this.savedPosition = 0;
+	}
+
+	public push(patch: DrawingPatch): void {
+		// やり直しの先は捨てる
+		this.patches.length = this.position - this.offset;
+		this.patches.push(patch);
+		this.position++;
+		this.evict();
+	}
+
+	private evict(): void {
+		while (this.patches.length > 1 && this.usedBytes > this.budgetBytes) {
+			this.patches.shift();
+			this.offset++;
 		}
 	}
 
-	/** 初期状態を設定し、履歴をリセットする */
-	public reset(initial: T): void {
-		this.stack = [initial];
-		this.index = 0;
-		this.savedSnapshot = initial;
-	}
-
-	/** 新しい状態を積む。現在位置より先の redo 履歴は破棄される */
-	public push(snapshot: T): void {
-		this.stack.splice(this.index + 1);
-		this.stack.push(snapshot);
-		if (this.stack.length > this.limit) {
-			this.stack.splice(0, this.stack.length - this.limit);
-		}
-		this.index = this.stack.length - 1;
-	}
-
-	public get current(): T | null {
-		return this.stack[this.index] ?? null;
+	public get usedBytes(): number {
+		return this.patches.reduce((total, patch) => total + bytesOf(patch), 0);
 	}
 
 	public get canUndo(): boolean {
-		return this.index > 0;
+		return this.position > this.offset;
 	}
 
 	public get canRedo(): boolean {
-		return this.index < this.stack.length - 1;
+		return this.position - this.offset < this.patches.length;
 	}
 
-	public undo(): T | null {
+	/** 戻すべき差分を返す。呼び出し側が `before` を書き戻す */
+	public undo(): DrawingPatch | null {
 		if (!this.canUndo) return null;
-		this.index--;
-		return this.current;
+		this.position--;
+		return this.patches[this.position - this.offset];
 	}
 
-	public redo(): T | null {
+	/** 進めるべき差分を返す。呼び出し側が `after` を書き戻す */
+	public redo(): DrawingPatch | null {
 		if (!this.canRedo) return null;
-		this.index++;
-		return this.current;
+		const patch = this.patches[this.position - this.offset];
+		this.position++;
+		return patch;
 	}
 
-	/** 現在の状態を保存済みとしてマークする */
 	public markSaved(): void {
-		this.savedSnapshot = this.current;
+		this.savedPosition = this.position;
 	}
 
-	/** 保存済み(または初期)状態から変更されているか */
+	/** 保存した時点から変わっているか */
 	public get isDirty(): boolean {
-		return this.current !== this.savedSnapshot;
+		return this.position !== this.savedPosition;
 	}
 }

@@ -26,8 +26,8 @@ export type DrawingToolContext = {
 	getSettings: () => DrawingSettings;
 	/** キャンバスの下地の色。null なら透明 */
 	getBackground: () => string | null;
-	/** 確定描画が行われたときに呼ぶ (履歴への記録など) */
-	commit: () => void;
+	/** 確定描画が行われたときに呼ぶ。書き換えた範囲とその前後を履歴に渡す */
+	commit: (patch: { box: Box; before: ImageData; after: ImageData; }) => void;
 	/** スポイトで色が取得されたときに呼ぶ */
 	pickColor: (hex: string) => void;
 };
@@ -53,16 +53,32 @@ function hardenRegion(ctx: CanvasRenderingContext2D, box: Box) {
 }
 
 /**
+ * 確定レイヤーの box の範囲を書き換え、その前後を履歴へ渡す。
+ *
+ * 履歴は全面ではなく触った矩形だけを持つので、前後の読み出しも矩形に限る
+ */
+function commitRegion(c: DrawingToolContext, box: Box, mutate: () => void) {
+	if (box.width <= 0 || box.height <= 0) return;
+
+	const before = c.ctx.getImageData(box.x, box.y, box.width, box.height);
+	mutate();
+	const after = c.ctx.getImageData(box.x, box.y, box.width, box.height);
+	c.commit({ box, before, after });
+}
+
+/**
  * 作業レイヤーの内容を確定レイヤーへ焼き付ける。
  * 作業レイヤーは二値化済みなので、重ねた結果も縁がぼけない
  */
-function commitOverlay(c: DrawingToolContext, composite: GlobalCompositeOperation = 'source-over') {
-	c.ctx.save();
-	c.ctx.globalCompositeOperation = composite;
-	c.ctx.drawImage(c.overlayCtx.canvas, 0, 0);
-	c.ctx.restore();
+function commitOverlay(c: DrawingToolContext, box: Box, composite: GlobalCompositeOperation = 'source-over') {
+	commitRegion(c, box, () => {
+		c.ctx.save();
+		c.ctx.globalCompositeOperation = composite;
+		// 触った矩形だけ転送する
+		c.ctx.drawImage(c.overlayCtx.canvas, box.x, box.y, box.width, box.height, box.x, box.y, box.width, box.height);
+		c.ctx.restore();
+	});
 	clearCanvas(c.overlayCtx);
-	c.commit();
 }
 
 /**
@@ -75,6 +91,8 @@ class StrokeTool implements DrawingTool {
 	private last: StrokePoint | null = null;
 	/** まだ二値化していない範囲 */
 	private pendingBox: Box | null = null;
+	/** ストローク全体で書き換えた範囲 (履歴の差分に使う) */
+	private dirtyBox: Box | null = null;
 	private hardenFrame: number | null = null;
 
 	constructor(
@@ -92,6 +110,7 @@ class StrokeTool implements DrawingTool {
 	 */
 	private queueHarden(box: Box) {
 		this.pendingBox = unionBox(this.pendingBox, box);
+		this.dirtyBox = unionBox(this.dirtyBox, box);
 		if (this.hardenFrame != null) return;
 		this.hardenFrame = window.requestAnimationFrame(() => {
 			this.hardenFrame = null;
@@ -179,7 +198,9 @@ class StrokeTool implements DrawingTool {
 		this.last = null;
 		// 焼き付ける前に、残っている範囲を二値化しきる
 		this.flushHarden();
-		commitOverlay(this.c, this.getComposite());
+		const box = this.dirtyBox;
+		this.dirtyBox = null;
+		if (box != null) commitOverlay(this.c, box, this.getComposite());
 	}
 
 	public cancel() {
@@ -188,6 +209,7 @@ class StrokeTool implements DrawingTool {
 			this.hardenFrame = null;
 		}
 		this.pendingBox = null;
+		this.dirtyBox = null;
 		clearCanvas(this.c.overlayCtx);
 		this.last = null;
 	}
@@ -204,11 +226,15 @@ class FillTool implements DrawingTool {
 		const { ctx } = this.c;
 		const color = hexToRgba(this.c.getSettings().penColor);
 		if (color == null) return;
+
 		const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-		if (floodFill(imageData, p.x, p.y, color, FILL_TOLERANCE)) {
-			ctx.putImageData(imageData, 0, 0);
-			this.c.commit();
-		}
+		const box = floodFill(imageData, p.x, p.y, color, FILL_TOLERANCE);
+		if (box == null) return;
+
+		// この時点で書き換わっているのは手元の imageData だけなので、canvas からは塗る前の状態が読める
+		commitRegion(this.c, box, () => {
+			ctx.putImageData(imageData, 0, 0, box.x, box.y, box.width, box.height);
+		});
 	}
 
 	public cancel() { /* noop */ }
@@ -246,10 +272,13 @@ class ShapeTool implements DrawingTool {
 		clearCanvas(this.c.overlayCtx);
 		if (from.x === p.x && from.y === p.y) return;
 		// 確定形をもう一度作業レイヤーに描いてから二値化して焼き付ける
-		drawShape(this.c.overlayCtx, from, p, this.styleOf(this.c.getSettings()));
+		const style = this.styleOf(this.c.getSettings());
+		drawShape(this.c.overlayCtx, from, p, style);
 		const { overlayCtx } = this.c;
-		hardenRegion(overlayCtx, { x: 0, y: 0, width: overlayCtx.canvas.width, height: overlayCtx.canvas.height });
-		commitOverlay(this.c);
+		// 図形の外接矩形。線幅と端の丸みの分だけ広げる
+		const box = strokeBox(from, p, style.width, overlayCtx.canvas.width, overlayCtx.canvas.height);
+		hardenRegion(overlayCtx, box);
+		commitOverlay(this.c, box);
 	}
 
 	public cancel() {

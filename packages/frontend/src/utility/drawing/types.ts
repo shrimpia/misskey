@@ -91,15 +91,6 @@ export function specForImage(imageWidth: number, imageHeight: number, background
 	};
 }
 
-/**
- * 履歴 1 件は幅 × 高さ × 4 バイト。大きなキャンバスで持ちすぎないよう件数を絞る
- */
-export function historyLimitFor(spec: { width: number; height: number; }): number {
-	const BUDGET_BYTES = 64 * 1024 * 1024;
-	const perSnapshot = Math.max(1, spec.width * spec.height * 4);
-	return Math.min(30, Math.max(5, Math.floor(BUDGET_BYTES / perSnapshot)));
-}
-
 export function createDefaultDrawingSettings(): DrawingSettings {
 	return {
 		penWidth: 4,

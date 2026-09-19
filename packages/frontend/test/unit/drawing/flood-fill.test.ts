@@ -32,7 +32,7 @@ function getPixel(buf: PixelBuffer, x: number, y: number): Rgba {
 describe('floodFill', () => {
 	test('一色の領域全体を塗りつぶす', () => {
 		const buf = createBuffer(4, 4, WHITE);
-		assert.isTrue(floodFill(buf, 1, 1, RED));
+		assert.isNotNull(floodFill(buf, 1, 1, RED));
 		for (let y = 0; y < 4; y++) {
 			for (let x = 0; x < 4; x++) {
 				assert.deepEqual(getPixel(buf, x, y), RED);
@@ -67,13 +67,13 @@ describe('floodFill', () => {
 
 	test('同色で塗ろうとした場合は何もしない', () => {
 		const buf = createBuffer(3, 3, RED);
-		assert.isFalse(floodFill(buf, 1, 1, RED));
+		assert.isNull(floodFill(buf, 1, 1, RED));
 	});
 
 	test('範囲外の座標は何もしない', () => {
 		const buf = createBuffer(3, 3, WHITE);
-		assert.isFalse(floodFill(buf, -1, 0, RED));
-		assert.isFalse(floodFill(buf, 3, 0, RED));
+		assert.isNull(floodFill(buf, -1, 0, RED));
+		assert.isNull(floodFill(buf, 3, 0, RED));
 	});
 
 	test('許容差内の近似色も塗る', () => {
@@ -86,5 +86,28 @@ describe('floodFill', () => {
 		setPixel(buf2, 1, 0, { r: 240, g: 240, b: 240, a: 255 });
 		floodFill(buf2, 0, 0, RED, 20);
 		assert.deepEqual(getPixel(buf2, 2, 0), RED);
+	});
+});
+
+describe('floodFill が返す範囲', () => {
+	test('塗った領域の外接矩形を返す', () => {
+		// 5x5 の白地の中央 3x3 だけを塗れる状態にする (周囲は黒で囲む)
+		const buf = createBuffer(5, 5, BLACK);
+		for (let y = 1; y <= 3; y++) {
+			for (let x = 1; x <= 3; x++) setPixel(buf, x, y, WHITE);
+		}
+		const box = floodFill(buf, 2, 2, RED);
+		assert.deepEqual(box, { x: 1, y: 1, width: 3, height: 3 });
+	});
+
+	test('全面を塗ればキャンバス全体になる', () => {
+		const buf = createBuffer(4, 3, WHITE);
+		assert.deepEqual(floodFill(buf, 0, 0, RED), { x: 0, y: 0, width: 4, height: 3 });
+	});
+
+	test('1px だけ塗れる場合は 1x1', () => {
+		const buf = createBuffer(3, 1, BLACK);
+		setPixel(buf, 1, 0, WHITE);
+		assert.deepEqual(floodFill(buf, 1, 0, RED), { x: 1, y: 0, width: 1, height: 1 });
 	});
 });
