@@ -233,20 +233,17 @@ function openResizeDialog(mode: 'canvas' | 'image') {
 async function applyResize(mode: 'canvas' | 'image', result: DrawingResizeResult) {
 	if (viewport.value == null) return;
 
-	// 大きさを変えると canvas の内容は失われるので、先に写しておく
-	const source = viewport.value.cloneCanvas();
 	const from = { width: spec.value.width, height: spec.value.height };
 	const to = { width: result.width, height: result.height };
+	const offset = mode === 'canvas' ? offsetForAnchor(result.anchor, from, to) : { x: 0, y: 0 };
 
-	await applySpec({ ...spec.value, ...to });
+	// 内容はレイヤーごとに描き直すので、ここでは消さずに大きさだけ差し替える
+	spec.value = { ...spec.value, ...to };
+	await nextTick();
 	if (viewport.value == null) return;
 
-	if (mode === 'canvas') {
-		const offset = offsetForAnchor(result.anchor, from, to);
-		viewport.value.drawImageAt(source, offset.x, offset.y);
-	} else {
-		viewport.value.drawImage(source, { smooth: result.smooth });
-	}
+	viewport.value.resizeCanvas(mode, offset, { smooth: result.smooth });
+	viewport.value.resetView();
 
 	// 大きさが変わると以前の差分は書き戻せないため、履歴はここで捨てる
 	history.clear();

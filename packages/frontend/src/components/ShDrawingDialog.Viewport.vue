@@ -42,6 +42,8 @@ import type { DrawingTool } from '@/utility/drawing/tools.js';
 import type { DrawingPatch } from '@/utility/drawing/history.js';
 import type { ViewportState } from '@/utility/drawing/viewport.js';
 import { createDrawingTool } from '@/utility/drawing/tools.js';
+import { BASE_LAYER_ID, DrawingLayerStack } from '@/utility/drawing/layers.js';
+import { rgbaToHex } from '@/utility/drawing/color.js';
 import { clientToCanvas, fitZoom, zoomAt } from '@/utility/drawing/viewport.js';
 import { isPressureCapable, resolvePressure } from '@/utility/drawing/pressure.js';
 import { i18n } from '@/i18n.js';
@@ -72,9 +74,11 @@ const gesture = shallowRef<Gesture | null>(null);
 /** 押下中のポインタのクライアント座標 */
 const pointers = new Map<number, Point>();
 
+/** 表示用 (レイヤーを合成した結果) */
 let ctx: CanvasRenderingContext2D | null = null;
 let overlayCtx: CanvasRenderingContext2D | null = null;
 let activeTool: DrawingTool | null = null;
+let layers: DrawingLayerStack | null = null;
 
 const stageStyle = computed(() => ({
 	width: `${props.spec.width}px`,
@@ -86,16 +90,35 @@ function clearCanvas(target: CanvasRenderingContext2D) {
 	target.clearRect(0, 0, target.canvas.width, target.canvas.height);
 }
 
+/** レイヤーを表示用キャンバスへまとめる */
+function composite() {
+	if (ctx == null || layers == null) return;
+	layers.flattenTo(ctx);
+}
+
+/** 合成後の色を拾う (スポイト用) */
+function sampleColor(p: Point): string | null {
+	if (ctx == null || layers == null || !layers.contains(p)) return null;
+	const [r, g, b, a] = ctx.getImageData(Math.floor(p.x), Math.floor(p.y), 1, 1).data;
+	// 透明な部分には色が無いので拾わない (黒を拾ったように見えてしまう)
+	if (a === 0) return null;
+	return rgbaToHex({ r, g, b, a });
+}
+
 function rebuildTool() {
 	activeTool?.cancel();
-	if (ctx == null || overlayCtx == null) return;
+	if (overlayCtx == null || layers == null) return;
+	const active = layers.active;
 	activeTool = createDrawingTool(props.tool, {
-		ctx,
+		ctx: active.ctx,
 		overlayCtx,
 		getSettings: () => props.settings,
-		getBackground: () => props.spec.background,
-		// 今は 1 枚なので target は 'base' 固定。レイヤーを入れたらここに対象を入れる
-		commit: (patch) => emit('commit', { target: 'base', ...patch }),
+		sampleColor,
+		commit: (patch) => {
+			// 焼き付け先のレイヤーを差分に記録しておく (undo/redo が対象を間違えないように)
+			composite();
+			emit('commit', { target: active.id, ...patch });
+		},
 		pickColor: hex => emit('pickColor', hex),
 	});
 }
@@ -267,19 +290,23 @@ function resetView() {
 function applyPatch(patch: DrawingPatch, which: 'before' | 'after') {
 	activeTool?.cancel();
 	gesture.value = null;
-	ctx?.putImageData(which === 'before' ? patch.before : patch.after, patch.box.x, patch.box.y);
+	const layer = layers?.get(patch.target);
+	if (layer == null) return;
+	layer.ctx.putImageData(which === 'before' ? patch.before : patch.after, patch.box.x, patch.box.y);
+	composite();
 }
 
-/** キャンバスを下地で塗り直す (透明ならすべて消す) */
+/** 内容を消して下地だけの状態に戻す */
 function clearToBackground(): void {
 	activeTool?.cancel();
 	gesture.value = null;
 	clearCanvas(overlayCtx!);
-	ctx!.clearRect(0, 0, props.spec.width, props.spec.height);
-	if (props.spec.background != null) {
-		ctx!.fillStyle = props.spec.background;
-		ctx!.fillRect(0, 0, props.spec.width, props.spec.height);
-	}
+	if (layers == null) return;
+	// 大きさや下地の色が変わっていることがあるので、レイヤーごと作り直す
+	layers.reset(props.spec);
+	composite();
+	// ツールは作り直す前のレイヤーを掴んでいるので、繋ぎ直す
+	rebuildTool();
 }
 
 /** dataURL の画像を下地の上に描く */
@@ -288,7 +315,8 @@ function drawImageFromDataUrl(dataUrl: string): Promise<void> {
 		const image = new Image();
 		image.onload = () => {
 			clearToBackground();
-			ctx!.drawImage(image, 0, 0);
+			layers!.active.ctx.drawImage(image, 0, 0);
+			composite();
 			resolve();
 		};
 		image.onerror = () => reject(new Error('Failed to load image'));
@@ -299,26 +327,36 @@ function drawImageFromDataUrl(dataUrl: string): Promise<void> {
 /** 画像をキャンバス全面に引き伸ばして描く */
 function drawImage(image: CanvasImageSource, options: { smooth?: boolean; } = {}): void {
 	clearToBackground();
-	ctx!.save();
-	ctx!.imageSmoothingEnabled = options.smooth ?? true;
-	ctx!.imageSmoothingQuality = 'high';
-	ctx!.drawImage(image, 0, 0, props.spec.width, props.spec.height);
-	ctx!.restore();
+	const target = layers!.active.ctx;
+	target.save();
+	target.imageSmoothingEnabled = options.smooth ?? true;
+	target.imageSmoothingQuality = 'high';
+	target.drawImage(image, 0, 0, props.spec.width, props.spec.height);
+	target.restore();
+	composite();
 }
 
-/** 画像を拡縮せず、指定位置に描く */
-function drawImageAt(image: CanvasImageSource, x: number, y: number): void {
-	clearToBackground();
-	ctx!.drawImage(image, Math.round(x), Math.round(y));
-}
-
-/** 今のキャンバスの内容を別の canvas に写して返す (大きさを変える前の退避用) */
-function cloneCanvas(): HTMLCanvasElement {
-	const clone = window.document.createElement('canvas');
-	clone.width = props.spec.width;
-	clone.height = props.spec.height;
-	clone.getContext('2d')!.drawImage(canvasEl.value!, 0, 0);
-	return clone;
+/**
+ * 大きさを変え、各レイヤーの内容を新しい大きさへ描き直す。
+ * canvas は拡縮せず位置だけずらす (切り抜き / 余白)、image は引き伸ばす
+ */
+function resizeCanvas(mode: 'canvas' | 'image', offset: Point, options: { smooth?: boolean; } = {}): void {
+	activeTool?.cancel();
+	gesture.value = null;
+	clearCanvas(overlayCtx!);
+	layers?.resize(props.spec, (target, source) => {
+		if (mode === 'canvas') {
+			target.drawImage(source, Math.round(offset.x), Math.round(offset.y));
+		} else {
+			target.save();
+			target.imageSmoothingEnabled = options.smooth ?? true;
+			target.imageSmoothingQuality = 'high';
+			target.drawImage(source, 0, 0, props.spec.width, props.spec.height);
+			target.restore();
+		}
+	});
+	composite();
+	rebuildTool();
 }
 
 /**
@@ -350,12 +388,15 @@ function toBlob(): Promise<Blob> {
 }
 
 onMounted(() => {
+	// スポイトで合成後の色を読むため
 	ctx = canvasEl.value!.getContext('2d', { willReadFrequently: true });
 	// 線の二値化で毎フレーム読み出すため
 	overlayCtx = overlayEl.value!.getContext('2d', { willReadFrequently: true });
 	if (ctx == null || overlayCtx == null) return;
 
-	clearToBackground();
+	layers = new DrawingLayerStack(props.spec);
+	layers.setActive(BASE_LAYER_ID);
+	composite();
 
 	rebuildTool();
 	resetView();
@@ -366,8 +407,7 @@ defineExpose({
 	applyPatch,
 	clearToBackground,
 	drawImage,
-	drawImageAt,
-	cloneCanvas,
+	resizeCanvas,
 	drawImageFromDataUrl,
 	toDataUrl,
 	toBlob,

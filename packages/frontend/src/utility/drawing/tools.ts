@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { hexToRgba, rgbaToHex } from './color.js';
+import { hexToRgba } from './color.js';
 import { floodFill } from './flood-fill.js';
 import { hardenAlpha, strokeBox, unionBox } from './harden.js';
 import { drawShape } from './shape.js';
@@ -18,14 +18,14 @@ import type { Box } from './harden.js';
 const FILL_TOLERANCE = 8;
 
 export type DrawingToolContext = {
-	/** 確定描画先 */
+	/** 確定描画先 (現在のレイヤー) */
 	ctx: CanvasRenderingContext2D;
 	/** 図形のプレビューなど、確定前の描画先 */
 	overlayCtx: CanvasRenderingContext2D;
 	/** 呼び出し時点の最新設定を返す */
 	getSettings: () => DrawingSettings;
-	/** キャンバスの下地の色。null なら透明 */
-	getBackground: () => string | null;
+	/** 合成後の色を拾う (スポイト用)。キャンバス外や透明なら null */
+	sampleColor: (p: Point) => string | null;
 	/** 確定描画が行われたときに呼ぶ。書き換えた範囲とその前後を履歴に渡す */
 	commit: (patch: { box: Box; before: ImageData; after: ImageData; }) => void;
 	/** スポイトで色が取得されたときに呼ぶ */
@@ -98,7 +98,7 @@ class StrokeTool implements DrawingTool {
 	constructor(
 		private readonly c: DrawingToolContext,
 		private readonly getStyle: (settings: DrawingSettings) => { color: string; width: number; },
-		/** 焼き付け方。消しゴムは下地が透明なら destination-out で削り取る */
+		/** 焼き付け方。消しゴムは destination-out で削り取る */
 		private readonly getComposite: () => GlobalCompositeOperation = () => 'source-over',
 	) {}
 
@@ -294,14 +294,10 @@ class EyedropperTool implements DrawingTool {
 	public move() { /* noop */ }
 
 	public up(p: StrokePoint) {
-		const { ctx } = this.c;
-		const x = Math.floor(p.x);
-		const y = Math.floor(p.y);
-		if (x < 0 || y < 0 || x >= ctx.canvas.width || y >= ctx.canvas.height) return;
-		const [r, g, b, a] = ctx.getImageData(x, y, 1, 1).data;
-		// 透明な部分には色が無いので拾わない (黒を拾ったように見えてしまう)
-		if (a === 0) return;
-		this.c.pickColor(rgbaToHex({ r, g, b, a }));
+		// 現在のレイヤーではなく、見えている色 (合成後) を拾う
+		const hex = this.c.sampleColor(p);
+		if (hex == null) return;
+		this.c.pickColor(hex);
 	}
 
 	public cancel() { /* noop */ }
@@ -314,10 +310,11 @@ export function createDrawingTool(kind: DrawingToolKind, context: DrawingToolCon
 	switch (kind) {
 		case 'hand': return null;
 		case 'pen': return new StrokeTool(context, s => ({ color: s.penColor, width: s.penWidth }));
+		// 下地は別レイヤーなので、消しゴムは常に削り取る (下のレイヤーが見える)
 		case 'eraser': return new StrokeTool(
 			context,
-			s => ({ color: context.getBackground() ?? '#000000', width: s.eraserWidth }),
-			() => context.getBackground() == null ? 'destination-out' : 'source-over',
+			s => ({ color: '#000000', width: s.eraserWidth }),
+			() => 'destination-out',
 		);
 		case 'fill': return new FillTool(context);
 		case 'shape': return new ShapeTool(context);
