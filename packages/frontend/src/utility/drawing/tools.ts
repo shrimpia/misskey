@@ -26,7 +26,7 @@ export type DrawingToolProperty = {
 	/** 項目はあるが今の設定では効かないとき false。グレーアウトして出す */
 	enabled?: (settings: DrawingSettings) => boolean;
 } & (
-	| { type: 'number'; key: SettingKeyOf<number>; label: string; min: number; max: number; step: number; showLabel: boolean; }
+	| { type: 'number'; key: SettingKeyOf<number>; label: string; min: number; max: number; step: number; }
 	| { type: 'color'; key: SettingKeyOf<string>; label: string; }
 	| { type: 'boolean'; key: SettingKeyOf<boolean>; label: string; icon: string; }
 	| { type: 'enum'; key: SettingKeyOf<string>; label: string; items: { value: string; label: string; icon: string; }[]; }
@@ -35,8 +35,8 @@ export type DrawingToolProperty = {
 );
 
 /** 線の太さ。ツールごとに書き戻す先が違うだけで、範囲は共通 */
-function thickness(key: SettingKeyOf<number>, showLabel: boolean, enabled?: (settings: DrawingSettings) => boolean): DrawingToolProperty {
-	return { type: 'number', key, label: 'thickness', min: 1, max: 64, step: 1, showLabel, enabled };
+function thickness(key: SettingKeyOf<number>, enabled?: (settings: DrawingSettings) => boolean): DrawingToolProperty {
+	return { type: 'number', key, label: 'thickness', min: 1, max: 64, step: 1, enabled };
 }
 
 // 直線は面を持たないため、モードに関わらず線の設定のみ効く
@@ -49,12 +49,12 @@ export const TOOL_PROPERTIES: Record<DrawingToolKind, DrawingToolProperty[]> = {
 		{ type: 'view' },
 	],
 	pen: [
-		thickness('penWidth', true),
+		thickness('penWidth'),
 		{ type: 'color', key: 'penColor', label: 'color' },
 		{ type: 'boolean', key: 'pressureSensitivity', label: 'pressure', icon: 'ti ti-brush' },
 	],
 	eraser: [
-		thickness('eraserWidth', true),
+		thickness('eraserWidth'),
 		{ type: 'boolean', key: 'pressureSensitivity', label: 'pressure', icon: 'ti ti-brush' },
 	],
 	fill: [
@@ -75,7 +75,7 @@ export const TOOL_PROPERTIES: Record<DrawingToolKind, DrawingToolProperty[]> = {
 				{ value: 'strokeAndFill', label: 'strokeAndFill', icon: 'ti ti-square-half' },
 			],
 		},
-		thickness('shapeWidth', false, hasStroke),
+		thickness('shapeWidth', hasStroke),
 		{ type: 'color', key: 'shapeStrokeColor', label: 'strokeColor', enabled: hasStroke },
 		{ type: 'color', key: 'shapeFillColor', label: 'fillColor', enabled: hasFill },
 	],

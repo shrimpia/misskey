@@ -79,8 +79,8 @@ const tools: { kind: DrawingToolKind; icon: string; label: string; }[] = [
 	{ kind: 'hand', icon: 'ti ti-hand-stop', label: i18n.ts._shDrawing._tools.hand },
 	{ kind: 'pen', icon: 'ti ti-pencil', label: i18n.ts._shDrawing._tools.pen },
 	{ kind: 'eraser', icon: 'ti ti-eraser', label: i18n.ts._shDrawing._tools.eraser },
-	{ kind: 'fill', icon: 'ti ti-paint', label: i18n.ts._shDrawing._tools.fill },
-	{ kind: 'shape', icon: 'ti ti-shape', label: i18n.ts._shDrawing._tools.shape },
+	{ kind: 'fill', icon: 'ti ti-bucket-droplet', label: i18n.ts._shDrawing._tools.fill },
+	{ kind: 'shape', icon: 'ti ti-circle-square', label: i18n.ts._shDrawing._tools.shape },
 	{ kind: 'eyedropper', icon: 'ti ti-color-picker', label: i18n.ts._shDrawing._tools.eyedropper },
 ];
 </script>

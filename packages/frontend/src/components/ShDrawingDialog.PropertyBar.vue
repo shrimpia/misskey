@@ -6,19 +6,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div v-if="properties.length > 0" class="_acrylic" :class="$style.root" role="group" :aria-label="i18n.ts._shDrawing.propertyBar">
 	<template v-for="property in properties" :key="keyOf(property)">
-		<div v-if="property.type === 'number'" v-tooltip="labelOf(property.label)" :class="$style.range">
-			<MkRange
-				:modelValue="settings[property.key]"
-				:min="property.min"
-				:max="property.max"
-				:step="property.step"
-				:disabled="!isEnabled(property)"
-				:continuousUpdate="true"
-				@update:modelValue="value => updateSetting(property.key, value)"
-			>
-				<template v-if="property.showLabel" #prefix>{{ labelOf(property.label) }}</template>
-			</MkRange>
-		</div>
+		<button
+			v-if="property.type === 'number'"
+			class="_button"
+			:class="$style.dropdown"
+			:disabled="!isEnabled(property)"
+			:aria-label="`${labelOf(property.label)}: ${settings[property.key]}`"
+			aria-haspopup="dialog"
+			@click="showNumberPopup(property, $event)"
+		>
+			<span>{{ labelOf(property.label) }}</span>
+			<span :class="$style.numberValue">{{ settings[property.key] }}</span>
+		</button>
 
 		<XColorButton
 			v-else-if="property.type === 'color'"
@@ -51,7 +50,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			@click="showEnumMenu(property, $event)"
 		>
 			<i :class="currentItem(property).icon"></i>
-			<i class="ti ti-chevron-down" :class="$style.dropdownChevron"></i>
 		</button>
 
 		<XViewControls v-else v-model:view="view" @reset="emit('resetView')"/>
@@ -62,15 +60,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { computed } from 'vue';
 import XColorButton from './ShDrawingDialog.ColorButton.vue';
+import XNumberPopup from './ShDrawingDialog.PropertyBar.NumberPopup.vue';
 import XViewControls from './ShDrawingDialog.PropertyBar.ViewControls.vue';
 import type { DrawingSettings, DrawingToolKind } from '@/utility/drawing/types.js';
 import type { DrawingToolProperty } from '@/utility/drawing/tools.js';
 import type { ViewportState } from '@/utility/drawing/viewport.js';
 import { TOOL_PROPERTIES } from '@/utility/drawing/tools.js';
-import MkRange from '@/components/MkRange.vue';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
 
+type NumberProperty = Extract<DrawingToolProperty, { type: 'number'; }>;
 type EnumProperty = Extract<DrawingToolProperty, { type: 'enum'; }>;
 
 const settings = defineModel<DrawingSettings>('settings', { required: true });
@@ -122,6 +121,22 @@ function updateSetting(key: keyof DrawingSettings, value: unknown) {
 	settings.value = { ...settings.value, [key]: value } as DrawingSettings;
 }
 
+function showNumberPopup(property: NumberProperty, ev: MouseEvent) {
+	const { dispose } = os.popup(XNumberPopup, {
+		anchorElement: ev.currentTarget as HTMLElement,
+		label: labelOf(property.label),
+		modelValue: settings.value[property.key],
+		min: property.min,
+		max: property.max,
+		step: property.step,
+	}, {
+		'update:modelValue': (value: number) => {
+			updateSetting(property.key, value);
+		},
+		closed: () => dispose(),
+	});
+}
+
 function currentItem(property: EnumProperty) {
 	return property.items.find(item => item.value === settings.value[property.key]) ?? property.items[0];
 }
@@ -161,12 +176,6 @@ function showEnumMenu(property: EnumProperty, ev: MouseEvent) {
 	@container (max-width: 500px) {
 		width: calc(100% - 24px);
 	}
-}
-
-.range {
-	flex: 1 1 auto;
-	width: 220px;
-	min-width: 120px;
 }
 
 // バーの高さ (44px) に収めるため、文字を詰める
@@ -210,6 +219,14 @@ function showEnumMenu(property: EnumProperty, ev: MouseEvent) {
 	&:disabled {
 		opacity: 0.5;
 	}
+}
+
+// 値が変わっても幅が動かないよう、桁数ぶんの幅を確保しておく
+.numberValue {
+	min-width: 2em;
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+	opacity: 0.8;
 }
 
 .dropdownChevron {

@@ -588,11 +588,12 @@ defineExpose({
 
 	// 透明なキャンバスは市松模様を下に敷いて、透けていることが分かるようにする
 	&.checkered {
-		background-image:
-			linear-gradient(45deg, var(--MI_THEME-bg) 25%, transparent 25%, transparent 75%, var(--MI_THEME-bg) 75%),
-			linear-gradient(45deg, var(--MI_THEME-bg) 25%, transparent 25%, transparent 75%, var(--MI_THEME-bg) 75%);
-		background-size: 16px 16px;
-		background-position: 0 0, 8px 8px;
+		--checker-a: #999;
+		--checker-b: #666;
+		background-image: repeating-conic-gradient(from 0deg, #999 0deg 90deg, #ddd 90deg 180deg);
+		background-size: 36px 36px;
+		background-position: 0 0, 18px 18px;
+		background-attachment: fixed;
 	}
 }
 
