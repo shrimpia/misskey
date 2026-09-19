@@ -64,7 +64,7 @@ export const TOOL_PROPERTIES: Record<DrawingToolKind, DrawingToolProperty[]> = {
 		{
 			type: 'enum', key: 'shapeKind', label: 'shapeKind', items: [
 				{ value: 'rect', label: 'rect', icon: 'ti ti-square' },
-				{ value: 'ellipse', label: 'ellipse', icon: 'ti ti-oval' },
+				{ value: 'ellipse', label: 'ellipse', icon: 'ti ti-circle' },
 				{ value: 'line', label: 'line', icon: 'ti ti-line' },
 			],
 		},
