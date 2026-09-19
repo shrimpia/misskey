@@ -52,7 +52,7 @@ import { createDrawingTool } from '@/utility/drawing/tools.js';
 import { BASE_LAYER_ID, DrawingLayerStack } from '@/utility/drawing/layers.js';
 import { rgbaToHex } from '@/utility/drawing/color.js';
 import { ROTATE_START_THRESHOLD, clientToCanvas, fitZoom, normalizeRotation, snapRotation, transformAt, zoomAt } from '@/utility/drawing/viewport.js';
-import { isPressureCapable, resolvePressure } from '@/utility/drawing/pressure.js';
+import { isPressureCapable, resolvePressure, smoothPressure, widthForPressure } from '@/utility/drawing/pressure.js';
 import { i18n } from '@/i18n.js';
 
 const props = defineProps<{
@@ -152,8 +152,15 @@ function rebuildTool() {
 	});
 }
 
-watch(() => props.tool, () => {
+/** 進行中の操作を捨てる。カーソルに出している筆圧も戻す */
+function abortGesture() {
+	activeTool?.cancel();
 	gesture.value = null;
+	strokePressure.value = null;
+}
+
+watch(() => props.tool, () => {
+	abortGesture();
 	rebuildTool();
 });
 
@@ -216,7 +223,7 @@ function pointerAngle(a: Point, b: Point): number {
  * 倍率と角度は基準からの差で求めるので、指の組が変わったときも呼ぶ
  */
 function startPinch() {
-	if (gesture.value?.type === 'draw') activeTool?.cancel();
+	if (gesture.value?.type === 'draw') abortGesture();
 	const [a, b] = [...pointers.values()];
 	gesture.value = {
 		type: 'pinch',
@@ -246,7 +253,9 @@ function onPointerDown(ev: PointerEvent) {
 		gesture.value = { type: 'pan', pointerId: ev.pointerId, last: client };
 	} else if (activeTool != null) {
 		gesture.value = { type: 'draw', pointerId: ev.pointerId, pressureCapable: isPressureCapable(ev.pointerType, ev.pressure) };
-		activeTool.down(toStrokePoint(ev));
+		const p = toStrokePoint(ev);
+		strokePressure.value = p.pressure;
+		activeTool.down(p);
 	}
 }
 
@@ -270,7 +279,10 @@ function onPointerMove(ev: PointerEvent) {
 			// 高頻度入力をまとめて受け取れる環境では取りこぼしなく線を引く
 			const events = ev.getCoalescedEvents?.() ?? [];
 			for (const e of events.length > 0 ? events : [ev]) {
-				activeTool?.move(toStrokePoint(e, rect));
+				const p = toStrokePoint(e, rect);
+				// StrokeTool と同じ平滑化を同じサンプル列に掛けて、カーソルを実際に置かれる太さに合わせる
+				strokePressure.value = smoothPressure(strokePressure.value ?? p.pressure, p.pressure);
+				activeTool?.move(p);
 			}
 			break;
 		}
@@ -321,6 +333,7 @@ function releasePointer(ev: PointerEvent, commit: boolean) {
 			activeTool?.cancel();
 		}
 		gesture.value = null;
+		strokePressure.value = null;
 	} else if (g.type === 'pan' && g.pointerId === ev.pointerId) {
 		gesture.value = null;
 	} else if (g.type === 'pinch') {
@@ -350,6 +363,8 @@ function onWheel(ev: WheelEvent) {
 // #region ブラシカーソル
 /** ルート要素を基準としたポインタ位置 (CSS px) */
 const cursor = shallowRef<Point | null>(null);
+/** 描いている間の筆圧 (平滑化後)。押していない間は null */
+const strokePressure = shallowRef<number | null>(null);
 /** 太さを変えた直後だけ、キャンバス中央に大きさを出す */
 const showingSizePreview = ref(false);
 let sizePreviewTimer: number | null = null;
@@ -362,8 +377,10 @@ const brushCursor = computed(() => {
 	const position = showingSizePreview.value ? canvasCenter() : cursor.value;
 	if (position == null) return null;
 
+	// 押している間は実際に置かれる太さを映す。ホバー中 (筆圧 0 が来る) は基準の太さのまま出す
+	const width = strokePressure.value == null ? brushWidth.value : widthForPressure(brushWidth.value, strokePressure.value);
 	// 細い線でも見えるように最低限の大きさは確保する
-	const diameter = Math.max(4, brushWidth.value * view.value.zoom);
+	const diameter = Math.max(4, width * view.value.zoom);
 	return {
 		width: `${diameter}px`,
 		height: `${diameter}px`,
@@ -414,8 +431,7 @@ function resetView() {
 
 /** 履歴の差分を書き戻す。undo なら before、redo なら after */
 function applyPatch(patch: DrawingPatch, which: 'before' | 'after') {
-	activeTool?.cancel();
-	gesture.value = null;
+	abortGesture();
 	const layer = layers?.get(patch.target);
 	if (layer == null) return;
 	layer.ctx.putImageData(which === 'before' ? patch.before : patch.after, patch.box.x, patch.box.y);
@@ -424,8 +440,7 @@ function applyPatch(patch: DrawingPatch, which: 'before' | 'after') {
 
 /** 内容を消して下地だけの状態に戻す */
 function clearToBackground(): void {
-	activeTool?.cancel();
-	gesture.value = null;
+	abortGesture();
 	clearCanvas(overlayCtx!);
 	if (layers == null) return;
 	// 大きさや下地の色が変わっていることがあるので、レイヤーごと作り直す
@@ -467,8 +482,7 @@ function drawImage(image: CanvasImageSource, options: { smooth?: boolean; } = {}
  * canvas は拡縮せず位置だけずらす (切り抜き / 余白)、image は引き伸ばす
  */
 function resizeCanvas(mode: 'canvas' | 'image', offset: Point, options: { smooth?: boolean; } = {}): void {
-	activeTool?.cancel();
-	gesture.value = null;
+	abortGesture();
 	clearCanvas(overlayCtx!);
 	layers?.resize(props.spec, (target, source) => {
 		if (mode === 'canvas') {
