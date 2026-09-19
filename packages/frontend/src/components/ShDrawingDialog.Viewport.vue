@@ -7,12 +7,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div
 	ref="rootEl"
 	class="_noSelect"
-	:class="[$style.root, { [$style.hand]: tool === 'hand', [$style.panning]: gesture?.type === 'pan' }]"
+	:class="[$style.root, { [$style.hand]: tool === 'hand', [$style.panning]: gesture?.type === 'pan', [$style.brush]: brushCursor != null }]"
 	@pointerdown="onPointerDown"
 	@pointermove="onPointerMove"
 	@pointerup="onPointerUp"
 	@pointercancel="onPointerCancel"
 	@lostpointercapture="onPointerCancel"
+	@pointerleave="cursor = null"
 	@wheel.prevent="onWheel"
 	@contextmenu.prevent
 >
@@ -32,11 +33,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 			:height="spec.height"
 		></canvas>
 	</div>
+	<!-- ブラシの大きさを示す円。画像ではなく画面の上に重ねるだけ -->
+	<div
+		v-if="brushCursor != null"
+		:class="[$style.brushCursor, { [$style.eraserCursor]: tool === 'eraser' }]"
+		:style="brushCursor"
+	></div>
 </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from 'vue';
 import type { DrawingCanvasSpec, DrawingSettings, DrawingToolKind, Point, StrokePoint } from '@/utility/drawing/types.js';
 import type { DrawingTool } from '@/utility/drawing/tools.js';
 import type { DrawingPatch } from '@/utility/drawing/history.js';
@@ -223,6 +230,11 @@ function onPointerDown(ev: PointerEvent) {
 }
 
 function onPointerMove(ev: PointerEvent) {
+	const rect = rootEl.value?.getBoundingClientRect();
+	if (rect != null) cursor.value = { x: ev.clientX - rect.left, y: ev.clientY - rect.top };
+	// キャンバスに戻ってきたら、中央のプレビューは待たずに切り上げる
+	if (showingSizePreview.value) clearSizePreview();
+
 	if (!pointers.has(ev.pointerId)) return;
 	const client = { x: ev.clientX, y: ev.clientY };
 	pointers.set(ev.pointerId, client);
@@ -298,6 +310,61 @@ function onWheel(ev: WheelEvent) {
 	const factor = Math.exp(-ev.deltaY * (ev.deltaMode === WheelEvent.DOM_DELTA_LINE ? 0.05 : 0.0015));
 	view.value = zoomAt(view.value, view.value.zoom * factor, toViewportCentered({ x: ev.clientX, y: ev.clientY }));
 }
+
+// #region ブラシカーソル
+/** ルート要素を基準としたポインタ位置 (CSS px) */
+const cursor = shallowRef<Point | null>(null);
+/** 太さを変えた直後だけ、キャンバス中央に大きさを出す */
+const showingSizePreview = ref(false);
+let sizePreviewTimer: number | null = null;
+
+const brushWidth = computed(() => props.tool === 'eraser' ? props.settings.eraserWidth : props.settings.penWidth);
+
+const brushCursor = computed(() => {
+	if (props.tool !== 'pen' && props.tool !== 'eraser') return null;
+
+	const position = showingSizePreview.value ? canvasCenter() : cursor.value;
+	if (position == null) return null;
+
+	// 細い線でも見えるように最低限の大きさは確保する
+	const diameter = Math.max(4, brushWidth.value * view.value.zoom);
+	return {
+		width: `${diameter}px`,
+		height: `${diameter}px`,
+		transform: `translate(-50%, -50%) translate(${position.x}px, ${position.y}px)`,
+		...(props.tool === 'pen' ? { background: props.settings.penColor } : {}),
+	};
+});
+
+/** ルート要素を基準としたキャンバス中央の位置 */
+function canvasCenter(): Point | null {
+	const rect = rootEl.value?.getBoundingClientRect();
+	if (rect == null) return null;
+	return {
+		x: rect.width / 2 + view.value.panX,
+		y: rect.height / 2 + view.value.panY,
+	};
+}
+
+function clearSizePreview() {
+	showingSizePreview.value = false;
+	if (sizePreviewTimer != null) {
+		window.clearTimeout(sizePreviewTimer);
+		sizePreviewTimer = null;
+	}
+}
+
+watch(brushWidth, () => {
+	if (props.tool !== 'pen' && props.tool !== 'eraser') return;
+	showingSizePreview.value = true;
+	if (sizePreviewTimer != null) window.clearTimeout(sizePreviewTimer);
+	sizePreviewTimer = window.setTimeout(clearSizePreview, 800);
+});
+
+onUnmounted(() => {
+	if (sizePreviewTimer != null) window.clearTimeout(sizePreviewTimer);
+});
+// #endregion
 
 function resetView() {
 	const rect = rootEl.value?.getBoundingClientRect();
@@ -450,6 +517,11 @@ defineExpose({
 		cursor: grab;
 	}
 
+	// ブラシの円が出ている間は OS のカーソルを消す (円が位置を示すため)
+	&.brush {
+		cursor: none;
+	}
+
 	&.panning {
 		cursor: grabbing;
 	}
@@ -486,5 +558,23 @@ defineExpose({
 
 .overlay {
 	pointer-events: none;
+}
+
+.brushCursor {
+	position: absolute;
+	top: 0;
+	left: 0;
+	border-radius: 999px;
+	pointer-events: none;
+	box-sizing: border-box;
+	// 下地と同系色でも輪郭が分かるように縁を付ける
+	box-shadow: 0 0 0 1px color(from var(--MI_THEME-fg) srgb r g b / 0.4);
+}
+
+.eraserCursor {
+	background: none;
+	// 縁だけで表す。二重の輪にならないよう内側の縁は消す
+	box-shadow: none;
+	border: solid 2px color(from var(--MI_THEME-fg) srgb r g b / 0.5);
 }
 </style>
