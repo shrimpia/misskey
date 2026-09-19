@@ -4,10 +4,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<label v-tooltip="label" :class="['_button', $style.root]">
+<label v-tooltip="label" :class="['_button', $style.root, { [$style.disabled]: disabled }]">
 	{{ label }}
 	<span :class="$style.swatch" :style="{ background: model }"></span>
-	<input v-model="model" type="color" :class="$style.input" :aria-label="label">
+	<input v-model="model" type="color" :class="$style.input" :aria-label="label" :disabled="disabled">
 </label>
 </template>
 
@@ -16,6 +16,7 @@ const model = defineModel<string>({ required: true });
 
 defineProps<{
 	label: string;
+	disabled?: boolean;
 }>();
 </script>
 
@@ -41,6 +42,12 @@ defineProps<{
 		outline: 2px solid var(--MI_THEME-focus);
 		outline-offset: -2px;
 	}
+}
+
+// 今の設定では効かないときはグレーアウトして、押しても色が変わらないようにする
+.disabled {
+	opacity: 0.5;
+	pointer-events: none;
 }
 
 .swatch {

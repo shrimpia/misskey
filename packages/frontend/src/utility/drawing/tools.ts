@@ -11,6 +11,77 @@ import { smoothPressure, stampCount, widthForPressure } from './pressure.js';
 import type { DrawingSettings, DrawingToolKind, Point, StrokePoint } from './types.js';
 import type { Box } from './harden.js';
 
+/** 設定のうち、指定した型の値を持つキーだけを取り出す */
+type SettingKeyOf<T> = { [K in keyof DrawingSettings]: DrawingSettings[K] extends T ? K : never }[keyof DrawingSettings];
+
+/**
+ * ツールが持つプロパティの定義。プロパティバーはこの並びをそのまま描く。
+ *
+ * label と enum の値は文言ではなく内部名で、実際の表示文言は UI 側で当てる。
+ * こうすることで定義が i18n から独立し、ツールの実装と同じ場所に置ける
+ */
+export type DrawingToolProperty = {
+	/** その構成では項目自体が無いとき false (例: 直線に塗りのモードは無い) */
+	visible?: (settings: DrawingSettings) => boolean;
+	/** 項目はあるが今の設定では効かないとき false。グレーアウトして出す */
+	enabled?: (settings: DrawingSettings) => boolean;
+} & (
+	| { type: 'number'; key: SettingKeyOf<number>; label: string; min: number; max: number; step: number; showLabel: boolean; }
+	| { type: 'color'; key: SettingKeyOf<string>; label: string; }
+	| { type: 'boolean'; key: SettingKeyOf<boolean>; label: string; icon: string; }
+	| { type: 'enum'; key: SettingKeyOf<string>; label: string; items: { value: string; label: string; icon: string; }[]; }
+	/** 表示の操作 (拡大率 / 回転 / リセット)。専用の UI を出すので文言も UI 側が持つ */
+	| { type: 'view'; }
+);
+
+/** 線の太さ。ツールごとに書き戻す先が違うだけで、範囲は共通 */
+function thickness(key: SettingKeyOf<number>, showLabel: boolean, enabled?: (settings: DrawingSettings) => boolean): DrawingToolProperty {
+	return { type: 'number', key, label: 'thickness', min: 1, max: 64, step: 1, showLabel, enabled };
+}
+
+// 直線は面を持たないため、モードに関わらず線の設定のみ効く
+const hasStroke = (settings: DrawingSettings) => settings.shapeKind === 'line' || settings.shapeMode !== 'fill';
+const hasFill = (settings: DrawingSettings) => settings.shapeKind !== 'line' && settings.shapeMode !== 'stroke';
+
+/** ツールごとのプロパティ。並び順がそのままプロパティバーの並び順になる */
+export const TOOL_PROPERTIES: Record<DrawingToolKind, DrawingToolProperty[]> = {
+	hand: [
+		{ type: 'view' },
+	],
+	pen: [
+		thickness('penWidth', true),
+		{ type: 'color', key: 'penColor', label: 'color' },
+		{ type: 'boolean', key: 'pressureSensitivity', label: 'pressure', icon: 'ti ti-brush' },
+	],
+	eraser: [
+		thickness('eraserWidth', true),
+		{ type: 'boolean', key: 'pressureSensitivity', label: 'pressure', icon: 'ti ti-brush' },
+	],
+	fill: [
+		{ type: 'color', key: 'penColor', label: 'color' },
+	],
+	shape: [
+		{
+			type: 'enum', key: 'shapeKind', label: 'shapeKind', items: [
+				{ value: 'rect', label: 'rect', icon: 'ti ti-square' },
+				{ value: 'ellipse', label: 'ellipse', icon: 'ti ti-oval' },
+				{ value: 'line', label: 'line', icon: 'ti ti-line' },
+			],
+		},
+		{
+			type: 'enum', key: 'shapeMode', label: 'mode', visible: settings => settings.shapeKind !== 'line', items: [
+				{ value: 'stroke', label: 'stroke', icon: 'ti ti-square' },
+				{ value: 'fill', label: 'fill', icon: 'ti ti-square-filled' },
+				{ value: 'strokeAndFill', label: 'strokeAndFill', icon: 'ti ti-square-half' },
+			],
+		},
+		thickness('shapeWidth', false, hasStroke),
+		{ type: 'color', key: 'shapeStrokeColor', label: 'strokeColor', enabled: hasStroke },
+		{ type: 'color', key: 'shapeFillColor', label: 'fillColor', enabled: hasFill },
+	],
+	eyedropper: [],
+};
+
 /**
  * 塗りつぶしの許容差。
  * 線は二値化して重ねるので縁がぼけない。わずかな誤差だけ拾えれば足りる

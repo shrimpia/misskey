@@ -4,111 +4,57 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div v-if="hasProperties" class="_acrylic" :class="$style.root" role="group" :aria-label="i18n.ts._shDrawing.propertyBar">
-	<template v-if="tool === 'hand'">
-		<div v-tooltip="i18n.ts._shDrawing.zoom" :class="$style.range">
+<div v-if="properties.length > 0" class="_acrylic" :class="$style.root" role="group" :aria-label="i18n.ts._shDrawing.propertyBar">
+	<template v-for="property in properties" :key="keyOf(property)">
+		<div v-if="property.type === 'number'" v-tooltip="labelOf(property.label)" :class="$style.range">
 			<MkRange
-				v-model="zoomExponent"
-				:min="MIN_ZOOM_EXPONENT"
-				:max="MAX_ZOOM_EXPONENT"
-				:step="0.01"
+				:modelValue="settings[property.key]"
+				:min="property.min"
+				:max="property.max"
+				:step="property.step"
+				:disabled="!isEnabled(property)"
 				:continuousUpdate="true"
-				:textConverter="zoomText"
-				@thumbDoubleClicked="zoomExponent = 0"
+				@update:modelValue="value => updateSetting(property.key, value)"
 			>
-				<template #prefix>{{ i18n.ts._shDrawing.zoom }}</template>
-				<template #suffix><span :class="$style.rangeValue">{{ zoomText(zoomExponent) }}</span></template>
+				<template v-if="property.showLabel" #prefix>{{ labelOf(property.label) }}</template>
 			</MkRange>
 		</div>
-		<div v-tooltip="i18n.ts._shDrawing.rotation" :class="$style.range">
-			<MkRange
-				v-model="rotationDegrees"
-				:min="-180"
-				:max="180"
-				:step="1"
-				:continuousUpdate="true"
-				:textConverter="rotationText"
-				@thumbDoubleClicked="rotationDegrees = 0"
-			>
-				<template #prefix>{{ i18n.ts._shDrawing.rotation }}</template>
-				<template #suffix><span :class="$style.rangeValue">{{ rotationText(rotationDegrees) }}</span></template>
-			</MkRange>
-		</div>
+
+		<XColorButton
+			v-else-if="property.type === 'color'"
+			:modelValue="settings[property.key]"
+			:label="labelOf(property.label)"
+			:disabled="!isEnabled(property)"
+			@update:modelValue="value => updateSetting(property.key, value)"
+		/>
+
 		<button
-			v-tooltip="i18n.ts._shDrawing.resetView"
+			v-else-if="property.type === 'boolean'"
 			class="_button"
-			:class="$style.iconButton"
-			:aria-label="i18n.ts._shDrawing.resetView"
-			@click="emit('resetView')"
+			:class="[$style.toggle, { [$style.active]: settings[property.key] }]"
+			:disabled="!isEnabled(property)"
+			:aria-pressed="settings[property.key]"
+			@click="updateSetting(property.key, !settings[property.key])"
 		>
-			<i class="ti ti-focus-centered"></i>
+			<i :class="property.icon"></i>
+			<span>{{ labelOf(property.label) }}</span>
 		</button>
-	</template>
 
-	<template v-else-if="tool === 'pen' || tool === 'eraser'">
-		<div v-tooltip="i18n.ts._shDrawing.thickness" :class="$style.range">
-			<MkRange v-if="tool === 'pen'" v-model="penWidth" :min="1" :max="64" :step="1" :continuousUpdate="true">
-				<template #prefix>{{ i18n.ts._shDrawing.thickness }}</template>
-			</MkRange>
-			<MkRange v-else v-model="eraserWidth" :min="1" :max="64" :step="1" :continuousUpdate="true">
-				<template #prefix>{{ i18n.ts._shDrawing.thickness }}</template>
-			</MkRange>
-		</div>
-		<XColorButton v-if="tool === 'pen'" v-model="penColor" :label="i18n.ts._shDrawing.color"/>
 		<button
-			class="_button"
-			:class="[$style.toggle, { [$style.active]: pressureSensitivity }]"
-			:aria-pressed="pressureSensitivity"
-			@click="pressureSensitivity = !pressureSensitivity"
-		>
-			<i class="ti ti-brush"></i>
-			<span>{{ i18n.ts._shDrawing.pressure }}</span>
-		</button>
-	</template>
-
-	<template v-else-if="tool === 'fill'">
-		<XColorButton v-model="penColor" :label="i18n.ts._shDrawing.color"/>
-	</template>
-
-	<template v-else-if="tool === 'shape'">
-		<button
-			v-tooltip="i18n.ts._shDrawing.shapeKind"
+			v-else-if="property.type === 'enum'"
+			v-tooltip="labelOf(property.label)"
 			class="_button"
 			:class="$style.dropdown"
-			:aria-label="`${i18n.ts._shDrawing.shapeKind}: ${currentShapeKind.label}`"
+			:disabled="!isEnabled(property)"
+			:aria-label="`${labelOf(property.label)}: ${labelOf(currentItem(property).label)}`"
 			aria-haspopup="menu"
-			@click="showShapeKindMenu"
+			@click="showEnumMenu(property, $event)"
 		>
-			<i :class="currentShapeKind.icon"></i>
-			<span>{{ currentShapeKind.label }}</span>
+			<i :class="currentItem(property).icon"></i>
 			<i class="ti ti-chevron-down" :class="$style.dropdownChevron"></i>
 		</button>
-		<div v-if="shapeKind !== 'line'" :class="$style.segment" role="group" :aria-label="i18n.ts._shDrawing.mode">
-			<button
-				v-for="item in shapeModeItems"
-				:key="item.value"
-				v-tooltip="item.label"
-				class="_button"
-				:class="[$style.segmentButton, { [$style.active]: shapeMode === item.value }]"
-				:aria-pressed="shapeMode === item.value"
-				:aria-label="item.label"
-				@click="shapeMode = item.value"
-			>
-				<span
-					:class="$style.modePreview"
-					:style="{
-						borderColor: item.value === 'fill' ? 'transparent' : shapeStrokeColor,
-						background: item.value === 'stroke' ? 'transparent' : shapeFillColor,
-					}"
-				></span>
-			</button>
-		</div>
-		<div v-if="showShapeStroke" v-tooltip="i18n.ts._shDrawing.thickness" :class="$style.range">
-			<MkRange v-model="shapeWidth" :min="1" :max="64" :step="1" :continuousUpdate="true">
-			</MkRange>
-		</div>
-		<XColorButton v-if="showShapeStroke" v-model="shapeStrokeColor" :label="i18n.ts._shDrawing.strokeColor"/>
-		<XColorButton v-if="showShapeFill" v-model="shapeFillColor" :label="i18n.ts._shDrawing.fillColor"/>
+
+		<XViewControls v-else v-model:view="view" @reset="emit('resetView')"/>
 	</template>
 </div>
 </template>
@@ -116,12 +62,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { computed } from 'vue';
 import XColorButton from './ShDrawingDialog.ColorButton.vue';
-import type { DrawingSettings, DrawingToolKind, Point, ShapeFillMode, ShapeKind } from '@/utility/drawing/types.js';
+import XViewControls from './ShDrawingDialog.PropertyBar.ViewControls.vue';
+import type { DrawingSettings, DrawingToolKind } from '@/utility/drawing/types.js';
+import type { DrawingToolProperty } from '@/utility/drawing/tools.js';
 import type { ViewportState } from '@/utility/drawing/viewport.js';
-import { MAX_ZOOM, MIN_ZOOM, transformAt, zoomAt } from '@/utility/drawing/viewport.js';
+import { TOOL_PROPERTIES } from '@/utility/drawing/tools.js';
 import MkRange from '@/components/MkRange.vue';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
+
+type EnumProperty = Extract<DrawingToolProperty, { type: 'enum'; }>;
 
 const settings = defineModel<DrawingSettings>('settings', { required: true });
 const view = defineModel<ViewportState>('view', { required: true });
@@ -134,87 +84,58 @@ const emit = defineEmits<{
 	(ev: 'resetView'): void;
 }>();
 
-/** settings の 1 項目を v-model で扱えるようにする */
-function useSetting<K extends keyof DrawingSettings>(key: K) {
-	return computed<DrawingSettings[K]>({
-		get: () => settings.value[key],
-		set: (value) => {
-			settings.value = { ...settings.value, [key]: value };
-		},
-	});
+/** 定義が持つ内部名に文言を当てる。文言を知っているのは UI 側だけ */
+const LABELS: Record<string, string> = {
+	thickness: i18n.ts._shDrawing.thickness,
+	color: i18n.ts._shDrawing.color,
+	pressure: i18n.ts._shDrawing.pressure,
+	shapeKind: i18n.ts._shDrawing.shapeKind,
+	mode: i18n.ts._shDrawing.mode,
+	strokeColor: i18n.ts._shDrawing.strokeColor,
+	fillColor: i18n.ts._shDrawing.fillColor,
+	rect: i18n.ts._shDrawing._shapes.rect,
+	ellipse: i18n.ts._shDrawing._shapes.ellipse,
+	line: i18n.ts._shDrawing._shapes.line,
+	stroke: i18n.ts._shDrawing._modes.stroke,
+	fill: i18n.ts._shDrawing._modes.fill,
+	strokeAndFill: i18n.ts._shDrawing._modes.strokeAndFill,
+};
+
+/** 対応表に無いときは内部名をそのまま出す (undefined を画面に出さないため) */
+function labelOf(name: string): string {
+	return LABELS[name] ?? name;
 }
 
-const penWidth = useSetting('penWidth');
-const penColor = useSetting('penColor');
-const eraserWidth = useSetting('eraserWidth');
-const shapeKind = useSetting('shapeKind');
-const shapeMode = useSetting('shapeMode');
-const shapeWidth = useSetting('shapeWidth');
-const shapeStrokeColor = useSetting('shapeStrokeColor');
-const shapeFillColor = useSetting('shapeFillColor');
-const pressureSensitivity = useSetting('pressureSensitivity');
+const properties = computed(() => TOOL_PROPERTIES[props.tool].filter(property => property.visible?.(settings.value) ?? true));
 
-const hasProperties = computed(() => props.tool !== 'eyedropper');
-
-// #region 表示 (ハンドツール)
-/** バーからの操作は、画面中央にあるものを動かさずに倍率と角度を変える */
-const VIEW_ANCHOR: Point = { x: 0, y: 0 };
-
-// 倍率はスライダー上では 2 の冪で扱う (等倍がつまみの中央付近に来るように)
-const MIN_ZOOM_EXPONENT = Math.log2(MIN_ZOOM);
-const MAX_ZOOM_EXPONENT = Math.log2(MAX_ZOOM);
-
-const zoomExponent = computed<number>({
-	get: () => Math.log2(view.value.zoom),
-	set: (value) => {
-		view.value = zoomAt(view.value, 2 ** value, VIEW_ANCHOR);
-	},
-});
-
-const rotationDegrees = computed<number>({
-	get: () => Math.round(view.value.rotation * 180 / Math.PI),
-	set: (value) => {
-		view.value = transformAt(view.value, view.value.zoom, value * Math.PI / 180 - view.value.rotation, VIEW_ANCHOR);
-	},
-});
-
-function zoomText(exponent: number): string {
-	return `${Math.round(2 ** exponent * 100)}%`;
+/** 項目の出入りで DOM が使い回されないように、項目ごとに決まる名前を振る */
+function keyOf(property: DrawingToolProperty): string {
+	return property.type === 'view' ? property.type : `${property.type}:${property.key}`;
 }
 
-function rotationText(degrees: number): string {
-	return `${degrees}°`;
+function isEnabled(property: DrawingToolProperty): boolean {
+	return property.enabled?.(settings.value) ?? true;
 }
-// #endregion
 
-// 直線は面を持たないため、モードに関わらず線の設定のみ出す
-const showShapeStroke = computed(() => shapeKind.value === 'line' || shapeMode.value !== 'fill');
-const showShapeFill = computed(() => shapeKind.value !== 'line' && shapeMode.value !== 'stroke');
+function updateSetting(key: keyof DrawingSettings, value: unknown) {
+	// 書き戻す先は定義から来るため、キーと値の組み合わせは型で保証しきれない
+	settings.value = { ...settings.value, [key]: value } as DrawingSettings;
+}
 
-const shapeKindItems: { value: ShapeKind; label: string; icon: string; }[] = [
-	{ value: 'rect', label: i18n.ts._shDrawing._shapes.rect, icon: 'ti ti-square' },
-	{ value: 'ellipse', label: i18n.ts._shDrawing._shapes.ellipse, icon: 'ti ti-oval' },
-	{ value: 'line', label: i18n.ts._shDrawing._shapes.line, icon: 'ti ti-line' },
-];
+function currentItem(property: EnumProperty) {
+	return property.items.find(item => item.value === settings.value[property.key]) ?? property.items[0];
+}
 
-const currentShapeKind = computed(() => shapeKindItems.find(item => item.value === shapeKind.value) ?? shapeKindItems[0]);
-
-function showShapeKindMenu(ev: MouseEvent) {
-	os.popupMenu(shapeKindItems.map(item => ({
-		text: item.label,
+function showEnumMenu(property: EnumProperty, ev: MouseEvent) {
+	os.popupMenu(property.items.map(item => ({
+		text: labelOf(item.label),
 		icon: item.icon,
-		active: shapeKind.value === item.value,
+		active: settings.value[property.key] === item.value,
 		action: () => {
-			shapeKind.value = item.value;
+			updateSetting(property.key, item.value);
 		},
 	})), ev.currentTarget ?? ev.target);
 }
-
-const shapeModeItems: { value: ShapeFillMode; label: string; }[] = [
-	{ value: 'stroke', label: i18n.ts._shDrawing._modes.stroke },
-	{ value: 'fill', label: i18n.ts._shDrawing._modes.fill },
-	{ value: 'strokeAndFill', label: i18n.ts._shDrawing._modes.strokeAndFill },
-];
 </script>
 
 <style lang="scss" module>
@@ -248,19 +169,6 @@ const shapeModeItems: { value: ShapeFillMode; label: string; }[] = [
 	min-width: 120px;
 }
 
-.rangeIcon {
-	opacity: 0.7;
-}
-
-// 値が変わっても幅が動かないよう、桁数ぶんの幅を確保しておく
-.rangeValue {
-	min-width: 3.5em;
-	font-size: 0.9em;
-	text-align: right;
-	font-variant-numeric: tabular-nums;
-	opacity: 0.8;
-}
-
 // バーの高さ (44px) に収めるため、文字を詰める
 .toggle {
 	display: flex;
@@ -280,6 +188,10 @@ const shapeModeItems: { value: ShapeFillMode; label: string; }[] = [
 		background: var(--MI_THEME-accentedBg);
 		color: var(--MI_THEME-accent);
 	}
+
+	&:disabled {
+		opacity: 0.5;
+	}
 }
 
 .dropdown {
@@ -294,50 +206,14 @@ const shapeModeItems: { value: ShapeFillMode; label: string; }[] = [
 	&:hover {
 		background: var(--MI_THEME-buttonHoverBg);
 	}
+
+	&:disabled {
+		opacity: 0.5;
+	}
 }
 
 .dropdownChevron {
 	font-size: 0.8em;
 	opacity: 0.7;
-}
-
-.segment {
-	display: flex;
-	flex-shrink: 0;
-	gap: 2px;
-}
-
-%iconButton {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-	width: 32px;
-	height: 32px;
-	border-radius: 8px;
-
-	&:hover {
-		background: var(--MI_THEME-buttonHoverBg);
-	}
-}
-
-.iconButton {
-	@extend %iconButton;
-}
-
-.segmentButton {
-	@extend %iconButton;
-
-	&.active {
-		background: var(--MI_THEME-accentedBg);
-	}
-}
-
-.modePreview {
-	width: 16px;
-	height: 16px;
-	border: solid 3px;
-	border-radius: 3px;
-	box-sizing: border-box;
 }
 </style>
