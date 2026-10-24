@@ -38,6 +38,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/misskey
+          labels: |
+            org.opencontainers.image.licenses=AGPL-3.0-only
+            org.opencontainers.image.source=https://github.com/shrimpia/misskey
           tags: |
             type=match,pattern=v(.*),group=1
             type=raw,value=latest
