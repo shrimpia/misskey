@@ -238,7 +238,7 @@ import MkInstanceTicker from '@/components/MkInstanceTicker.vue';
 // #region shrimpia
 import ShVisibilityColoring from '@/components/ShVisibilityColoring.vue';
 // #endregion
-import { notePage } from '@/filters/note.js';
+import { notePage } from '@@/js/note.js';
 import * as os from '@/os.js';
 import { stealMenu } from '@/utility/steal-menu.js'; // shrimpia
 import { playHeadPat, registerHeadPatTarget } from '@/utility/head-pat.js'; // shrimpia

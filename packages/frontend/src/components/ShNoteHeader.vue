@@ -41,7 +41,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import * as misskey from 'misskey-js';
 import { i18n } from '@/i18n';
-import { notePage } from '@/filters/note';
+import { notePage } from '@@/js/note.js';
 import { userPage } from '@/filters/user';
 import MkInstanceTicker from '@/components/MkInstanceTicker.vue';
 
