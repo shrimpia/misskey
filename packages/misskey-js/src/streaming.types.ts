@@ -161,6 +161,16 @@ export type Channels = {
 		};
 		receives: null;
 	};
+	clip: {
+		params: {
+			clipId: string;
+		};
+		events: {
+			updated: () => void;
+			deleted: () => void;
+		};
+		receives: null;
+	};
 	drive: {
 		params: null;
 		events: {
