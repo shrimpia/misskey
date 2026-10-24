@@ -11,10 +11,12 @@ export function checkReactionPermissions(me: Misskey.entities.MeDetailed, note: 
 	if ('char' in emoji) return true; // UnicodeEmojiDefなら常にリアクション可能
 
 	const roleIdsThatCanBeUsedThisEmojiAsReaction = emoji.roleIdsThatCanBeUsedThisEmojiAsReaction ?? [];
-	return !(emoji.localOnly && note.user.host !== me.host)
-      && !(emoji.isSensitive && (note.reactionAcceptance === 'nonSensitiveOnly' || note.reactionAcceptance === 'nonSensitiveOnlyForLocalLikeOnlyForRemote'))
-      // #region shrimpia
-      && !(emoji.isHarmful && !(note.allowHarmfulReaction ?? true))
-      // #endregion
-      && (roleIdsThatCanBeUsedThisEmojiAsReaction.length === 0 || me.roles.some(role => roleIdsThatCanBeUsedThisEmojiAsReaction.includes(role.id)));
+	const canUseLocalOnlyEmoji = note.user.host === me.host && (note.renote?.user.host == null || note.renote.user.host === me.host);
+
+	return (!emoji.localOnly || canUseLocalOnlyEmoji)
+		&& !(emoji.isSensitive && (note.reactionAcceptance === 'nonSensitiveOnly' || note.reactionAcceptance === 'nonSensitiveOnlyForLocalLikeOnlyForRemote'))
+		// #region shrimpia
+		&& !(emoji.isHarmful && !(note.allowHarmfulReaction ?? true))
+		// #endregion
+		&& (roleIdsThatCanBeUsedThisEmojiAsReaction.length === 0 || me.roles.some(role => roleIdsThatCanBeUsedThisEmojiAsReaction.includes(role.id)));
 }

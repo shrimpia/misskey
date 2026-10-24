@@ -23,7 +23,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { } from 'vue';
 import * as Misskey from 'misskey-js';
+// #region shrimpia ニックネーム対応
 import { userName } from '@/filters/user.js';
+// #endregion
 
 const props = defineProps<{
 	flash: Misskey.entities.Flash;
