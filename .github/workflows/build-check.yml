@@ -1,0 +1,40 @@
+name: Build check
+
+# empire ブランチでビルドが通ることを、タグを打つ前に検知する
+on:
+  push:
+    branches:
+      - empire
+  pull_request:
+    branches:
+      - empire
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - uses: pnpm/action-setup@v6.0.10
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - run: pnpm i --frozen-lockfile
+
+      - run: cp .github/misskey/test.yml .config/test.yml
+
+      - run: pnpm build
