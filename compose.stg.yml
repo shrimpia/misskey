@@ -1,0 +1,23 @@
+# #region shrimpia
+# 実験用サーバー向けの上書き設定。Docker Hub に新しいイメージが上がったら web を自動更新する。
+#
+#   docker compose -f compose.yml -f compose.stg.yml up -d
+#
+# 毎回 -f を書きたくない場合は .env に COMPOSE_FILE=compose.yml:compose.stg.yml を書く。
+# 更新前にバックアップを取ること (更新と同時に migration が走る)。
+services:
+  web:
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+
+  watchtower:
+    image: nickfedor/watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_CLEANUP=true
+      # ラベルを付けたコンテナ (web) だけを更新対象にする。db / redis は更新しない
+      - WATCHTOWER_LABEL_ENABLE=true
+# #endregion

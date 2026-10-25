@@ -1,6 +1,9 @@
 services:
   web:
-    build: .
+    # #region shrimpia Docker Hub のイメージを使う (Watchtower による自動更新に対応するため build から変更)
+    image: ebiselutica/misskey:latest
+    # build: .
+    # #endregion
     restart: always
     links:
       - db
