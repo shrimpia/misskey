@@ -215,6 +215,7 @@ export class ImportCustomEmojisProcessorService {
 				license: emojiInfo.license,
 				isSensitive: emojiInfo.isSensitive,
 				localOnly: emojiInfo.localOnly,
+				isHarmful: false,
 				roleIdsThatCanBeUsedThisEmojiAsReaction: [],
 			});
 		} catch (e) {

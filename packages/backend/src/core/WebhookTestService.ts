@@ -82,6 +82,9 @@ function generateDummyNote(override?: Partial<MiNote>): MiNote {
 		user: null,
 		localOnly: true,
 		reactionAcceptance: 'likeOnly',
+		// #region shrimpia
+		allowHarmfulReaction: true,
+		// #endregion
 		renoteCount: 10,
 		repliesCount: 5,
 		clippedCount: 0,
@@ -386,6 +389,9 @@ export class WebhookTestService {
 			channel: note.channel,
 			localOnly: note.localOnly,
 			reactionAcceptance: note.reactionAcceptance,
+			// #region shrimpia
+			allowHarmfulReaction: note.allowHarmfulReaction,
+			// #endregion
 			reactionEmojis: {},
 			reactions: {},
 			reactionCount: 0,

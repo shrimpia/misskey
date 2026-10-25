@@ -96,6 +96,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				license: emoji.license,
 				isSensitive: emoji.isSensitive,
 				localOnly: emoji.localOnly,
+				isHarmful: emoji.isHarmful,
 				roleIdsThatCanBeUsedThisEmojiAsReaction: emoji.roleIdsThatCanBeUsedThisEmojiAsReaction,
 			}, me);
 

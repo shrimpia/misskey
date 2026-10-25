@@ -6,7 +6,6 @@
 import { Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { GetterService } from '@/server/api/GetterService.js';
-import { RoleService } from '@/core/RoleService.js';
 import { AbuseReportService } from '@/core/AbuseReportService.js';
 import { ApiError } from '../../error.js';
 
@@ -46,7 +45,6 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
 	constructor(
 		private getterService: GetterService,
-		private roleService: RoleService,
 		private abuseReportService: AbuseReportService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
@@ -58,10 +56,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (targetUser.id === me.id) {
 				throw new ApiError(meta.errors.cannotReportYourself);
-			}
-
-			if (await this.roleService.isAdministrator(targetUser)) {
-				throw new ApiError(meta.errors.cannotReportAdmin);
 			}
 
 			await this.abuseReportService.report([{

@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 <template>
 	<MkWindow ref="window"
 		:initial-width="520"

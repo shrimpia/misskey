@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 import type { User } from 'misskey-js/entities.js';
 import * as os from '@/os';
 import { prefer } from '@/preferences';

@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: Ebise Lutica and GitHub Contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 import { pleaseLogin } from './please-login.js';
 import type { Note } from 'misskey-js/entities.js';
 import type { MenuItem } from '@/types/menu.js';

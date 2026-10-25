@@ -298,10 +298,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			if (Array.isArray(ps.spamUrlPatterns)) {
 				set.spamUrlPatterns = ps.spamUrlPatterns.filter(Boolean);
 			}
-			if (ps.spamUrlWindowSize !== undefined) set.spamUrlWindowSize = ps.spamUrlWindowSize;
-			if (ps.spamUrlThreshold !== undefined) set.spamUrlThreshold = ps.spamUrlThreshold;
-			if (ps.spamRenoteWindowSize !== undefined) set.spamRenoteWindowSize = ps.spamRenoteWindowSize;
-			if (ps.spamRenoteThreshold !== undefined) set.spamRenoteThreshold = ps.spamRenoteThreshold;
+			if (ps.spamUrlWindowSize != null) set.spamUrlWindowSize = ps.spamUrlWindowSize;
+			if (ps.spamUrlThreshold != null) set.spamUrlThreshold = ps.spamUrlThreshold;
+			if (ps.spamRenoteWindowSize != null) set.spamRenoteWindowSize = ps.spamRenoteWindowSize;
+			if (ps.spamRenoteThreshold != null) set.spamRenoteThreshold = ps.spamRenoteThreshold;
 			// #endregion
 			if (ps.themeColor !== undefined) {
 				set.themeColor = ps.themeColor;
