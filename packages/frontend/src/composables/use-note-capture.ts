@@ -16,6 +16,7 @@ import { misskeyApi } from '@/utility/misskey-api.js';
 import { prefer } from '@/preferences.js';
 import { globalEvents } from '@/events.js';
 import * as sound from '@/utility/sound.js';
+import { getAppearNote } from '@/utility/get-appear-note.js';
 
 export const noteEvents = new EventEmitter<{
 	[ev: `reacted:${string}`]: (ctx: { userId: Misskey.entities.User['id']; reaction: string; emoji?: { name: string; url: string; } | null; }) => void;
@@ -80,6 +81,10 @@ createVisibilityAwareInterval(() => {
 
 	if (ids.length === 0) return;
 
+	fetchReactions(ids);
+}, POLLING_INTERVAL);
+
+function fetchReactions(ids: string[]) {
 	// まとめてリクエストするのではなく、個別にHTTPリクエスト投げてCDNにキャッシュさせた方がサーバーの負荷低減には良いかもしれない？
 	misskeyApi('notes/show-partial-bulk', {
 		noteIds: ids,
@@ -91,26 +96,50 @@ createVisibilityAwareInterval(() => {
 			});
 		}
 	});
-}, POLLING_INTERVAL);
+}
+
+const refetchQueue = new Set<string>();
+
+/** 同じタイミングで要求されたものをまとめてリクエストする */
+function requestRefetch(noteId: string) {
+	if (refetchQueue.size === 0) {
+		window.queueMicrotask(() => {
+			const ids = [...refetchQueue];
+			refetchQueue.clear();
+			for (let i = 0; i < ids.length; i += 100) {
+				fetchReactions(ids.slice(i, i + 100));
+			}
+		});
+	}
+	refetchQueue.add(noteId);
+}
+
+const delayedNotes = new Map<string, number>();
+
+/**
+ * 受信してから遅れて描画されるノート(タイムラインのキューに溜まっていたノートなど)について、
+ * 描画されるまでの間に発生したリアクションを反映し、作成から時間が経っていても購読するようにする
+ */
+export function prepareDelayedNotes(notes: Misskey.entities.Note[]): void {
+	const now = Date.now();
+	for (const [id, addedAt] of delayedNotes) {
+		if (now - addedAt > 1000 * 60 * 5) delayedNotes.delete(id);
+	}
+	for (const note of notes) {
+		delayedNotes.set(note.id, now);
+		requestRefetch(getAppearNote(note)?.id ?? note.id);
+	}
+}
 
 function pollingSubscribe(props: {
 	note: Pick<Misskey.entities.Note, 'id' | 'createdAt'>;
-	$note: ReactiveNoteData;
 }) {
-	const { note, $note } = props;
-
-	function onFetched(data: Pick<Misskey.entities.Note, 'reactions' | 'reactionEmojis'>): void {
-		$note.reactions = data.reactions;
-		$note.reactionCount = Object.values(data.reactions).reduce((a, b) => a + b, 0);
-		$note.reactionEmojis = data.reactionEmojis;
-	}
+	const { note } = props;
 
 	pollingEnqueue(note);
-	fetchEvent.on(note.id, onFetched);
 
 	onUnmounted(() => {
 		pollingDequeue(note);
-		fetchEvent.off(note.id, onFetched);
 	});
 }
 
@@ -221,6 +250,7 @@ export function useNoteCapture(props: {
 	noteEvents.on(`reacted:${note.id}`, onReacted);
 	noteEvents.on(`unreacted:${note.id}`, onUnreacted);
 	noteEvents.on(`pollVoted:${note.id}`, onPollVoted);
+	fetchEvent.on(note.id, onFetched);
 
 	// 操作がダブっていないかどうかを簡易的に記録するためのMap
 	const reactionUserMap = new Map<Misskey.entities.User['id'], string | typeof noReaction>();
@@ -271,6 +301,12 @@ export function useNoteCapture(props: {
 		}
 	}
 
+	function onFetched(data: Pick<Misskey.entities.Note, 'reactions' | 'reactionEmojis'>): void {
+		$note.reactions = data.reactions;
+		$note.reactionCount = Object.values(data.reactions).reduce((a, b) => a + b, 0);
+		$note.reactionEmojis = data.reactionEmojis;
+	}
+
 	function onPollVoted(ctx: { userId: Misskey.entities.User['id']; choice: number; }): void {
 		const newPollVotedKey = `${ctx.userId}:${ctx.choice}`;
 		if (newPollVotedKey === latestPollVotedKey) return;
@@ -301,7 +337,6 @@ export function useNoteCapture(props: {
 		} else {
 			pollingSubscribe({
 				note,
-				$note,
 			});
 		}
 	}
@@ -310,7 +345,20 @@ export function useNoteCapture(props: {
 		noteEvents.off(`reacted:${note.id}`, onReacted);
 		noteEvents.off(`unreacted:${note.id}`, onUnreacted);
 		noteEvents.off(`pollVoted:${note.id}`, onPollVoted);
+		fetchEvent.off(note.id, onFetched);
 	});
+
+	// 受信してから遅れて描画されたノートは、作成から時間が経っていてもイベント発生が考えられるため購読する
+	if (delayedNotes.has((parentNote ?? note).id)) {
+		subscribe();
+
+		return {
+			$note,
+			subscribe: () => {
+				// すでに購読しているので何もしない
+			},
+		};
+	}
 
 	// 投稿からある程度経過している(=タイムラインを遡って表示した)ノートは、イベントが発生する可能性が低いためそもそも購読しない
 	// ただし「リノートされたばかりの過去のノート」(= parentNoteが存在し、かつparentNoteの投稿日時が最近)はイベント発生が考えられるため購読する

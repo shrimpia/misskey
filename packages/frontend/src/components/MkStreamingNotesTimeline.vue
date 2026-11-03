@@ -78,6 +78,7 @@ import { DI } from '@/di.js';
 import { globalEvents, useGlobalEvent } from '@/events.js';
 import { isSeparatorNeeded, getSeparatorInfo } from '@/utility/timeline-date-separate.js';
 import { Paginator } from '@/utility/paginator.js';
+import { prepareDelayedNotes } from '@/composables/use-note-capture.js';
 
 const props = withDefaults(defineProps<{
 	src: BasicTimelineType | 'mentions' | 'directs' | 'list' | 'antenna' | 'channel' | 'featured' | 'role';
@@ -220,7 +221,7 @@ let scrollContainer: HTMLElement | null = null;
 
 function onScrollContainerScroll() {
 	if (isTop()) {
-		paginator.releaseQueue();
+		prepareDelayedNotes(paginator.releaseQueue());
 	}
 }
 
@@ -291,7 +292,7 @@ useGlobalEvent('noteRemovedFromAntenna', (antennaId, noteId) => {
 });
 
 function releaseQueue() {
-	paginator.releaseQueue();
+	prepareDelayedNotes(paginator.releaseQueue());
 	scrollToTop(rootEl.value!);
 }
 
