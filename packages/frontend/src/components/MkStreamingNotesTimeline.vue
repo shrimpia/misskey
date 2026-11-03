@@ -78,6 +78,7 @@ import { DI } from '@/di.js';
 import { globalEvents, useGlobalEvent } from '@/events.js';
 import { isSeparatorNeeded, getSeparatorInfo } from '@/utility/timeline-date-separate.js';
 import { Paginator } from '@/utility/paginator.js';
+import { prepareDelayedNotes } from '@/composables/use-note-capture.js';
 
 const props = withDefaults(defineProps<{
 	src: BasicTimelineType | 'mentions' | 'directs' | 'list' | 'antenna' | 'channel' | 'featured' | 'role';
@@ -220,7 +221,7 @@ let scrollContainer: HTMLElement | null = null;
 
 function onScrollContainerScroll() {
 	if (isTop()) {
-		paginator.releaseQueue();
+		prepareDelayedNotes(paginator.releaseQueue());
 	}
 }
 
@@ -291,7 +292,7 @@ useGlobalEvent('noteRemovedFromAntenna', (antennaId, noteId) => {
 });
 
 function releaseQueue() {
-	paginator.releaseQueue();
+	prepareDelayedNotes(paginator.releaseQueue());
 	scrollToTop(rootEl.value!);
 }
 
@@ -414,8 +415,31 @@ function disconnectChannel() {
 	}
 }
 
+let isStreamDisconnected = false;
+
+function onStreamDisconnected() {
+	isStreamDisconnected = true;
+}
+
+function onStreamConnected() {
+	if (!isStreamDisconnected) return;
+	isStreamDisconnected = false;
+
+	// 切断されていた間に流れてきたノートを取得する
+	// 描画前に prepareDelayedNotes を通すため、一度キューに入れてから解放する
+	paginator.fetchNewer({
+		toQueue: true,
+	}).then(() => {
+		if (isTop() && !isPausingUpdate) {
+			prepareDelayedNotes(paginator.releaseQueue());
+		}
+	});
+}
+
 if (store.s.realtimeMode) {
 	connectChannel();
+	stream?.on('_disconnected_', onStreamDisconnected);
+	stream?.on('_connected_', onStreamConnected);
 }
 
 watch(() => [props.list, props.antenna, props.channel, props.role, props.withRenotes, props.withBots, props.onlyLocals], () => {
@@ -428,6 +452,8 @@ watch(() => props.withSensitive, reloadTimeline);
 
 onUnmounted(() => {
 	disconnectChannel();
+	stream?.off('_disconnected_', onStreamDisconnected);
+	stream?.off('_connected_', onStreamConnected);
 });
 
 function reloadTimeline() {

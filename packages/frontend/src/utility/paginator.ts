@@ -64,7 +64,7 @@ export interface IPaginator<T = unknown, _T = T & MisskeyEntity> {
 	pushItems(oldItems: (_T)[]): void;
 	prepend(item: _T): void;
 	enqueue(item: _T): void;
-	releaseQueue(): void;
+	releaseQueue(): _T[];
 	removeItem(id: string): void;
 	updateItem(id: string, updater: (item: _T) => _T): void;
 }
@@ -339,7 +339,7 @@ export class Paginator<
 		}
 
 		if (options.toQueue) {
-			this.aheadQueue.unshift(...apiRes.toReversed());
+			this.aheadQueue.unshift(...apiRes.toReversed().filter(x => !this.aheadQueue.some(y => y.id === x.id))); // ストリーミングやポーリングのタイミングによっては重複することがあるため
 			if (this.aheadQueue.length > MAX_QUEUE_ITEMS) {
 				this.aheadQueue = this.aheadQueue.slice(0, MAX_QUEUE_ITEMS);
 			}
@@ -390,6 +390,7 @@ export class Paginator<
 	}
 
 	public enqueue(item: T): void {
+		if (this.aheadQueue.some(x => x.id === item.id)) return;
 		this.aheadQueue.unshift(item);
 		if (this.aheadQueue.length > MAX_QUEUE_ITEMS) {
 			this.aheadQueue.pop();
@@ -397,11 +398,13 @@ export class Paginator<
 		this.queuedAheadItemsCount.value = this.aheadQueue.length;
 	}
 
-	public releaseQueue(): void {
-		if (this.aheadQueue.length === 0) return; // これやらないと余計なre-renderが走る
-		this.unshiftItems(this.aheadQueue);
+	public releaseQueue(): T[] {
+		if (this.aheadQueue.length === 0) return []; // これやらないと余計なre-renderが走る
+		const released = this.aheadQueue;
+		this.unshiftItems(released);
 		this.aheadQueue = [];
 		this.queuedAheadItemsCount.value = 0;
+		return released;
 	}
 
 	public removeItem(id: string): void {
