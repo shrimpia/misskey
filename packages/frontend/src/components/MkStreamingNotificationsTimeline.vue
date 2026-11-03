@@ -154,6 +154,22 @@ function onNotification(notification: Misskey.entities.Notification) {
 	}
 }
 
+let isStreamDisconnected = false;
+
+function onStreamDisconnected() {
+	isStreamDisconnected = true;
+}
+
+function onStreamConnected() {
+	if (!isStreamDisconnected) return;
+	isStreamDisconnected = false;
+
+	// 切断されていた間に届いた通知を取得する
+	paginator.fetchNewer({
+		toQueue: !isTop() || isPausingUpdate,
+	});
+}
+
 function reload() {
 	return paginator.reload();
 }
@@ -173,11 +189,17 @@ onMounted(() => {
 		connection = useStream().useChannel('main');
 		connection.on('notification', onNotification);
 		connection.on('notificationFlushed', reload);
+		useStream().on('_disconnected_', onStreamDisconnected);
+		useStream().on('_connected_', onStreamConnected);
 	}
 });
 
 onUnmounted(() => {
-	if (connection) connection.dispose();
+	if (connection) {
+		connection.dispose();
+		useStream().off('_disconnected_', onStreamDisconnected);
+		useStream().off('_connected_', onStreamConnected);
+	}
 	if (scrollContainer != null) {
 		scrollContainer.removeEventListener('scroll', onScrollContainerScroll);
 	}

@@ -339,7 +339,7 @@ export class Paginator<
 		}
 
 		if (options.toQueue) {
-			this.aheadQueue.unshift(...apiRes.toReversed());
+			this.aheadQueue.unshift(...apiRes.toReversed().filter(x => !this.aheadQueue.some(y => y.id === x.id))); // ストリーミングやポーリングのタイミングによっては重複することがあるため
 			if (this.aheadQueue.length > MAX_QUEUE_ITEMS) {
 				this.aheadQueue = this.aheadQueue.slice(0, MAX_QUEUE_ITEMS);
 			}
@@ -390,6 +390,7 @@ export class Paginator<
 	}
 
 	public enqueue(item: T): void {
+		if (this.aheadQueue.some(x => x.id === item.id)) return;
 		this.aheadQueue.unshift(item);
 		if (this.aheadQueue.length > MAX_QUEUE_ITEMS) {
 			this.aheadQueue.pop();

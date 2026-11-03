@@ -197,8 +197,14 @@ function realtimeSubscribe(props: {
 		if (withHandler) connection.off('noteUpdated', onStreamNoteUpdated);
 	}
 
+	let isInitialConnection = connection.state === 'initializing';
+
 	function onStreamConnected() {
 		capture(false);
+
+		// 切断されていた間に発生したリアクションを反映する
+		if (!isInitialConnection) requestRefetch(note.id);
+		isInitialConnection = false;
 	}
 
 	capture(true);
