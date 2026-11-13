@@ -48,10 +48,10 @@ import type { AnnouncementService } from '@/core/AnnouncementService.js';
 import type { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import { ChatService } from '@/core/ChatService.js';
+import { toArray } from '@/misc/prelude/array.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { NoteEntityService } from './NoteEntityService.js';
 import type { PageEntityService } from './PageEntityService.js';
-import { toArray } from '@/misc/prelude/array.js';
 
 const Ajv = _Ajv.default;
 const ajv = new Ajv();
@@ -509,8 +509,8 @@ export class UserEntityService implements OnModuleInit {
 				movedTo: user.movedToUri ? this.apPersonService.resolvePerson(user.movedToUri).then(user => user.id).catch(() => null) : null,
 				alsoKnownAs: user.alsoKnownAs ?
 					Promise.all(toArray(user.alsoKnownAs).map(uri => this.apPersonService.fetchPerson(uri).then(user => user?.id).catch(() => null)))
-				.then(xs => xs.length === 0 ? null : xs.filter(x => x != null))
-				: null,
+						.then(xs => xs.length === 0 ? null : xs.filter(x => x != null))
+					: null,
 				createdAt: this.idService.parse(user.id).date.toISOString(),
 				updatedAt: user.updatedAt ? user.updatedAt.toISOString() : null,
 				lastFetchedAt: user.lastFetchedAt ? user.lastFetchedAt.toISOString() : null,
@@ -668,13 +668,17 @@ export class UserEntityService implements OnModuleInit {
 		let userMemos: Map<MiUser['id'], string | null> = new Map();
 		let pinNotes: Map<MiUser['id'], MiUserNotePining[]> = new Map();
 
-		if (options?.schema !== 'UserLite') {
+		const schema = (options?.schema ?? 'UserLite') as S;
+		if (schema !== 'UserLite') {
+			profilesMap = await this.userProfilesRepository.findBy({ userId: In(_userIds) })
+				.then(profiles => new Map(profiles.map(p => [p.userId, p])));
+
 			const meId = me ? me.id : null;
 			if (meId) {
-				userMemos = await this.userMemosRepository.findBy({ userId: meId })
-					.then(memos => new Map(memos.map(memo => [memo.targetUserId, memo.memo])));
-
 				if (_userIds.length > 0) {
+					userMemos = await this.userMemosRepository.findBy({ userId: meId, targetUserId: In(_userIds) })
+						.then(memos => new Map(memos.map(memo => [memo.targetUserId, memo.memo])));
+
 					userRelations = await this.getRelations(meId, _userIds);
 					pinNotes = await this.userNotePiningsRepository.createQueryBuilder('pin')
 						.where('pin.userId IN (:...userIds)', { userIds: _userIds })
@@ -703,6 +707,7 @@ export class UserEntityService implements OnModuleInit {
 				me,
 				{
 					...options,
+					schema,
 					userProfile: profilesMap?.get(u.id),
 					userRelations: userRelations,
 					userMemos: userMemos,
