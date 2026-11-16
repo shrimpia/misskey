@@ -84,9 +84,9 @@ createVisibilityAwareInterval(() => {
 	fetchReactions(ids);
 }, POLLING_INTERVAL);
 
-function fetchReactions(ids: string[]) {
+function fetchReactions(ids: string[]): Promise<void> {
 	// まとめてリクエストするのではなく、個別にHTTPリクエスト投げてCDNにキャッシュさせた方がサーバーの負荷低減には良いかもしれない？
-	misskeyApi('notes/show-partial-bulk', {
+	return misskeyApi('notes/show-partial-bulk', {
 		noteIds: ids,
 	}).then((items) => {
 		for (const item of items) {
@@ -107,11 +107,82 @@ function requestRefetch(noteId: string) {
 			const ids = [...refetchQueue];
 			refetchQueue.clear();
 			for (let i = 0; i < ids.length; i += 100) {
-				fetchReactions(ids.slice(i, i + 100));
+				refetchReactions(ids.slice(i, i + 100));
 			}
 		});
 	}
 	refetchQueue.add(noteId);
+}
+
+// 再取得とストリームのイベントの整合
+// 再取得の結果(その時点のリアクションの全量)と、ストリームで届くリアクションの差分イベントは順序が保証されない。
+// サーバーはリアクションを保存してからイベントを発行するまでに間があるため、再取得の結果に含まれているリアクションのイベントが後から届くと二重に加算されてしまう。
+// イベント側からは結果に含まれていたかを判別できないため、再取得中・直後にイベントが届いたノートは、少し待ってからもう一度取得して整合させる。
+
+const RECONCILE_DELAY = 1000 * 3;
+const MAX_RECONCILE_RETRIES = 3;
+
+const refetchStates = new Map<string, {
+	inFlight: boolean;
+	/** この時刻までに届いたイベントは、直前の再取得の結果に含まれていた可能性がある */
+	ambiguousUntil: number;
+	/** 再取得中にイベントが届いた */
+	dirty: boolean;
+	retries: number;
+	timer: number | null;
+}>();
+
+function refetchReactions(ids: string[]) {
+	for (const id of ids) {
+		const state = refetchStates.get(id);
+		if (state) {
+			state.inFlight = true;
+			state.dirty = false;
+		} else {
+			refetchStates.set(id, { inFlight: true, ambiguousUntil: 0, dirty: false, retries: 0, timer: null });
+		}
+	}
+
+	fetchReactions(ids).finally(() => {
+		const ambiguousUntil = Date.now() + RECONCILE_DELAY;
+		for (const id of ids) {
+			const state = refetchStates.get(id);
+			if (state == null) continue;
+			state.inFlight = false;
+			state.ambiguousUntil = ambiguousUntil;
+			if (state.dirty) scheduleReconcile(id);
+		}
+		window.setTimeout(() => {
+			for (const id of ids) {
+				const state = refetchStates.get(id);
+				// 後続の再取得が行われている場合はそちらに任せる
+				if (state != null && !state.inFlight && state.timer == null && state.ambiguousUntil === ambiguousUntil) {
+					refetchStates.delete(id);
+				}
+			}
+		}, RECONCILE_DELAY);
+	});
+}
+
+function scheduleReconcile(noteId: string) {
+	const state = refetchStates.get(noteId);
+	if (state == null || state.timer != null || state.retries >= MAX_RECONCILE_RETRIES) return;
+	state.retries++;
+	state.timer = window.setTimeout(() => {
+		state.timer = null;
+		requestRefetch(noteId);
+	}, RECONCILE_DELAY);
+}
+
+/** ストリームでリアクションのイベントを受け取ったときに呼ぶ */
+function onReactionEventReceived(noteId: string) {
+	const state = refetchStates.get(noteId);
+	if (state == null) return;
+	if (state.inFlight) {
+		state.dirty = true;
+	} else if (Date.now() < state.ambiguousUntil) {
+		scheduleReconcile(noteId);
+	}
 }
 
 const delayedNotes = new Map<string, number>();
@@ -127,7 +198,10 @@ export function prepareDelayedNotes(notes: Misskey.entities.Note[]): void {
 	}
 	for (const note of notes) {
 		delayedNotes.set(note.id, now);
-		requestRefetch(getAppearNote(note)?.id ?? note.id);
+		const appearNoteId = getAppearNote(note)?.id ?? note.id;
+		// すでにストリームで購読されているノート(表示中のノートのリノートなど)は最新の状態が反映されているので取得しない
+		if (realtimeCaptures.has(appearNoteId) && useStream().state === 'connected') continue;
+		requestRefetch(appearNoteId);
 	}
 }
 
@@ -143,11 +217,16 @@ function pollingSubscribe(props: {
 	});
 }
 
+/** ストリームで購読中のノートIDと購読数 */
+const realtimeCaptures = new Map<string, number>();
+
 function realtimeSubscribe(props: {
 	note: Pick<Misskey.entities.Note, 'id' | 'createdAt'>;
 }): void {
 	const note = props.note;
 	const connection = useStream();
+
+	realtimeCaptures.set(note.id, (realtimeCaptures.get(note.id) ?? 0) + 1);
 
 	function onStreamNoteUpdated(noteData: NoteUpdatedEvent): void {
 		const { type, id, body } = noteData;
@@ -156,6 +235,7 @@ function realtimeSubscribe(props: {
 
 		switch (type) {
 			case 'reacted': {
+				onReactionEventReceived(id);
 				noteEvents.emit(`reacted:${id}`, {
 					userId: body.userId,
 					reaction: body.reaction,
@@ -165,6 +245,7 @@ function realtimeSubscribe(props: {
 			}
 
 			case 'unreacted': {
+				onReactionEventReceived(id);
 				noteEvents.emit(`unreacted:${id}`, {
 					userId: body.userId,
 					reaction: body.reaction,
@@ -213,6 +294,13 @@ function realtimeSubscribe(props: {
 	onUnmounted(() => {
 		decapture(true);
 		connection.off('_connected_', onStreamConnected);
+
+		const count = realtimeCaptures.get(note.id) ?? 0;
+		if (count <= 1) {
+			realtimeCaptures.delete(note.id);
+		} else {
+			realtimeCaptures.set(note.id, count - 1);
+		}
 	});
 }
 
