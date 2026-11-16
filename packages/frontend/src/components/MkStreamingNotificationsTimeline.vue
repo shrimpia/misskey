@@ -57,6 +57,7 @@ import { prefer } from '@/preferences.js';
 import { store } from '@/store.js';
 import { isSeparatorNeeded, getSeparatorInfo } from '@/utility/timeline-date-separate.js';
 import { Paginator } from '@/utility/paginator.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
 
 const props = defineProps<{
 	excludeTypes?: typeof notificationTypes[number][] | null;
@@ -164,10 +165,47 @@ function onStreamConnected() {
 	if (!isStreamDisconnected) return;
 	isStreamDisconnected = false;
 
-	// 切断されていた間に届いた通知を取得する
-	paginator.fetchNewer({
-		toQueue: !isTop() || isPausingUpdate,
+	fetchMissedNotifications();
+}
+
+/** 通知が、表示中またはキュー内の通知(グループ化された通知を含む)によってすでに表されているかどうか */
+function isAlreadyShown(notification: Misskey.entities.Notification): boolean {
+	return paginator.someItem(x => {
+		if (x.id === notification.id) return true;
+		if (x.type === 'reaction:grouped' && notification.type === 'reaction') {
+			return x.note.id === notification.note.id && x.reactions.some(r => r.user.id === notification.user.id && r.reaction === notification.reaction);
+		}
+		if (x.type === 'renote:grouped' && notification.type === 'renote') {
+			return x.note.renoteId === notification.note.renoteId && x.users.some(u => u.id === notification.user.id);
+		}
+		return false;
 	});
+}
+
+/**
+ * 切断されていた間に届いた通知を取得する
+ *
+ * グループ化された通知のIDはストリームで届く個々の通知のIDと一致せず、IDだけでは重複を判定できない。
+ * そのため常に個別の通知として取得し、すでに表示されているものを内容で除外してから追加する。
+ * グループ化された通知のIDはグループ内で最も古い通知のIDなので、sinceIdより新しい取得済みの通知も返りうるが、それも除外される。
+ */
+async function fetchMissedNotifications() {
+	const notifications = await misskeyApi('i/notifications', {
+		limit: 30,
+		sinceId: paginator.getNewestId() ?? undefined,
+		excludeTypes: props.excludeTypes ?? undefined,
+		markAsRead: window.document.visibilityState === 'visible',
+	}).catch(() => null);
+	if (notifications == null) return;
+
+	for (const notification of notifications.toReversed()) {
+		if (isAlreadyShown(notification)) continue;
+		if (isTop() && !isPausingUpdate) {
+			paginator.prepend(notification);
+		} else {
+			paginator.enqueue(notification);
+		}
+	}
 }
 
 function reload() {

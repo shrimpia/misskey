@@ -65,6 +65,8 @@ export interface IPaginator<T = unknown, _T = T & MisskeyEntity> {
 	prepend(item: _T): void;
 	enqueue(item: _T): void;
 	releaseQueue(): _T[];
+	getNewestId(): string | null | undefined;
+	someItem(predicate: (item: _T) => boolean): boolean;
 	removeItem(id: string): void;
 	updateItem(id: string, updater: (item: _T) => _T): void;
 }
@@ -177,7 +179,7 @@ export class Paginator<
 		this.updateItem = this.updateItem.bind(this);
 	}
 
-	private getNewestId(): string | null | undefined {
+	public getNewestId(): string | null | undefined {
 		// 様々な要因により並び順は保証されないのでソートが必要
 		if (this.aheadQueue.length > 0) {
 			return this.aheadQueue.map(x => x.id).sort().at(-1);
@@ -383,14 +385,14 @@ export class Paginator<
 	}
 
 	public prepend(item: T): void {
-		if (this.items.value.some(x => x.id === item.id)) return;
+		if (this.someItem(x => x.id === item.id)) return;
 		this.items.value.unshift(item);
 		this.trim(false);
 		if (this.useShallowRef) triggerRef(this.items);
 	}
 
 	public enqueue(item: T): void {
-		if (this.aheadQueue.some(x => x.id === item.id)) return;
+		if (this.someItem(x => x.id === item.id)) return;
 		this.aheadQueue.unshift(item);
 		if (this.aheadQueue.length > MAX_QUEUE_ITEMS) {
 			this.aheadQueue.pop();
@@ -405,6 +407,11 @@ export class Paginator<
 		this.aheadQueue = [];
 		this.queuedAheadItemsCount.value = 0;
 		return released;
+	}
+
+	/** 表示中のアイテムとキュー内のアイテムのいずれかが条件を満たすかどうか */
+	public someItem(predicate: (item: T) => boolean): boolean {
+		return this.items.value.some(predicate) || this.aheadQueue.some(predicate);
 	}
 
 	public removeItem(id: string): void {
