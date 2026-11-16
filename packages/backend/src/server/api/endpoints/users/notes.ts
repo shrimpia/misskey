@@ -5,7 +5,7 @@
 
 import { Brackets } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
-import type { MiMeta, NotesRepository } from '@/models/_.js';
+import type { MiMeta, NotesRepository, UsersRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { DI } from '@/di-symbols.js';
@@ -78,6 +78,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
+
+		@Inject(DI.usersRepository)
+		private usersRepository: UsersRepository,
 		private noteEntityService: NoteEntityService,
 		private queryService: QueryService,
 		private cacheService: CacheService,
@@ -98,6 +101,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				if (userIdsWhoBlockingMe.has(ps.userId)) {
 					return [];
 				}
+			}
+
+			// 非ログイン時はログイン必須設定のユーザーのノートを一切返さない
+			if (me == null) {
+				const requireSignin = await this.usersRepository.findOneBy({ id: ps.userId, requireSigninToViewContents: true });
+				if (requireSignin != null) return [];
 			}
 
 			if (!this.serverSettings.enableFanoutTimeline) {
