@@ -670,9 +670,6 @@ export class UserEntityService implements OnModuleInit {
 
 		const schema = (options?.schema ?? 'UserLite') as S;
 		if (schema !== 'UserLite') {
-			profilesMap = await this.userProfilesRepository.findBy({ userId: In(_userIds) })
-				.then(profiles => new Map(profiles.map(p => [p.userId, p])));
-
 			const meId = me ? me.id : null;
 			if (meId) {
 				if (_userIds.length > 0) {
